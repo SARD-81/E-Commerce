@@ -1,11 +1,14 @@
 import SideMenu from "./components/SideMenu";
+import { ThemeProvider, CssBaseline } from "@mui/material";
+import { theme } from "./theme";
 
 function App() {
   return (
     <>
-      <SideMenu>
-        
-      </SideMenu>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <SideMenu></SideMenu>
+      </ThemeProvider>
     </>
   );
 }
