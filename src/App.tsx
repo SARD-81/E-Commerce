@@ -1,7 +1,7 @@
 import SideMenu from "./components/SideMenu";
-// temporary import used to view myOrders and details
-// import OrdersPage from "./pages/User/myOrders";
-// import OrderDetailsPage from "./pages/User/details";
+// Temporary import used to view MyOrders and DetailsMain:
+// import MyOrders from "./pages/User/MyOrders";
+// import DetailsMain from "./pages/User/DetailsMain";
 
 // const mockOrders = [
 //   {
@@ -22,8 +22,8 @@ function App() {
   return (
     <>
       <SideMenu></SideMenu>
-      {/* return <OrdersPage />; */}
-      {/* <OrderDetailsPage orderItems={mockOrders} /> */}
+      {/* return <MyOrders />; */}
+      {/* <DetailsMain orderItems={mockOrders} /> */}
     </>
   );
 }
