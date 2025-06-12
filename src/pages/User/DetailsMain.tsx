@@ -1,8 +1,8 @@
 import React from "react";
 import { Box } from "@mui/material";
-import OrderProductsTable from "./DetailsComponent/DetailsTable";
-import OrderCustomerInfo from "./DetailsComponent/DetailsCustomerInfo";
-import OrderSummary from "./DetailsComponent/DetailsSummary";
+import OrderProductsTable from "../../components/DetailsComponent/DetailsTable";
+import OrderCustomerInfo from "../../components/DetailsComponent/DetailsCustomerInfo";
+import OrderSummary from "../../components/DetailsComponent/DetailsSummary";
 
 interface OrderItem {
   image: string;
