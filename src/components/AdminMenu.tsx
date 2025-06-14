@@ -1,53 +1,91 @@
-import { useState, useRef, useEffect } from "react";
+import {
+  Menu,
+  MenuItem,
+  IconButton,
+  ClickAwayListener,
+  Box,
+} from "@mui/material";
 import { FiMenu } from "react-icons/fi";
+import { useState, useRef } from "react";
 
 const AdminMenu = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const isOpen = Boolean(anchorEl);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const toggleDropdown = () => {
-    setIsOpen((prev) => !prev);
+  const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(anchorEl ? null : event.currentTarget);
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
-    <div ref={menuRef} className="relative inline-block text-left">
-      <button
-        onClick={toggleDropdown}
-        className="text-2xl text-black cursor-pointer"
-      >
-        <FiMenu />
-      </button>
+    <ClickAwayListener onClickAway={handleClose}>
+      <Box sx={{ position: "relative", display: "inline-block" }}>
+        <IconButton
+          onClick={handleToggle}
+          ref={buttonRef}
+          disableRipple
+          disableFocusRipple
+          sx={{
+            fontSize: "24px",
+            color: "#000",
+            padding: 0,
+            backgroundColor: "transparent",
+            "&:hover": {
+              backgroundColor: "transparent",
+            },
+          }}
+        >
+          <FiMenu />
+        </IconButton>
 
-      {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-[169px] bg-white rounded-lg border border-[#CED2D7] py-4 px-2 shadow-lg z-10">
-          <ul className="flex flex-col gap-4">
-            {["داشبورد", "محصول جدید", "مدیریت کاربران", "سفارشات"].map(
-              (item, index) => (
-                <li
-                  key={index}
-                  className="px-2 py-2 rounded-md text-right text-[16px] font-normal leading-[21px] hover:bg-[#DB277714] hover:text-[#DB2777] cursor-pointer"
-                >
-                  {item}
-                </li>
-              )
-            )}
-          </ul>
-        </div>
-      )}
-    </div>
+        <Menu
+          anchorEl={anchorEl}
+          open={isOpen}
+          onClose={handleClose}
+          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+          transformOrigin={{ vertical: "top", horizontal: "left" }}
+          PaperProps={{
+            sx: {
+              width: 169,
+              borderRadius: "8px",
+              border: "1px solid #CED2D7",
+              boxShadow: 3,
+              py: 1,
+              px: 1,
+              mt: 1,
+            },
+          }}
+        >
+          {["داشبورد", "محصول جدید", "مدیریت کاربران", "سفارشات"].map(
+            (item, index) => (
+              <MenuItem
+                key={index}
+                onClick={handleClose}
+                sx={{
+                  fontSize: "16px",
+                  fontWeight: 400,
+                  lineHeight: "21px",
+                  textAlign: "right",
+                  borderRadius: "8px",
+                  px: 1,
+                  py: 1,
+                  ":hover": {
+                    backgroundColor: "#DB277714",
+                    color: "#DB2777",
+                  },
+                }}
+              >
+                {item}
+              </MenuItem>
+            )
+          )}
+        </Menu>
+      </Box>
+    </ClickAwayListener>
   );
 };
 
