@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Table,
   TableBody,
@@ -8,9 +8,7 @@ import {
   TableRow,
   Paper,
   Button,
-  Modal,
   Box,
-  Typography,
   styled,
 } from "@mui/material";
 
@@ -135,40 +133,7 @@ const ActionButton = styled(Button)({
   },
 });
 
-const ModalContainer = styled(Box)({
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  width: "80%",
-  maxWidth: "800px",
-  outline: "none",
-});
-
-const ModalContent = styled(Paper)({
-  padding: "2rem",
-  direction: "rtl",
-});
-
-const DetailSection = styled("div")({
-  marginTop: "2rem",
-});
-
-const DetailItem = styled("div")({
-  marginBottom: "1rem",
-  fontSize: 16,
-});
-
-const OrdersPage: React.FC = () => {
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-
-  const handleViewDetails = (order: Order) => {
-    setSelectedOrder(order);
-  };
-
-  const handleCloseDetails = () => {
-    setSelectedOrder(null);
-  };
-
+const MyOrders: React.FC = () => {
   return (
     <PageContainer>
       <TableContainer
@@ -301,7 +266,7 @@ const OrdersPage: React.FC = () => {
                 <TableCell sx={{ textAlign: "center" }}>
                   <ActionButton
                     variant="contained"
-                    onClick={() => handleViewDetails(order)}
+                    onClick={() => {}}
                     sx={{ textAlign: "center" }}
                   >
                     جزئیات
@@ -312,39 +277,8 @@ const OrdersPage: React.FC = () => {
           </TableBody>
         </Table>
       </TableContainer>
-
-      <Modal
-        open={Boolean(selectedOrder)}
-        onClose={handleCloseDetails}
-        aria-labelledby="order-details-modal"
-      >
-        <ModalContainer>
-          <ModalContent elevation={3}>
-            {selectedOrder && (
-              <>
-                <Typography variant="h5" gutterBottom></Typography>
-
-                <DetailSection>
-                  <DetailItem>
-                    <strong>محصول:</strong> {selectedOrder.product}
-                  </DetailItem>
-                  {/* ... other detail items ... */}
-                </DetailSection>
-
-                <ActionButton
-                  variant="contained"
-                  onClick={handleCloseDetails}
-                  sx={{ mt: 3 }}
-                >
-                  بستن
-                </ActionButton>
-              </>
-            )}
-          </ModalContent>
-        </ModalContainer>
-      </Modal>
     </PageContainer>
   );
 };
 
-export default OrdersPage;
+export default MyOrders;
