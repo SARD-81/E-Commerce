@@ -2,19 +2,47 @@ import { useEffect, useState } from "react";
 import ProductCard from "../../components/ProductCard";
 import ShopPageFilter from "../../components/ShopPageFilter";
 import { CategoryMockData } from "../../mockData/CategoryMockData";
-import { ProductMockData } from "../../mockData/ProductMockData";
+// import { ProductMockData } from "../../mockData/ProductMockData";
 import type { FilterProductType } from "../../types/filter";
 import type { ProductType } from "../../types/Product";
+import server from "../../utils/axios";
 
 const Shop = () => {
-  const [products, setProducts] = useState<ProductType[]>([]);
+  const [productsResponse, setProductsResponse] = useState<{
+    loading: boolean;
+    data: ProductType[];
+    error: string | null;
+  }>({
+    loading: false,
+    data: [],
+    error: null,
+  });
+
   const [filters, setFilters] = useState<FilterProductType>({
     categories: [],
     price: [],
   });
 
   useEffect(() => {
-    setProducts(ProductMockData);
+    const fetchProducts = async () => {
+      try {
+        setProductsResponse({ loading: true, data: [], error: null });
+        const res = await server.get("products/allproducts");
+        setProductsResponse({
+          loading: false,
+          data: res.data,
+          error: null,
+        });
+      } catch (error) {
+        setProductsResponse({
+          loading: false,
+          data: [],
+          error: `Failed to fetch products: ${error}`,
+        });
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   const handleCategoryFilter = (categoryId: string) => {
@@ -36,6 +64,14 @@ const Shop = () => {
     });
   };
 
+  if (productsResponse.loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (productsResponse.error) {
+    return <div>Error: {productsResponse.error}</div>;
+  }
+
   return (
     <div className="flex gap-8 bg-[#EEEFF1] pt-6 pr-8">
       <ShopPageFilter
@@ -45,7 +81,7 @@ const Shop = () => {
         onCategoryFilter={handleCategoryFilter}
       />
       <div className="flex flex-wrap w-3/4 gap-8">
-        {products.map((product) => (
+        {productsResponse.data.map((product) => (
           <ProductCard
             title={product.name}
             price={product.price}
