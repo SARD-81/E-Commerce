@@ -1,3 +1,4 @@
+
 import SideMenu from "./components/SideMenu";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import { theme } from "./theme";
