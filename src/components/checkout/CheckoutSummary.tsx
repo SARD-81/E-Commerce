@@ -1,4 +1,5 @@
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import type { ReactNode } from "react";
 
 const summary = {
   total: "۱۰۰,۰۰۰ تومان",
@@ -7,7 +8,7 @@ const summary = {
   final: "۱۲۰,۰۰۰ تومان",
 };
 
-const CheckoutSummary = () => {
+const CheckoutSummary = ({ actionButton }: { actionButton?: ReactNode }) => {
   return (
     <Box
       sx={{
@@ -70,27 +71,8 @@ const CheckoutSummary = () => {
           </Box>
         ))}
       </Box>
-
-      {/* Payment Button */}
-      <Button
-        variant="contained"
-        sx={{
-          mt: "32px",
-          width: "100%",
-          height: "48px",
-          borderRadius: "9999px",
-          backgroundColor: "#DB2777",
-          fontSize: "20px",
-          fontWeight: 700,
-          py: "8px",
-          px: "32px",
-          ":hover": {
-            backgroundColor: "#c41f6d",
-          },
-        }}
-      >
-        پرداخت
-      </Button>
+      {/* Button */}
+      {actionButton && <Box sx={{ mt: "32px" }}>{actionButton}</Box>}
     </Box>
   );
 };
