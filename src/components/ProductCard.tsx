@@ -11,7 +11,7 @@ interface ProductCardProps {
   onAddToBasket: (productId: number | string) => void;
 }
 
-export default function ProductCard({
+export default function wProductCard({
   productId,
   title,
   price,
