@@ -1,7 +1,9 @@
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
+import {CssBaseline} from "@mui/material/CssBaseline";
 import RelatedProducts from "./components/RelatedProducts";
 import SideMenu from "./components/SideMenu";
+import { theme } from "./theme";
+
 
 const theme = createTheme({
   direction: "rtl",
@@ -14,9 +16,10 @@ function App() {
   return (
     <>
       <ThemeProvider theme={theme}>
-        <SideMenu></SideMenu>
+
         <CssBaseline />
-        <RelatedProducts />
+        <SideMenu></SideMenu>
+
       </ThemeProvider>
     </>
   );

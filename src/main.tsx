@@ -4,6 +4,7 @@ import "./index.css";
 import "./assets/fonts/font.css";
 import App from "./App.tsx";
 
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <App />
