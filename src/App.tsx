@@ -1,7 +1,15 @@
-// import SideMenu from "./components/SideMenu";
 import { Button, createTheme, CssBaseline, ThemeProvider } from "@mui/material";
-import { useMemo, useState } from "react";
+import RelatedProducts from "./components/RelatedProducts";
 import SideMenu from "./components/SideMenu";
+import { theme } from "./theme";
+
+
+const theme = createTheme({
+  direction: "rtl",
+  typography: {
+    fontFamily: "Vazir, Arial, sans-serif",
+  },
+});
 
 function App() {
   const [mode, setMode] = useState<"light" | "dark">("light");
@@ -21,7 +29,9 @@ function App() {
   return (
     <>
       <ThemeProvider theme={theme}>
+
         <CssBaseline />
+<<<<<<< HEAD
         <Button
           variant="outlined"
           onClick={handleToggleClick}
@@ -39,6 +49,10 @@ function App() {
           {/* <ProductPage /> */}
           {/* <ProductCreate /> */}
         </SideMenu>
+=======
+        <SideMenu></SideMenu>
+
+>>>>>>> 390c6d74fac228ddc26799b05b439b97a1f0c4bb
       </ThemeProvider>
     </>
   );
