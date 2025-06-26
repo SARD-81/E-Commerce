@@ -2,7 +2,6 @@
 import { Button, createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { useMemo, useState } from "react";
 import SideMenu from "./components/SideMenu";
-import ProductCreate from "./pages/Admin/ProductCreate";
 
 function App() {
   const [mode, setMode] = useState<"light" | "dark">("light");
@@ -38,7 +37,7 @@ function App() {
         </Button>
         <SideMenu>
           {/* <ProductPage /> */}
-          <ProductCreate />
+          {/* <ProductCreate /> */}
         </SideMenu>
       </ThemeProvider>
     </>
