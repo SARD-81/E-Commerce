@@ -250,7 +250,7 @@ const ProductPage = () => {
                   userComments.map((item, index) => (
                     <section
                       key={index}
-                      className="bg-[#E6E8EB] rounded-lg p-4 space-y-4 pr-7"
+                      className="bg-[#E6E8EB] rounded-lg min-w-3xl p-4 space-y-4"
                     >
                       <div className="flex text-[#58616C] items-center justify-between">
                         <p>علی موسوی</p>
