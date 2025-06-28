@@ -70,7 +70,6 @@ const CheckoutAddressInfo = () => {
       <Box
         sx={{
           width: "100%",
-          height: 40,
           border: "1px solid #CED2D7",
           backgroundColor: "#E6E8EB",
           borderRadius: "4px",
