@@ -11,8 +11,7 @@ const Checkout = () => {
         flexDirection: "row",
         justifyContent: "space-between",
         gap: 7,
-        p: 3,
-        minHeight: "100vh",
+        px: 3,
       }}
     >
       <Box sx={{ width: "50%" }}>
