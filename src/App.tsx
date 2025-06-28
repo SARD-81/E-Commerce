@@ -1,5 +1,4 @@
-import { Button, createTheme, CssBaseline, ThemeProvider } from "@mui/material";
-import RelatedProducts from "./components/RelatedProducts";
+import { CssBaseline, ThemeProvider } from "@mui/material";
 import SideMenu from "./components/SideMenu";
 import { theme } from "./theme";
 
@@ -22,19 +21,3 @@ function App() {
 }
 
 export default App;
-// import SideMenu from "./components/SideMenu";
-// import { ThemeProvider, CssBaseline } from "@mui/material";
-// import { theme } from "./theme";
-
-// function App() {
-//   return (
-//     <>
-//       <ThemeProvider theme={theme}>
-//         <CssBaseline />
-//         <SideMenu></SideMenu>
-//       </ThemeProvider>
-//     </>
-//   );
-// }
-
-// export default App;

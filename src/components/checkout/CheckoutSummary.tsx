@@ -71,8 +71,32 @@ const CheckoutSummary = ({ actionButton }: { actionButton?: ReactNode }) => {
           </Box>
         ))}
       </Box>
+<<<<<<< Updated upstream
       {/* Button */}
       {actionButton && <Box sx={{ mt: "32px" }}>{actionButton}</Box>}
+=======
+
+      {/* Payment Button */}
+      <Button
+        variant="contained"
+        sx={{
+          mt: "32px",
+          width: "100%",
+          // height: "48px",
+          borderRadius: "9999px",
+          backgroundColor: "#DB2777",
+          fontSize: "20px",
+          fontWeight: 700,
+          py: "8px",
+          px: "32px",
+          ":hover": {
+            backgroundColor: "#c41f6d",
+          },
+        }}
+      >
+        پرداخت
+      </Button>
+>>>>>>> Stashed changes
     </Box>
   );
 };
