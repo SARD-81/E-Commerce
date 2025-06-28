@@ -1,7 +1,6 @@
-import { Button, createTheme, CssBaseline, ThemeProvider } from "@mui/material";
+import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { useMemo, useState } from "react";
-import { FiSun } from "react-icons/fi";
-import { FiMoon } from "react-icons/fi";
+import { FiMoon, FiSun } from "react-icons/fi";
 const DarkMode = () => {
   const [mode, setMode] = useState<"light" | "dark">("light");
   const theme = useMemo(() => {
