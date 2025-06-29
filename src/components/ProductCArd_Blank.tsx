@@ -13,8 +13,8 @@ const ProductCArd_Blank = ({
 }: ProductCard_BlankProps) => {
   const imageSize: { width: number; height: number } =
     size === "small"
-      ? { width: 350, height: 300 }
-      : { width: 400, height: 345 };
+      ? { width: 200, height: 200 }
+      : { width: 250, height: 250 };
 
   return (
     <div
@@ -31,8 +31,8 @@ const ProductCArd_Blank = ({
       />
       <div className="flex justify-between items-center ">
         <p className="font-bold">{title}</p>
-        <div className="bg-[#831747] p-1 px-4 rounded-full">
-          <p className="text-white">{price} تومان</p>
+        <div className="bg-[#831747]  px-2 rounded-full">
+          <p className="text-white text-sm">{price} تومان</p>
         </div>
       </div>
     </div>
