@@ -1,18 +1,58 @@
 import { Box, Container, Typography } from "@mui/material";
 import { useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+
+type ProductFormData = {
+  productName: string;
+  productPrice: number;
+  productBrand: string;
+  productDesc: string;
+  productQuantity: number;
+  productStatus: string;
+};
 
 const ProductCreate = () => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<ProductFormData>();
+
   const [filename, setFileName] = useState("");
+  const [preview, setPreview] = useState("");
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const handleClick = () => {
     fileInputRef.current?.click();
   };
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setFileName(file.name);
+      setPreview(URL.createObjectURL(file));
     }
   };
+
+  const onSubmit = (data: ProductFormData) => {
+    const imageFile = fileInputRef.current?.files?.[0];
+    const productData = {
+      ...data,
+      image: imageFile,
+    };
+
+    console.log("Submitting Product:", productData);
+
+    reset();
+    setFileName("");
+    setPreview("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   return (
     <Container maxWidth="md">
       <Box
@@ -26,9 +66,7 @@ const ProductCreate = () => {
       >
         <Typography variant="h5">محصول جدید</Typography>
         <form
-          onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
-            e.preventDefault();
-          }}
+          onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col w-full gap-6"
         >
           <Box
@@ -52,74 +90,91 @@ const ProductCreate = () => {
               ref={fileInputRef}
               accept="image/*"
               className="hidden"
-              onChange={handleChange}
+              onChange={handleFileChange}
             />
           </Box>
-          <Box>
-            <label htmlFor="product-name">نام</label>
-            <input
-              type="text"
-              id="product-name"
-              name="product-name"
-              placeholder="نام محصول خود را وارد نمایید"
-              className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white "
+          {preview && (
+            <img
+              src={preview}
+              alt="Preview"
+              className="w-40 h-40 object-cover rounded"
             />
+          )}
+          <Box>
+            <label htmlFor="productName">نام</label>
+            <input
+              id="productName"
+              placeholder="نام محصول خود را وارد نمایید"
+              className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
+              {...register("productName", { required: true })}
+            />
+            {errors.productName && (
+              <span className="text-red-500 text-sm">این فیلد اجباری است</span>
+            )}
           </Box>
           <Box className="flex items-center justify-center gap-8">
             <div className="w-1/2">
-              <label htmlFor="product-price">قیمت</label>
+              <label htmlFor="productPrice">قیمت</label>
               <input
                 type="number"
-                id="product-price"
-                name="product-price"
+                id="productPrice"
                 placeholder="قیمت محصول خود را وارد نمایید"
                 className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
+                {...register("productPrice", {
+                  required: true,
+                  valueAsNumber: true,
+                })}
               />
+              {errors.productPrice && (
+                <span className="text-red-500 text-sm">قیمت الزامی است</span>
+              )}
             </div>
             <div className="w-1/2">
-              <label htmlFor="product-brand">برند</label>
+              <label htmlFor="productBrand">برند</label>
               <input
                 type="text"
-                id="product-brand"
-                name="product-brand"
+                id="productBrand"
+                placeholder="برند محصول را وارد نمایید"
                 className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
-                placeholder="برند محصول خود را وارد نمایید"
+                {...register("productBrand", { required: true })}
               />
+              {errors.productBrand && (
+                <span className="text-red-500 text-sm">برند الزامی است</span>
+              )}
             </div>
           </Box>
           <Box className="flex flex-col gap-3">
-            <label htmlFor="product-desc">توضیحات</label>
+            <label htmlFor="productDesc">توضیحات</label>
             <textarea
+              id="productDesc"
               rows={4}
-              name="product-desc"
-              id="product-desc"
               placeholder="توضیحات محصول خود را وارد نمایید"
               className="w-full p-2 outline-none border border-[#CED2D7] rounded-lg bg-white resize-none"
+              {...register("productDesc")}
             ></textarea>
           </Box>
           <Box className="flex items-center justify-center gap-8">
             <div className="w-1/2">
-              <label htmlFor="product-price">
-                تعداد قابل خرید را وارد نمایید
-              </label>
+              <label htmlFor="productQuantity">تعداد قابل خرید</label>
               <input
                 type="number"
-                id="product-price"
-                name="product-price"
-                placeholder="قیمت محصول خود را وارد نمایید"
+                id="productQuantity"
+                placeholder="تعداد را وارد نمایید"
                 className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
+                {...register("productQuantity", {
+                  required: true,
+                  valueAsNumber: true,
+                })}
               />
             </div>
             <div className="w-1/2">
-              <label htmlFor="product-brand">موجودی</label>
+              <label htmlFor="productStatus">موجودی</label>
               <select
-                id="product-brand"
-                name="product-brand"
+                id="productStatus"
                 className="appearance-none cursor-pointer w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
+                {...register("productStatus")}
               >
-                <option className="color-[]" value="in-stock">
-                  موجودی
-                </option>
+                <option value="in-stock">موجود</option>
                 <option value="out-of-stock">ناموجود</option>
               </select>
             </div>

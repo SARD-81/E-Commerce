@@ -1,10 +1,5 @@
-import { Grid } from "@mui/material";
 const ProductAllProduct = () => {
-  return (
-    <Grid container spacing={2}>
-      <Grid>{/* <ProductCard  /> */}</Grid>
-    </Grid>
-  );
+  return <section className="grid grid-cols-3 gap-10"></section>;
 };
 
 export default ProductAllProduct;
