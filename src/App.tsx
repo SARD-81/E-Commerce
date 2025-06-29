@@ -1,6 +1,8 @@
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import SideMenu from "./components/SideMenu";
 import { theme } from "./theme";
+// import Buttons from "./components/SlideMenuReuseables/buttons";
+
 // import { useState } from "react";
 // import { useMemo } from "react";
 // import ProductPage from "./pages/User/ProductPage";
@@ -44,6 +46,7 @@ function App() {
         >
           {mode === "light" ? "Dark Mode" : "Light Mode"}
         </Button> */}
+
         <SideMenu></SideMenu>
       </ThemeProvider>
     </>
