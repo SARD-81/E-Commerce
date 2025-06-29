@@ -1,6 +1,5 @@
-import * as React from "react";
-import shoppingCard from "../assets/shop.svg";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import shoppingCard from "../assets/shop.svg";
 
 interface ProductCardProps {
   productId: number | string;
@@ -12,7 +11,7 @@ interface ProductCardProps {
   onAddToBasket?: (productId: number | string) => void;
 }
 
-export default function ProductCard({
+export default function wProductCard({
   productId,
   title,
   price,
