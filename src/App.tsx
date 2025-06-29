@@ -18,7 +18,7 @@ function App() {
         <CssBaseline />
         <SideMenu>
           {/* <DarkMode /> */}
-          <ProductCreate />
+          {/* <ProductCreate /> */}
         </SideMenu>
       </ThemeProvider>
     </>
