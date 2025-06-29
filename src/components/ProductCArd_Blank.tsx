@@ -23,13 +23,13 @@ const ProductCArd_Blank = ({
       }}
     >
       <img
-        className="rounded-xl mb-4"
+        className="rounded-xl mb-4 bg-[#797979]"
         src={imageSrc}
         alt="product_card_blank"
         width={imageSize.width}
         height={imageSize.height}
       />
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center ">
         <p className="font-bold">{title}</p>
         <div className="bg-[#831747] p-1 px-4 rounded-full">
           <p className="text-white">{price} تومان</p>
