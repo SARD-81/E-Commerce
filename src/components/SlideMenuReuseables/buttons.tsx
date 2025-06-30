@@ -28,8 +28,8 @@ const Buttons: React.FC<DynamicButtonProps> = ({
       >
         <Heart
           size={20}
-          fill={liked ? 'red' : 'none'}
-          color={liked ? 'red' : 'gray'}
+          fill={liked ? '#DB2777' : 'none'}
+          color={liked ? '#DB2777' : '#DFE3E8'}
         />
       </button>
     );
