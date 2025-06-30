@@ -14,7 +14,9 @@ function App() {
     <>
       <ThemeProvider theme={theme}>
         <CssBaseline />
+
         <SideMenu>{/* <DarkMode /> */}</SideMenu>
+
       </ThemeProvider>
     </>
   );
