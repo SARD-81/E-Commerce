@@ -1,7 +1,7 @@
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import SideMenu from "./components/SideMenu";
 import { theme } from "./theme";
-import FilterCategories from "./components/SlideMenuReuseables/filtercategories";
+import TextField from "./components/SlideMenuReuseables/textField";
 
 
 // import Buttons from "./components/SlideMenuReuseables/buttons";
@@ -50,7 +50,6 @@ function App() {
           {mode === "light" ? "Dark Mode" : "Light Mode"}
         </Button> */}
 
-        {/* <FilterCategories texts={['Smartphone','Laptop']} /> */}
         <SideMenu></SideMenu>
       </ThemeProvider>
     </>
