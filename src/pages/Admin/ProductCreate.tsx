@@ -1,29 +1,31 @@
 import { Box, Container, Typography } from "@mui/material";
-import { useRef, useState } from "react";
-import { useForm } from "react-hook-form";
-
-type ProductFormData = {
-  productName: string;
-  productPrice: number;
-  productBrand: string;
-  productDesc: string;
-  productQuantity: number;
-  productStatus: string;
-};
-
+import { useRef, useState, type ChangeEvent } from "react";
+import server from "../../utils/axios";
+import { toast, ToastContainer } from "react-toastify";
 const ProductCreate = () => {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<ProductFormData>();
-
-  const [filename, setFileName] = useState("");
+  const [formData, setFormData] = useState({
+    productName: "",
+    price: "",
+    brand: "",
+    description: "",
+    quantity: "",
+    status: "in-stock",
+    productImage: null as File | null,
+  });
   const [preview, setPreview] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
   const handleClick = () => {
     fileInputRef.current?.click();
   };
@@ -31,30 +33,66 @@ const ProductCreate = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setFileName(file.name);
+      setFormData((prev) => ({
+        ...prev,
+        productImage: file,
+      }));
       setPreview(URL.createObjectURL(file));
     }
   };
 
-  const onSubmit = (data: ProductFormData) => {
-    const imageFile = fileInputRef.current?.files?.[0];
-    const productData = {
-      ...data,
-      image: imageFile,
-    };
+  const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const { productName, price, brand, description, quantity, productImage } =
+      formData;
+    if (
+      !productName ||
+      !price ||
+      !brand ||
+      !description ||
+      !quantity ||
+      !productImage
+    ) {
+      toast.error("لطفا تمام فیلد ها رو تکمیل نمایید و یک عکس بارگذاری کنید");
+      return;
+    }
 
-    console.log("Submitting Product:", productData);
-
-    reset();
-    setFileName("");
-    setPreview("");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+    const payload = new FormData();
+    payload.append("name", formData.productName);
+    payload.append("description", formData.description);
+    payload.append("price", formData.price);
+    payload.append("brand", formData.brand);
+    payload.append("quantity", formData.quantity);
+    // payload.append("status", formData.status);
+    if (formData.productImage) {
+      payload.append("image", formData.productImage);
+    }
+    try {
+      const response = await server.post("products", payload);
+      toast.success("محصول با موفقیت ساخته شد🎉");
+      console.log(response);
+      setFormData({
+        productName: "",
+        price: "",
+        description: "",
+        brand: "",
+        quantity: "",
+        status: "in-stock",
+        productImage: null,
+      });
+      setPreview("");
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    } catch (error) {
+      toast.error("خطا در ارسال محصول");
+      console.log("Error creating product:", error);
     }
   };
 
   return (
     <Container maxWidth="md">
+      <ToastContainer position="top-center" autoClose={3000} />
       <Box
         component="section"
         sx={{
@@ -65,10 +103,7 @@ const ProductCreate = () => {
         }}
       >
         <Typography variant="h5">محصول جدید</Typography>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col w-full gap-6"
-        >
+        <form onSubmit={handleSubmit} className="flex flex-col w-full gap-6">
           <Box
             onClick={handleClick}
             sx={{
@@ -83,7 +118,9 @@ const ProductCreate = () => {
             }}
           >
             <Typography sx={{ alignSelf: "center", color: "#58616C" }}>
-              {filename ? `فایل انتخاب شده: ${filename}` : "آپلود عکس"}
+              {formData.productImage
+                ? `فایل انتخاب شده: ${formData.productImage}`
+                : "آپلود عکس"}
             </Typography>
             <input
               type="file"
@@ -104,53 +141,49 @@ const ProductCreate = () => {
             <label htmlFor="productName">نام</label>
             <input
               id="productName"
+              name="productName"
+              value={formData.productName}
               placeholder="نام محصول خود را وارد نمایید"
               className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
-              {...register("productName", { required: true })}
+              onChange={handleChange}
             />
-            {errors.productName && (
-              <span className="text-red-500 text-sm">این فیلد اجباری است</span>
-            )}
           </Box>
           <Box className="flex items-center justify-center gap-8">
             <div className="w-1/2">
               <label htmlFor="productPrice">قیمت</label>
               <input
                 type="number"
+                name="price"
+                value={formData.price}
                 id="productPrice"
                 placeholder="قیمت محصول خود را وارد نمایید"
                 className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
-                {...register("productPrice", {
-                  required: true,
-                  valueAsNumber: true,
-                })}
+                onChange={handleChange}
               />
-              {errors.productPrice && (
-                <span className="text-red-500 text-sm">قیمت الزامی است</span>
-              )}
             </div>
             <div className="w-1/2">
               <label htmlFor="productBrand">برند</label>
               <input
                 type="text"
+                name="brand"
+                value={formData.brand}
                 id="productBrand"
                 placeholder="برند محصول را وارد نمایید"
                 className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
-                {...register("productBrand", { required: true })}
+                onChange={handleChange}
               />
-              {errors.productBrand && (
-                <span className="text-red-500 text-sm">برند الزامی است</span>
-              )}
             </div>
           </Box>
           <Box className="flex flex-col gap-3">
             <label htmlFor="productDesc">توضیحات</label>
             <textarea
               id="productDesc"
+              name="description"
+              value={formData.description}
               rows={4}
               placeholder="توضیحات محصول خود را وارد نمایید"
               className="w-full p-2 outline-none border border-[#CED2D7] rounded-lg bg-white resize-none"
-              {...register("productDesc")}
+              onChange={handleChange}
             ></textarea>
           </Box>
           <Box className="flex items-center justify-center gap-8">
@@ -158,21 +191,22 @@ const ProductCreate = () => {
               <label htmlFor="productQuantity">تعداد قابل خرید</label>
               <input
                 type="number"
+                name="quantity"
+                value={formData.quantity}
                 id="productQuantity"
                 placeholder="تعداد را وارد نمایید"
                 className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
-                {...register("productQuantity", {
-                  required: true,
-                  valueAsNumber: true,
-                })}
+                onChange={handleChange}
               />
             </div>
             <div className="w-1/2">
               <label htmlFor="productStatus">موجودی</label>
               <select
                 id="productStatus"
+                name="status"
+                value={formData.status}
                 className="appearance-none cursor-pointer w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
-                {...register("productStatus")}
+                onChange={handleChange}
               >
                 <option value="in-stock">موجود</option>
                 <option value="out-of-stock">ناموجود</option>
