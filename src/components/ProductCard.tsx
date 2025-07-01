@@ -7,8 +7,8 @@ interface ProductCardProps {
   price: number;
   description: string;
   imageSrc: string;
-  onShowMore: (productId: number | string) => void;
-  onAddToBasket: (productId: number | string) => void;
+  onShowMore?: (productId: number | string) => void;
+  onAddToBasket?: (productId: number | string) => void;
 }
 
 export default function wProductCard({
@@ -36,11 +36,11 @@ export default function wProductCard({
           <img
             src={shoppingCard}
             alt=""
-            onClick={() => onAddToBasket(productId)}
+            onClick={() => onAddToBasket?.(productId)}
           />
           <button
             className="!bg-[#DB2777] text-white"
-            onClick={() => onShowMore(productId)}
+            onClick={() => onShowMore?.(productId)}
           >
             <KeyboardBackspaceIcon /> مشاهده بیشتر{" "}
           </button>
