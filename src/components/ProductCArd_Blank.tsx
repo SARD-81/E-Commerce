@@ -26,22 +26,32 @@ const ProductCArd_Blank = ({
     >
       <Box
         component="img"
-        className="rounded-xl mb-4 bg-[#797979]"
+        sx={{
+          borderRadius: "12px",
+          marginBottom: "16px",
+          backgroundColor: "#797979",
+        }}
         src={imageSrc}
         alt="product_card_blank"
         width={imageSize.width}
         height={imageSize.height}
       />
 
-      <Box className="flex justify-between items-center ">
-        <Typography component="p" variant="body1" className="font-bold">
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Typography component="p" variant="body1" sx={{ fontWeight: "bold" }}>
           {title}
         </Typography>
-        <Box className="bg-[#831747]  px-2 rounded-full">
+        <Box sx={{ background: "#831747", px: 2, borderRadius: "50%" }}>
           <Typography
             component="p"
             variant="body1"
-            className="text-white text-sm"
+            sx={{ color: "#FFFFFF", fontSize: "14px" }}
           >
             {price} تومان
           </Typography>
