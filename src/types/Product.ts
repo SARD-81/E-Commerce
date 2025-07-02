@@ -1,6 +1,6 @@
 import type { CategoryType } from "./Category";
-
-export interface ProductType {
+import type { ApiResponse } from "./ApiResponse";
+interface ProductResponseType {
   _id: string;
   name: string;
   image: string;
@@ -16,3 +16,7 @@ export interface ProductType {
   updatedAt: string;
   __v: number;
 }
+
+type ProductType = ApiResponse<ProductResponseType[]>;
+
+export type { ProductType, ProductResponseType };

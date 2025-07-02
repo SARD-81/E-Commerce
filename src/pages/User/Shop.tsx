@@ -8,11 +8,7 @@ import type { ProductType } from "../../types/Product";
 import server from "../../utils/axios";
 
 const Shop = () => {
-  const [productsResponse, setProductsResponse] = useState<{
-    loading: boolean;
-    data: ProductType[];
-    error: string | null;
-  }>({
+  const [productsResponse, setProductsResponse] = useState<ProductType>({
     loading: false,
     data: [],
     error: null,
@@ -81,7 +77,7 @@ const Shop = () => {
         onCategoryFilter={handleCategoryFilter}
       />
       <div className="flex flex-wrap w-3/4 gap-8">
-        {productsResponse.data.map((product) => (
+        {productsResponse.data?.map((product) => (
           <ProductCard
             title={product.name}
             price={product.price}

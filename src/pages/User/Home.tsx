@@ -1,8 +1,16 @@
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
+import pic from "../../assets/appleIphone.jpg";
 import ProductCArd_Blank from "../../components/ProductCArd_Blank";
-import pic from "../../assets/iphone-14-pro-model-unselect-gallery-1-202209.jpg";
 import ProductSlider from "../../components/ProductSlider";
-
 const Home = () => {
+  const location = useLocation();
+  useEffect(() => {
+    const successMessage = location.state?.message;
+    if (!successMessage) return;
+    toast.success(successMessage, { toastId: "Login-success" });
+  }, [location.state]);
   return (
     <div className="">
       <div className="flex mb-10 w-full justify-between">
