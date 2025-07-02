@@ -1,4 +1,4 @@
-import { CssBaseline, ThemeProvider } from "@mui/material";
+import { CssBaseline, ThemeProvider, Box } from "@mui/material";
 import SideMenu from "./components/SideMenu";
 import { theme } from "./theme";
 // const theme = createTheme({
