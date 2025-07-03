@@ -8,11 +8,7 @@ import server from "../../utils/axios";
 import { Box } from "@mui/material";
 
 const Shop = () => {
-  const [productsResponse, setProductsResponse] = useState<{
-    loading: boolean;
-    data: ProductType[];
-    error: string | null;
-  }>({
+  const [productsResponse, setProductsResponse] = useState<ProductType>({
     loading: false,
     data: [],
     error: null,
@@ -98,6 +94,7 @@ const Shop = () => {
         }}
       >
         {productsResponse.data.map((product) => (
+
           <ProductCard
             title={product.name}
             price={product.price}

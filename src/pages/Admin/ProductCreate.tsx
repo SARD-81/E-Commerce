@@ -214,7 +214,10 @@ const ProductCreate = () => {
             </div>
           </Box>
           <Box className="w-1/5 text-white flex items-center rounded-lg bg-[#DB2777]">
-            <button type="submit" className="m-auto h-[45px] cursor-pointer">
+            <button
+              type="submit"
+              className="m-auto h-[45px] cursor-pointer hover:bg-[#BE1D64]"
+            >
               ساخت محصول جدید
             </button>
           </Box>

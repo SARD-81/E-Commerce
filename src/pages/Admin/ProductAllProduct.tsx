@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import server from "../../utils/axios";
 import ProductCard from "../../components/ProductCard";
-import type ProductResponseType from "../../types/ProductResponseType";
+import server from "../../utils/axios";
+import type { ProductType } from "../../types/Product";
 const ProductAllProduct = () => {
-  const [productsResponse, setProductResponse] = useState<ProductResponseType>({
+  const [productsResponse, setProductResponse] = useState<ProductType>({
     loading: false,
     data: [],
     error: null,
@@ -36,7 +36,7 @@ const ProductAllProduct = () => {
       ) : productsResponse.error ? (
         <p className="text-red-500">{productsResponse.error}</p>
       ) : (
-        productsResponse.data.map((product) => (
+        productsResponse.data?.map((product) => (
           <ProductCard
             title={product.name}
             price={product.price}
