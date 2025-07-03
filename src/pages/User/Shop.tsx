@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import ProductCard from "../../components/ProductCard";
 import ShopPageFilter from "../../components/ShopPageFilter";
 import { CategoryMockData } from "../../mockData/CategoryMockData";
-// import { ProductMockData } from "../../mockData/ProductMockData";
 import type { FilterProductType } from "../../types/filter";
 import type { ProductType } from "../../types/Product";
 import server from "../../utils/axios";
+import { Box } from "@mui/material";
 
 const Shop = () => {
   const [productsResponse, setProductsResponse] = useState<{
@@ -73,14 +73,30 @@ const Shop = () => {
   }
 
   return (
-    <div className="flex gap-8 bg-[#EEEFF1] pt-6 pr-8">
+    <Box
+      sx={{
+        display: "flex",
+        gap: "32px",
+        paddingTop: "24px",
+        paddingRight: "32px",
+
+        backgroundColor: "#EEEFF1",
+      }}
+    >
       <ShopPageFilter
         onPriceFilter={handlePriceFilter}
         onDeleteFilter={handleDeleteFilter}
         categories={CategoryMockData}
         onCategoryFilter={handleCategoryFilter}
       />
-      <div className="flex flex-wrap w-3/4 gap-8">
+      <Box
+        sx={{
+          display: "flex",
+          gap: "32px",
+          width: "75%",
+          flexWrap: "wrap",
+        }}
+      >
         {productsResponse.data.map((product) => (
           <ProductCard
             title={product.name}
@@ -90,8 +106,8 @@ const Shop = () => {
             description={product.description}
           />
         ))}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 
