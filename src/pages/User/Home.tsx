@@ -4,6 +4,9 @@ import { toast } from "react-toastify";
 import pic from "../../assets/appleIphone.jpg";
 import ProductCArd_Blank from "../../components/ProductCArd_Blank";
 import ProductSlider from "../../components/ProductSlider";
+
+import { Box, Typography } from "@mui/material";
+
 const Home = () => {
   const location = useLocation();
   useEffect(() => {
@@ -12,10 +15,23 @@ const Home = () => {
     toast.success(successMessage, { toastId: "Login-success" });
   }, [location.state]);
   return (
-    <div className="">
-      <div className="flex mb-10 w-full justify-between">
-        <div className="flex justify-around w-2/5">
-          <div>
+    <Box>
+      <Box
+        sx={{
+          display: "flex",
+          marginBottom: "40px",
+          width: "100%",
+          justifyContent: "center",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-around",
+            width: "20%",
+          }}
+        >
+          <Box>
             <ProductCArd_Blank
               size="small"
               imageSrc={pic}
@@ -30,10 +46,8 @@ const Home = () => {
               price={1000}
               productId={1}
             />
-            {/* <ImgMediaCard />
-            <ImgMediaCard /> */}
-          </div>
-          <div>
+          </Box>
+          <Box>
             <ProductCArd_Blank
               size="small"
               imageSrc={pic}
@@ -48,20 +62,43 @@ const Home = () => {
               price={1000}
               productId={1}
             />
-            {/* <ImgMediaCard />
-            <ImgMediaCard /> */}
-          </div>
-        </div>
+          </Box>
+        </Box>
         <ProductSlider />
-      </div>
-      <div className="">
-        <div className=" w-full flex justify-between items-center pb-4 ">
-          <p className="text-[40px] font-normal">محصولات ویژه</p>
-          <p className="bg-[#DB2777] px-3 py-1 rounded-full text-white">
+      </Box>
+      <Box className="">
+        <Box className=" w-full flex justify-between items-center pb-4 ">
+          <Typography
+            component="p"
+            variant="body1"
+            sx={{
+              fontSize: "40px",
+              fontWeight: "bold",
+            }}
+          >
+            محصولات ویژه
+          </Typography>
+          <Typography
+            component="p"
+            variant="body1"
+            sx={{
+              padding: "8px 16px",
+              color: "#FFFFFF",
+              borderRadius: "50%",
+              backgroundColor: "#DB2777",
+            }}
+          >
             فروشگاه
-          </p>
-        </div>
-        <div className=" flex flex-wrap gap-4 justify-between">
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
+            gap: "16px",
+          }}
+        >
           <ProductCArd_Blank
             size="large"
             imageSrc={pic}
@@ -104,9 +141,9 @@ const Home = () => {
             price={10000}
             productId={1}
           />
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 
