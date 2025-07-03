@@ -1,5 +1,6 @@
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import shoppingCard from "../assets/shop.svg";
+import { Box, Button, Typography } from "@mui/material";
 
 interface ProductCardProps {
   productId: number | string;
@@ -21,31 +22,77 @@ export default function wProductCard({
   onAddToBasket,
 }: ProductCardProps) {
   return (
-    <div className="w-[384px]">
-      <div className="rounded-t-md flex items-center justify-center h-[170px] overflow-hidden">
+    <Box sx={{ width: "384px" }}>
+      <Box
+        sx={{
+          borderTopLeftRadius: "6px",
+          borderTopRightRadius: "6px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "170px",
+          overflow: "hidden",
+        }}
+      >
         <img src={imageSrc} alt="product-picture" />
-      </div>
+      </Box>
 
-      <div className="rounded-b-md bg-[#1F2937] p-4 gap-4 flex flex-col ">
-        <div className="flex justify-between">
-          <p className="text-[#DB2777]">{price} تومان</p>
-          <p className="text-[#FFFFFF] text-xl">{title}</p>
-        </div>
-        <p className="text-[#9CA3AF] text-right">{description}</p>
-        <div className=" flex justify-between ">
-          <img
+      <Box
+        sx={{
+          borderBottomLeftRadius: "6px",
+          borderBottomRightRadius: "6px",
+          backgroundColor: "#1F2937",
+          display: "flex",
+          flexDirection: "column",
+          gap: "16px",
+          padding: "16px",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography component="p" variant="body1" sx={{ color: "#DB2777" }}>
+            {price} تومان
+          </Typography>
+          <Typography
+            component="p"
+            variant="body1"
+            sx={{ color: "#FFFFFF", fontSize: "20px", fontWeight: "bold" }}
+          >
+            {title}
+          </Typography>
+        </Box>
+        <Typography className="text-[#9CA3AF] text-right">
+          {description}
+        </Typography>
+        <Box className=" flex justify-between ">
+          <Box
+            component="img"
+            sx={{
+              borderRadius: "12px",
+              marginBottom: "16px",
+              backgroundColor: "#797979",
+            }}
             src={shoppingCard}
-            alt=""
+            alt="product_card"
             onClick={() => onAddToBasket?.(productId)}
           />
-          <button
-            className="!bg-[#DB2777] text-white"
+
+          <Button
+            variant="contained"
+            sx={{
+              color: "#FFFFFF",
+              backgroundColor: "#DB2777",
+            }}
             onClick={() => onShowMore?.(productId)}
           >
             <KeyboardBackspaceIcon /> مشاهده بیشتر{" "}
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </Box>
+      </Box>
+    </Box>
   );
 }
