@@ -1,8 +1,8 @@
 import { styled, useTheme } from "@mui/material/styles";
+import { CssBaseline } from "@mui/material";
 import type { Theme, CSSObject } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
-import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
@@ -13,6 +13,11 @@ import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import { useState } from "react";
 import SideMenuHeader from "./SlideMenuReuseables/SideMenuHeader";
 import SlideMenuList from "./SlideMenuReuseables/SlideMenuList";
+import { useLocation } from "react-router";
+import { useAuth } from "../context/AuthContext";
+import AdminDropdown from "./AdminDropdown";
+import UserDropdown from "./UserDropdown";
+import Preloader from "./Preloader";
 
 const drawerWidth = 300;
 
@@ -60,48 +65,40 @@ const StyledDrawer = styled(MuiDrawer, {
 }));
 
 interface SideMenuProps {
-  children?: React.ReactNode;
+  children: React.ReactNode;
 }
 
 const SideMenu = ({ children }: SideMenuProps) => {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const location = useLocation();
+  const { user, loading } = useAuth();
 
   const handleDrawerOpen = () => setOpen(!open);
   const handleSelectItem = (id: number) => setSelectedIndex(id);
 
   const mainMenuItems = [
-    { text: "داشبورد", icon: <HomeOutlinedIcon /> },
-    { text: "فروشگاه", icon: <ShoppingBagOutlinedIcon /> },
-    { text: "سبد خرید", icon: <ShoppingCartOutlinedIcon /> },
-    { text: "علاقه‌مندی‌ها", icon: <FavoriteOutlinedIcon /> },
+    { text: "داشبورد", icon: <HomeOutlinedIcon />, to: "/" },
+    { text: "فروشگاه", icon: <ShoppingBagOutlinedIcon />, to: "/shop" },
+    { text: "سبد خرید", icon: <ShoppingCartOutlinedIcon />, to: "/cart" },
+    { text: "علاقه‌مندی‌ها", icon: <FavoriteOutlinedIcon />, to: "/wishlist" },
   ];
 
   const authMenuItems = [
-    { text: "ورود", icon: <LoginIcon /> },
-    { text: "ثبت‌نام", icon: <PersonAddOutlinedIcon /> },
+    { text: "ورود", icon: <LoginIcon />, to: "/login" },
+    { text: "ثبت‌نام", icon: <PersonAddOutlinedIcon />, to: "/register" },
   ];
 
+  const isAuthPage = ["/login", "/register"].includes(location.pathname);
+
+  if (loading) {
+    return <Preloader />;
+  }
+
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", minHeight: "100vh" }}>
       <CssBaseline />
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          marginRight: open
-            ? `${drawerWidth}px`
-            : `calc(${theme.spacing(7)} + 1px)`,
-          transition: theme.transitions.create("margin", {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-          }),
-        }}
-      >
-        {children}
-      </Box>
       <StyledDrawer
         variant="permanent"
         open={open}
@@ -129,14 +126,50 @@ const SideMenu = ({ children }: SideMenuProps) => {
 
         <Box sx={{ marginTop: "auto" }}>
           <Divider />
-          <SlideMenuList
-            items={authMenuItems}
-            open={open}
-            selectedIndex={-1}
-            onItemClick={() => {}}
-          />
+          
+          {isAuthPage ? (
+            <SlideMenuList
+              items={authMenuItems}
+              open={open}
+              selectedIndex={-1}
+              onItemClick={() => {}}
+            />
+          ) : user ? (
+            user.isAdmin ? (
+              <AdminDropdown />
+            ) : (
+              <UserDropdown />
+            )
+          ) : (
+            
+            <SlideMenuList
+              items={authMenuItems}
+              open={open}
+              selectedIndex={-1}
+              onItemClick={() => {}}
+            />
+          )}
         </Box>
       </StyledDrawer>
+
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          marginRight: open
+            ? `${drawerWidth}px`
+            : `calc(${theme.spacing(7)} + 1px)`,
+          transition: theme.transitions.create("margin", {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+          }),
+          width: "100%",
+          minHeight: "100vh",
+        }}
+      >
+        {children}
+      </Box>
     </Box>
   );
 };
