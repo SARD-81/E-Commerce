@@ -1,12 +1,7 @@
 import { CssBaseline, ThemeProvider } from "@mui/material";
-import SideMenu from "./components/SideMenu";
-import Login from "./pages/Login/Login";
-import { theme } from "./theme";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Register from "./pages/Register/Register";
-import Home from "./pages/User/Home";
 import { ToastContainer } from "react-toastify";
-// const theme = createTheme({
+import SideMenu from "./components/SideMenu";
+import { theme } from "./theme";
 //   direction: "rtl",
 //   typography: {
 //     fontFamily: "Vazir, Arial, sans-serif",
@@ -24,9 +19,11 @@ function App() {
             autoClose={2000}
             pauseOnHover={false}
           />
-          <BrowserRouter>
+
+          {/* <BrowserRouter>
             <Routes>
               <Route path="/" element={<Login />} />
+              <Route path="/products" element={<ProductCreate />} />
               <Route path="/register" element={<Register />} />
               <Route
                 path="/home"
@@ -37,7 +34,7 @@ function App() {
                 }
               />
             </Routes>
-          </BrowserRouter>
+          </BrowserRouter> */}
         </SideMenu>
       </ThemeProvider>
     </>

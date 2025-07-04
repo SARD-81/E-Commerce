@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import loginBackground from "../../../public/images/loginBackGround.png";
 import "../../assets/fonts/font.css";
+import useAuthStore from "../../state-management/stores/useAuthStore";
 import type { ApiResponse } from "../../types/ApiResponse";
 import type {
   LoginFormData,
@@ -19,6 +20,7 @@ import type {
 import server from "../../utils/axios";
 
 const Login: React.FC = () => {
+  const { setId, setIsAdmin, setFlashMessage } = useAuthStore();
   const navigate = useNavigate();
   const [LoginResponse, setLoginResponse] = useState<
     ApiResponse<LoginResponseData>
@@ -41,65 +43,46 @@ const Login: React.FC = () => {
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted");
+
     if (!LoginForm.email || !LoginForm.password) {
       toast.error("لطفاً ایمیل و رمزعبور خود را وارد کنید");
       return;
     }
-    const timeout = setTimeout(() => {
-      setLoginResponse((prev) => ({ ...prev, loading: false }));
-    }, 5000);
+
     setLoginResponse({
       loading: true,
       data: null,
       error: null,
     });
-    const payload = {
-      email: LoginForm.email,
-      password: LoginForm.password,
-    };
+
     try {
       const response = await server.post<LoginResponseData>(
         "users/auth",
-        payload
+        LoginForm
       );
-      console.log(response.data);
-      setLoginResponse((prev) => ({
-        ...prev,
-        data: response.data,
-        error: null,
-      }));
+
+      setLoginResponse({ loading: false, data: response.data, error: null });
+
       if (response.status === 200) {
-        const userInfo = {
-          id: response.data._id,
-          isAdmin: response.data.isAdmin,
-        };
-        localStorage.setItem("userInfo", JSON.stringify(userInfo));
-        navigate("/home", {
-          state: {
-            message: "ثبت‌نام با موفقیت انجام شد 🎉",
-          },
-        });
-        setLoginForm({
-          email: "",
-          password: "",
-        });
+        const { _id, isAdmin } = response.data;
+        setId(_id);
+        setIsAdmin(isAdmin);
+        setFlashMessage("ثبت‌نام با موفقیت انجام شد 🎉");
+        navigate("/products", { replace: true });
+        setLoginForm({ email: "", password: "" });
       }
-      clearTimeout(timeout);
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        toast.error("ایمیل یا رمزعبور اشتباه است");
-      } else toast.error("خطا در ورود به سیستم. لطفاً دوباره تلاش کنید.");
-      console.log("Login Error", error);
-      setLoginResponse((prev) => ({
-        ...prev,
+      setLoginResponse({
+        loading: false,
         data: null,
-        error: error.response?.data?.message,
-      }));
-      clearTimeout(timeout);
-    } finally {
-      setLoginResponse((prev) => ({ ...prev, loading: false }));
-      clearTimeout(timeout);
+        error: error.response?.data?.message || "خطا در ورود به سیستم",
+      });
+
+      if (error.response?.status === 401) {
+        toast.error("ایمیل یا رمز عبور اشتباه است. لطفاً دوباره تلاش کنید.");
+      } else {
+        toast.error("خطا در ورود به سیستم. لطفاً دوباره تلاش کنید.");
+      }
     }
   };
 
@@ -196,6 +179,7 @@ const Login: React.FC = () => {
 
                 {/* Email input */}
                 <TextField
+                  type="email"
                   id="email"
                   name="email"
                   value={LoginForm.email}
@@ -270,8 +254,8 @@ const Login: React.FC = () => {
                   id="password"
                   name="password"
                   value={LoginForm.password}
-                  onChange={handleChange}
                   type="password"
+                  onChange={handleChange}
                   placeholder="رمزعبور خود را وارد نمایید"
                   fullWidth
                   required
@@ -318,17 +302,9 @@ const Login: React.FC = () => {
                     type="submit"
                     variant="contained"
                     disabled={LoginResponse.loading}
-                    sx={{
-                      width: "12.5%",
-                      py: 1.1,
-                      borderRadius: "8px",
-                      boxShadow: "none",
-                      bgcolor: "#DB2777",
-                      fontFamily: "vazir",
-                      "&:hover": {
-                        bgcolor: "#BE1D64",
-                      },
-                    }}
+                    className={`${
+                      LoginResponse.loading ? "w-[100px]" : ""
+                    } w-[12.5%] py-1 rounded-lg shadow-none bg-[#DB2777] whitespace-nowrap hover:bg-[#BE1D64]`}
                   >
                     {LoginResponse.loading ? "در حال ورود" : "ورود"}
                   </Button>

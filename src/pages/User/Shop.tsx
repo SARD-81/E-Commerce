@@ -93,8 +93,7 @@ const Shop = () => {
           flexWrap: "wrap",
         }}
       >
-        {productsResponse.data.map((product) => (
-
+        {productsResponse.data?.map((product) => (
           <ProductCard
             title={product.name}
             price={product.price}

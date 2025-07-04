@@ -19,4 +19,21 @@ interface ProductResponseType {
 
 type ProductType = ApiResponse<ProductResponseType[]>;
 
-export type { ProductType, ProductResponseType };
+interface CreateProductFormResponse {
+  name: string;
+  image: string;
+  quantity: number;
+  category: string;
+  description: string;
+  rating: number;
+  numReview: number;
+  price: number;
+  countInStock: number;
+  _id: string;
+  reviews: [];
+  createdAt: Date;
+  updatedAt: Date;
+  __v: number;
+}
+
+export type { ProductType, ProductResponseType, CreateProductFormResponse };

@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import loginBackground from "../../../public/images/loginBackGround.png";
 import "../../assets/fonts/font.css";
+import useAuthStore from "../../state-management/stores/useAuthStore";
 import type { ApiResponse } from "../../types/ApiResponse";
 import type {
   RegisterFormData,
@@ -19,6 +20,7 @@ import type {
 import server from "../../utils/axios";
 
 const Register: React.FC = () => {
+  const { setId, setIsAdmin, setFlashMessage } = useAuthStore();
   const [RegisterRespose, setRegisterResponse] = useState<
     ApiResponse<RegisterResponseData>
   >({
@@ -42,12 +44,8 @@ const Register: React.FC = () => {
     }));
   };
   const handleSubmit = async (e: React.FormEvent) => {
-    setRegisterResponse({
-      loading: true,
-      data: null,
-      error: null,
-    });
     e.preventDefault();
+
     if (
       !RegisterForm.username ||
       !RegisterForm.email ||
@@ -57,10 +55,13 @@ const Register: React.FC = () => {
       toast.error("لطفا تمام فیلد ها را پر کنید");
       return;
     }
-    const timeout = setTimeout(() => {
-      setRegisterResponse((prev) => ({ ...prev, loading: false }));
-    }, 5000);
-    console.log("Register form submitted");
+
+    setRegisterResponse({
+      loading: true,
+      data: null,
+      error: null,
+    });
+
     const payload = {
       username: RegisterForm.username,
       email: RegisterForm.email,
@@ -73,22 +74,22 @@ const Register: React.FC = () => {
         "users/",
         payload
       );
-      setRegisterResponse((prev) => ({
-        ...prev,
+
+      setRegisterResponse({
+        loading: false,
         data: response.data,
         error: null,
-      }));
+      });
+
       if (response.status === 201) {
         const userInfo = {
           id: response.data._id,
           isAdmin: response.data.isAdmin,
         };
-        localStorage.setItem("userInfo", JSON.stringify(userInfo));
-        navigate("/home", {
-          state: {
-            message: "ثبت‌نام با موفقیت انجام شد 🎉",
-          },
-        });
+        setId(userInfo.id);
+        setIsAdmin(userInfo.isAdmin);
+        setFlashMessage("ثبت‌نام با موفقیت انجام شد 🎉");
+        navigate("/home", { replace: true });
         setRegisterForm({
           username: "",
           email: "",
@@ -96,23 +97,17 @@ const Register: React.FC = () => {
           confirm_Password: "",
         });
       }
-      clearTimeout(timeout);
     } catch (error) {
-      if (error.response && error.response.data.message) {
-        toast.error(error.response.data.message);
-      } else toast.error("خطا در ثبت نام. لطفا دوباره تلاش کنید.");
-      setRegisterResponse((prev) => ({
-        ...prev,
-        data: null,
-        error: error.response?.data?.message,
-      }));
-      clearTimeout(timeout);
-    } finally {
-      setRegisterResponse((prev) => ({
-        ...prev,
+      const message =
+        error.response?.data?.message ||
+        "خطا در ثبت نام. لطفا دوباره تلاش کنید.";
+      toast.error(message);
+
+      setRegisterResponse({
         loading: false,
-      }));
-      clearTimeout(timeout);
+        data: null,
+        error: message,
+      });
     }
   };
 
@@ -205,6 +200,7 @@ const Register: React.FC = () => {
 
                 {/* Name input */}
                 <TextField
+                  type="text"
                   id="username"
                   name="username"
                   value={RegisterForm.username}
@@ -268,6 +264,7 @@ const Register: React.FC = () => {
 
                 {/* Email input */}
                 <TextField
+                  type="email"
                   id="email"
                   name="email"
                   value={RegisterForm.email}
@@ -333,11 +330,11 @@ const Register: React.FC = () => {
 
                 {/* Password input */}
                 <TextField
+                  type="password"
                   id="password"
                   name="password"
                   value={RegisterForm.password}
                   onChange={handleChange}
-                  type="password"
                   placeholder="رمزعبور خود را وارد نمایید"
                   fullWidth
                   required
@@ -399,11 +396,11 @@ const Register: React.FC = () => {
 
                 {/* Confirm Password input */}
                 <TextField
+                  type="password"
                   id="confirm_Password"
                   name="confirm_Password"
                   value={RegisterForm.confirm_Password}
                   onChange={handleChange}
-                  type="password"
                   placeholder="رمزعبور خود را دوباره وارد نمایید"
                   fullWidth
                   required
@@ -450,17 +447,9 @@ const Register: React.FC = () => {
                     type="submit"
                     variant="contained"
                     disabled={RegisterRespose.loading}
-                    sx={{
-                      width: "18%",
-                      py: 1.1,
-                      borderRadius: "8px",
-                      boxShadow: "none",
-                      bgcolor: "#DB2777",
-                      fontFamily: "vazir",
-                      "&:hover": {
-                        bgcolor: "#BE1D64",
-                      },
-                    }}
+                    className={`${
+                      RegisterRespose.loading ? "w-[100px]" : ""
+                    } w-[12.5%] py-1 rounded-lg shadow-none bg-[#DB2777] whitespace-nowrap hover:bg-[#BE1D64]`}
                   >
                     {RegisterRespose.loading ? "در حال ثبت نام..." : "ثبت نام"}
                   </Button>

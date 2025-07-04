@@ -1,19 +1,25 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import pic from "../../assets/appleIphone.jpg";
 import ProductCArd_Blank from "../../components/ProductCArd_Blank";
 import ProductSlider from "../../components/ProductSlider";
 
 import { Box, Typography } from "@mui/material";
+import useAuthStore from "../../state-management/stores/useAuthStore";
 
 const Home = () => {
-  const location = useLocation();
+  const { flashMessage, clearFlashMessage } = useAuthStore();
+  const toastId = "flash-success-toast";
   useEffect(() => {
-    const successMessage = location.state?.message;
-    if (!successMessage) return;
-    toast.success(successMessage, { toastId: "Login-success" });
-  }, [location.state]);
+    if (flashMessage) {
+      if (!toast.isActive(toastId)) {
+        toast.success(flashMessage, { toastId });
+      }
+      setTimeout(() => {
+        clearFlashMessage();
+      }, 100);
+    }
+  }, [flashMessage, clearFlashMessage]);
   return (
     <Box>
       <Box
