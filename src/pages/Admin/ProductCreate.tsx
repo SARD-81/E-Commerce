@@ -1,8 +1,17 @@
-import { Box, Container, Typography } from "@mui/material";
+import { Box, Button, Container, Typography } from "@mui/material";
 import { useRef, useState, type ChangeEvent } from "react";
 import server from "../../utils/axios";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
+import type { ApiResponse } from "../../types/ApiResponse";
+import type { CreateProductFormResponse } from "../../types/Product";
 const ProductCreate = () => {
+  const [createProductForm, setCreateProductForm] = useState<
+    ApiResponse<CreateProductFormResponse>
+  >({
+    loading: false,
+    data: null,
+    error: null,
+  });
   const [formData, setFormData] = useState({
     productName: "",
     price: "",
@@ -43,8 +52,10 @@ const ProductCreate = () => {
 
   const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     const { productName, price, brand, description, quantity, productImage } =
       formData;
+
     if (
       !productName ||
       !price ||
@@ -57,20 +68,31 @@ const ProductCreate = () => {
       return;
     }
 
+    setCreateProductForm({
+      loading: true,
+      data: null,
+      error: null,
+    });
+
     const payload = new FormData();
-    payload.append("name", formData.productName);
-    payload.append("description", formData.description);
-    payload.append("price", formData.price);
-    payload.append("brand", formData.brand);
-    payload.append("quantity", formData.quantity);
-    // payload.append("status", formData.status);
-    if (formData.productImage) {
-      payload.append("image", formData.productImage);
-    }
+    payload.append("name", productName);
+    payload.append("description", description);
+    payload.append("price", price);
+    payload.append("quantity", quantity);
+    payload.append("status", formData.status);
+    payload.append("image", productImage);
+
     try {
       const response = await server.post("products", payload);
+
       toast.success("محصول با موفقیت ساخته شد🎉");
-      console.log(response);
+
+      setCreateProductForm({
+        loading: false,
+        data: response.data,
+        error: null,
+      });
+
       setFormData({
         productName: "",
         price: "",
@@ -80,19 +102,25 @@ const ProductCreate = () => {
         status: "in-stock",
         productImage: null,
       });
+
       setPreview("");
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+      if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (error) {
-      toast.error("خطا در ارسال محصول");
-      console.log("Error creating product:", error);
+      const message =
+        error.response?.data?.message ||
+        "خطا در ایجاد محصول. لطفاً دوباره تلاش کنید.";
+      toast.error(message);
+
+      setCreateProductForm({
+        loading: false,
+        data: null,
+        error: message,
+      });
     }
   };
 
   return (
     <Container maxWidth="md">
-      <ToastContainer position="top-center" autoClose={3000} />
       <Box
         component="section"
         sx={{
@@ -213,13 +241,19 @@ const ProductCreate = () => {
               </select>
             </div>
           </Box>
-          <Box className="w-1/5 text-white flex items-center rounded-lg bg-[#DB2777]">
-            <button
+          <Box>
+            <Button
               type="submit"
-              className="m-auto h-[45px] cursor-pointer hover:bg-[#BE1D64]"
+              variant="contained"
+              disabled={createProductForm.loading}
+              className={`${
+                createProductForm.loading ? "w-[100px]" : ""
+              } w-[15.5%] py-1 rounded-lg shadow-none bg-[#DB2777] whitespace-nowrap hover:bg-[#BE1D64]`}
             >
-              ساخت محصول جدید
-            </button>
+              {createProductForm.loading
+                ? "در حال پردازش..."
+                : "ساخت محصول جدید"}
+            </Button>
           </Box>
         </form>
       </Box>
