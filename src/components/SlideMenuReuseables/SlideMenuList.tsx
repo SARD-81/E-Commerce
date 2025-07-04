@@ -6,6 +6,7 @@ interface IMenuListProps {
   items: {
     text: string;
     icon: ReactNode;
+    to: string; 
   }[];
   open: boolean;
   selectedIndex: number;
@@ -27,6 +28,7 @@ const SlideMenuList = ({
         selected={selectedIndex === index}
         onClick={() => onItemClick(index)}
         icon={item.icon}
+        to={item.to} 
       />
     ))}
   </List>

@@ -8,11 +8,17 @@ import {
 } from "@mui/material";
 import { IoChevronDownSharp } from "react-icons/io5";
 import { useState, useRef } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const UserDropdown = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isOpen = Boolean(anchorEl);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  if (!user || user.isAdmin) return null;
 
   const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
@@ -20,6 +26,12 @@ const UserDropdown = () => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    logout();
+    handleClose();
+    navigate("/");
   };
 
   return (
@@ -80,27 +92,42 @@ const UserDropdown = () => {
             },
           }}
         >
-          {["پروفایل", "خروج از حساب"].map((item, index) => (
-            <MenuItem
-              key={index}
-              onClick={handleClose}
-              sx={{
-                borderRadius: "8px",
-                fontSize: "16px",
-                fontWeight: 400,
-                lineHeight: "21px",
-                textAlign: "right",
-                px: 1,
-                py: 1,
-                ":hover": {
-                  backgroundColor: "#DB277714",
-                  color: "#DB2777",
-                },
-              }}
-            >
-              {item}
-            </MenuItem>
-          ))}
+          <MenuItem
+            onClick={() => navigate("/profile")}
+            sx={{
+              borderRadius: "8px",
+              fontSize: "16px",
+              fontWeight: 400,
+              lineHeight: "21px",
+              textAlign: "right",
+              px: 1,
+              py: 1,
+              ":hover": {
+                backgroundColor: "#DB277714",
+                color: "#DB2777",
+              },
+            }}
+          >
+            پروفایل
+          </MenuItem>
+          <MenuItem
+            onClick={handleLogout}
+            sx={{
+              borderRadius: "8px",
+              fontSize: "16px",
+              fontWeight: 400,
+              lineHeight: "21px",
+              textAlign: "right",
+              px: 1,
+              py: 1,
+              ":hover": {
+                backgroundColor: "#DB277714",
+                color: "#DB2777",
+              },
+            }}
+          >
+            خروج از حساب
+          </MenuItem>
         </Menu>
       </Box>
     </ClickAwayListener>
