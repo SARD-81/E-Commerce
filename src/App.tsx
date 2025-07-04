@@ -1,19 +1,15 @@
-import { CssBaseline, ThemeProvider, Box } from "@mui/material";
-import SideMenu from "./components/SideMenu";
+import { CssBaseline, ThemeProvider } from "@mui/material";
 import { theme } from "./theme";
-// const theme = createTheme({
-//   direction: "rtl",
-//   typography: {
-//     fontFamily: "Vazir, Arial, sans-serif",
-//   },
-// });
+import { RouterProvider } from "react-router-dom";
+import router from "./router";
 
 function App() {
   return (
     <>
       <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <SideMenu></SideMenu>
+        <CssBaseline>
+          <RouterProvider router={router} />
+        </CssBaseline>
       </ThemeProvider>
     </>
   );
