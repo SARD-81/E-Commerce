@@ -1,3 +1,5 @@
+import { Box, Typography } from "@mui/material";
+
 interface ProductCard_BlankProps {
   productId: number | string;
   title: string;
@@ -17,25 +19,45 @@ const ProductCArd_Blank = ({
       : { width: 250, height: 250 };
 
   return (
-    <div
+    <Box
       style={{
         width: imageSize.width,
       }}
     >
-      <img
-        className="rounded-xl mb-4 bg-[#797979]"
+      <Box
+        component="img"
+        sx={{
+          borderRadius: "12px",
+          marginBottom: "16px",
+          backgroundColor: "#797979",
+        }}
         src={imageSrc}
         alt="product_card_blank"
         width={imageSize.width}
         height={imageSize.height}
       />
-      <div className="flex justify-between items-center ">
-        <p className="font-bold">{title}</p>
-        <div className="bg-[#831747]  px-2 rounded-full">
-          <p className="text-white text-sm">{price} تومان</p>
-        </div>
-      </div>
-    </div>
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Typography component="p" variant="body1" sx={{ fontWeight: "bold" }}>
+          {title}
+        </Typography>
+        <Box sx={{ background: "#831747", px: 2, borderRadius: "50%" }}>
+          <Typography
+            component="p"
+            variant="body1"
+            sx={{ color: "#FFFFFF", fontSize: "14px" }}
+          >
+            {price} تومان
+          </Typography>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

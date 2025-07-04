@@ -1,22 +1,106 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
   Container,
+  CssBaseline,
   TextField,
   Typography,
-  CssBaseline,
 } from "@mui/material";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import loginBackground from "../../../public/images/loginBackGround.png";
 import "../../assets/fonts/font.css";
+import type { ApiResponse } from "../../types/ApiResponse";
+import type {
+  LoginFormData,
+  LoginResponseData,
+} from "../../types/LoginFormData";
+import server from "../../utils/axios";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const [LoginResponse, setLoginResponse] = useState<
+    ApiResponse<LoginResponseData>
+  >({
+    loading: false,
+    data: null,
+    error: null,
+  });
+  const [LoginForm, setLoginForm] = useState<LoginFormData>({
+    email: "",
+    password: "",
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setLoginForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Form submitted");
+    if (!LoginForm.email || !LoginForm.password) {
+      toast.error("لطفاً ایمیل و رمزعبور خود را وارد کنید");
+      return;
+    }
+    const timeout = setTimeout(() => {
+      setLoginResponse((prev) => ({ ...prev, loading: false }));
+    }, 5000);
+    setLoginResponse({
+      loading: true,
+      data: null,
+      error: null,
+    });
+    const payload = {
+      email: LoginForm.email,
+      password: LoginForm.password,
+    };
+    try {
+      const response = await server.post<LoginResponseData>(
+        "users/auth",
+        payload
+      );
+      console.log(response.data);
+      setLoginResponse((prev) => ({
+        ...prev,
+        data: response.data,
+        error: null,
+      }));
+      if (response.status === 200) {
+        const userInfo = {
+          id: response.data._id,
+          isAdmin: response.data.isAdmin,
+        };
+        localStorage.setItem("userInfo", JSON.stringify(userInfo));
+        navigate("/home", {
+          state: {
+            message: "ثبت‌نام با موفقیت انجام شد 🎉",
+          },
+        });
+        setLoginForm({
+          email: "",
+          password: "",
+        });
+      }
+      clearTimeout(timeout);
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        toast.error("ایمیل یا رمزعبور اشتباه است");
+      } else toast.error("خطا در ورود به سیستم. لطفاً دوباره تلاش کنید.");
+      console.log("Login Error", error);
+      setLoginResponse((prev) => ({
+        ...prev,
+        data: null,
+        error: error.response?.data?.message,
+      }));
+      clearTimeout(timeout);
+    } finally {
+      setLoginResponse((prev) => ({ ...prev, loading: false }));
+      clearTimeout(timeout);
+    }
   };
 
   return (
@@ -114,6 +198,8 @@ const Login: React.FC = () => {
                 <TextField
                   id="email"
                   name="email"
+                  value={LoginForm.email}
+                  onChange={handleChange}
                   placeholder="ایمیل خود را وارد نمایید"
                   fullWidth
                   required
@@ -183,6 +269,8 @@ const Login: React.FC = () => {
                 <TextField
                   id="password"
                   name="password"
+                  value={LoginForm.password}
+                  onChange={handleChange}
                   type="password"
                   placeholder="رمزعبور خود را وارد نمایید"
                   fullWidth
@@ -229,6 +317,7 @@ const Login: React.FC = () => {
                   <Button
                     type="submit"
                     variant="contained"
+                    disabled={LoginResponse.loading}
                     sx={{
                       width: "12.5%",
                       py: 1.1,
@@ -241,7 +330,7 @@ const Login: React.FC = () => {
                       },
                     }}
                   >
-                    ورود
+                    {LoginResponse.loading ? "در حال ورود" : "ورود"}
                   </Button>
                 </Box>
 
