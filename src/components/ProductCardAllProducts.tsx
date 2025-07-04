@@ -3,13 +3,13 @@ import { Box, Typography, Button, Card, CardMedia } from "@mui/material";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 
 interface ProductCardAllProductsProps {
-  productId: number | string;
+  productId: string;
   title: string;
-  description: string;
   price: number;
-  date: string;
   imageSrc: string;
-  onShowMore?: (id: number | string) => void;
+  description: string;
+  date: string;
+  onShowMore?: (id: string) => void;
 }
 
 const ProductCardAllProducts = ({

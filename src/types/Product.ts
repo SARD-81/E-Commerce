@@ -1,17 +1,27 @@
-import type { CategoryType } from "./Category";
-
-export interface ProductType {
+export interface Product {
   _id: string;
   name: string;
   image: string;
   quantity: number;
-  category: CategoryType;
+  category: {
+    _id: string;
+    name: string;
+    __v: number;
+  };
   description: string;
   rating: number;
   numReviews: number;
   price: number;
   countInStock: number;
-  reviews: string[];
+  reviews: {
+    name: string;
+    rating: number;
+    comment: string;
+    user: string;
+    _id: string;
+    createdAt: string;
+    updatedAt: string;
+  }[];
   createdAt: string;
   updatedAt: string;
   __v: number;

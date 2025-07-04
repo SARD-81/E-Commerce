@@ -1,71 +1,46 @@
-import React from "react";
-import { Box, Container } from "@mui/material";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import ProductCardAllProducts from "./ProductCardAllProducts";
+import type { Product } from "../types/Product";
 
-const products = [
-  {
-    productId: 1,
-    title: "Apple iPhone 14 Pro",
-    description:
-      "آیفون 14 پرو دارای صفحه نمایش 6.1 اینچی Super Retina XDR است، فناوری ProMotion، تراشه A16 Bionic و سیستم دوربین سه‌گانه ...",
-    price: 10000000,
-    date: "۳۱ مرداد ۱۴۰۳",
-    imageSrc: "https://via.placeholder.com/120x120",
-  },
-  {
-    productId: 2,
-    title: "Apple iPhone 14 Pro",
-    description:
-      "آیفون 14 پرو دارای صفحه نمایش 6.1 اینچی Super Retina XDR است، فناوری ProMotion، تراشه A16 Bionic و سیستم دوربین سه‌گانه ...",
-    price: 10000000,
-    date: "۳۱ مرداد ۱۴۰۳",
-    imageSrc: "https://via.placeholder.com/120x120",
-  },
-  {
-    productId: 3,
-    title: "Apple iPhone 14 Pro",
-    description:
-      "آیفون 14 پرو دارای صفحه نمایش 6.1 اینچی Super Retina XDR است، فناوری ProMotion، تراشه A16 Bionic و سیستم دوربین سه‌گانه ...",
-    price: 10000000,
-    date: "۳۱ مرداد ۱۴۰۳",
-    imageSrc: "https://via.placeholder.com/120x120",
-  },
-  {
-    productId: 4,
-    title: "Apple iPhone 14 Pro",
-    description:
-      "آیفون 14 پرو دارای صفحه نمایش 6.1 اینچی Super Retina XDR است، فناوری ProMotion، تراشه A16 Bionic و سیستم دوربین سه‌گانه ...",
-    price: 10000000,
-    date: "۳۱ مرداد ۱۴۰۳",
-    imageSrc: "https://via.placeholder.com/120x120",
-  },
-];
+const AllProducts = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-export default function AllProducts() {
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(
+          "https://qbc9.liara.run/api/products/allproducts"
+        );
+        setProducts(res.data);
+      } catch (error) {
+        console.error("خطا در دریافت محصولات:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  if (loading) return <p>در حال دریافت محصولات...</p>;
+
   return (
-    <Container sx={{ py: 4 }}>
-      <Box
-        sx={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: { xs: "center", md: "space-between" },
-          gap: 2,
-        }}
-      >
-        {products.map((product) => (
-          <Box
-            key={product.productId}
-            sx={{
-              flex: {
-                xs: "1 1 100%", // موبایل: کل عرض
-                md: "1 1 calc(50% - 16px)", // دسکتاپ: نصف عرض با فاصله بینشون
-              },
-            }}
-          >
-            <ProductCardAllProducts {...product} />
-          </Box>
-        ))}
-      </Box>
-    </Container>
+    <div className="flex flex-wrap gap-6 justify-center">
+      {products.map((product) => (
+        <ProductCardAllProducts
+          key={product._id}
+          productId={product._id}
+          title={product.name}
+          price={product.price}
+          imageSrc={product.image}
+          description={product.description}
+          date={product.createdAt}
+        />
+      ))}
+    </div>
   );
-}
+};
+
+export default AllProducts;
