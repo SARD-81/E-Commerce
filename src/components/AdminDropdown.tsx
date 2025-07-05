@@ -15,10 +15,10 @@ const AdminDropdown = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isOpen = Boolean(anchorEl);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
-  if (!user || !user.isAdmin) return null;
+  // if (!user || !user.isAdmin) return null;
 
   const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);

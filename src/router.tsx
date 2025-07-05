@@ -6,6 +6,8 @@ import Profile from "./pages/User/Profile";
 import { Home } from "lucide-react";
 import ProtectedRoutes from "./ProtectedRoutes";
 import ProductCreate from "./pages/Admin/ProductCreate";
+import Login from "./pages/Login/Login";
+import Register from "./pages/Register/Register";
 
 const router = createBrowserRouter([
   {
@@ -15,10 +17,15 @@ const router = createBrowserRouter([
     children: [
       { index: true, Component: Home },
       { path: "shop", Component: Shop },
-      { path: "profile", Component: Profile },
+
+      { path: "login", Component: Login },
+      { path: "register", Component: Register },
       {
         Component: ProtectedRoutes,
-        children: [{ path: "create-product", Component: ProductCreate }],
+        children: [
+          { path: "create-product", Component: ProductCreate },
+          { path: "profile", Component: Profile },
+        ],
       },
     ],
   },
