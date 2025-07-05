@@ -8,6 +8,7 @@ import WatchLaterSharpIcon from "@mui/icons-material/WatchLaterSharp";
 import QuestionAnswerSharpIcon from "@mui/icons-material/QuestionAnswerSharp";
 import { useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
+import useNewProduct from "../hooks/useNewProducts";
 
 // Sample data - you can replace this with your own data or fetch from an API
 const productData = {
@@ -30,6 +31,12 @@ const productData = {
 
 const ProductSlider = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const {
+    data: newProduct,
+    isError: isErrorNewProduct,
+    isLoading: isLoadingNewProduct,
+    error: errorNewProduct,
+  } = useNewProduct();
 
   const handlePrev = () => {
     setCurrentIndex((prevIndex) =>
@@ -42,6 +49,18 @@ const ProductSlider = () => {
       prevIndex === productData.images.length - 1 ? 0 : prevIndex + 1
     );
   };
+
+  if (isLoadingNewProduct) {
+    return <div>Loading...</div>;
+  }
+
+  if (isErrorNewProduct) {
+    return <div>Error: {errorNewProduct.message}</div>;
+  }
+
+  if (newProduct === undefined) {
+    return null;
+  }
 
   return (
     <Box
@@ -68,7 +87,7 @@ const ProductSlider = () => {
           <Box
             component="img"
             alt="Product"
-            src={productData.images[currentIndex]}
+            src={newProduct[currentIndex].image}
             style={{ minHeight: "400px" }}
             sx={{
               width: "full",
@@ -163,7 +182,7 @@ const ProductSlider = () => {
                 marginBottom: 0,
               }}
             >
-              {productData.title}
+              {newProduct[currentIndex].name}
             </Typography>
             <Typography
               sx={{
@@ -173,7 +192,7 @@ const ProductSlider = () => {
                 color: "#101828",
               }}
             >
-              {productData.price}
+              {newProduct[currentIndex].price}
             </Typography>
             <Typography
               sx={{
@@ -182,7 +201,7 @@ const ProductSlider = () => {
                 lineHeight: 1.625,
               }}
             >
-              {productData.description}
+              {newProduct[currentIndex].description}
             </Typography>
           </Box>
 
@@ -198,22 +217,23 @@ const ProductSlider = () => {
             }}
           >
             <Typography>
-              <StorefrontSharpIcon /> برند : {productData.brand}
+              <StorefrontSharpIcon /> برند :{" "}
+              {newProduct[currentIndex].category.name}
             </Typography>
             <Typography>
-              <StarPurple500SharpIcon /> امتیاز : {productData.rating}{" "}
+              <StarPurple500SharpIcon /> امتیاز : {newProduct[currentIndex].rating}{" "}
             </Typography>
             <Typography>
-              <LocalGroceryStoreSharpIcon /> تعداد : {productData.quantity}
+              <LocalGroceryStoreSharpIcon /> تعداد : {newProduct[currentIndex].quantity}
             </Typography>
             <Typography>
-              <WatchLaterSharpIcon /> زمان بروزرسانی : {productData.lastUpdated}{" "}
+              <WatchLaterSharpIcon /> زمان بروزرسانی : {newProduct[currentIndex].updatedAt}{" "}
             </Typography>
             <Typography>
-              <QuestionAnswerSharpIcon /> نظرات : {productData.reviews}{" "}
+              <QuestionAnswerSharpIcon /> نظرات : {newProduct[currentIndex].numReviews}{" "}
             </Typography>
             <Typography>
-              <WidgetsSharpIcon /> موجودی : {productData.stock}{" "}
+              <WidgetsSharpIcon /> موجودی : {newProduct[currentIndex].countInStock}{" "}
             </Typography>
           </Box>
         </Box>
