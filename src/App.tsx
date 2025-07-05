@@ -1,7 +1,9 @@
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ToastContainer } from "react-toastify";
 import SideMenu from "./components/SideMenu";
+import ProductCreate from "./pages/Admin/ProductCreate";
 import { theme } from "./theme";
+import ProductAllProduct from "./pages/Admin/ProductAllProduct";
 //   direction: "rtl",
 //   typography: {
 //     fontFamily: "Vazir, Arial, sans-serif",
@@ -19,7 +21,7 @@ function App() {
             autoClose={2000}
             pauseOnHover={false}
           />
-
+          <ProductAllProduct />
           {/* <BrowserRouter>
             <Routes>
               <Route path="/" element={<Login />} />
