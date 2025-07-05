@@ -1,1 +1,17 @@
 @import "tailwindcss";
+
+@import url("https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500&display=swap");
+
+body {
+  font-family: "Vazirmatn", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+}
+
+::selection {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+::-moz-selection {
+  background-color: rgba(0, 0, 0, 0.2);
+}
