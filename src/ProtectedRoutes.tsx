@@ -3,8 +3,7 @@ import useAuthStore from "./state-management/stores/useAuthStore";
 
 const ProtectedRoutes = () => {
   const id = useAuthStore((state) => state.id);
-  if (!id) <Navigate to="/login" />;
-  return <Outlet />;
+  return id ? <Outlet /> : <Navigate to="/login" />;
 };
 
 export default ProtectedRoutes;
