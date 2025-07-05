@@ -5,6 +5,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import type { CategoryType } from "../types/Category";
 import TextField from "@mui/material/TextField";
+import { Button, Box } from "@mui/material";
 
 interface IShopFilterProps {
   onCategoryFilter: (categoryId: string) => void;
@@ -31,10 +32,30 @@ const ShopPageFilter = ({
     }
   };
   return (
-    <div className="w-1/4 px-12 pt-4 flex flex-col gap-4 bg-[#E6E8EB]">
-      <div className="rounded-full flex items-center justify-center bg-white py-2 cursor-pointer">
+    <Box
+      sx={{
+        width: "25%",
+        padding: "0 48px",
+        paddingTop: "16px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "16px",
+        backgroundColor: "#E6E8EB",
+      }}
+    >
+      <Box
+        sx={{
+          borderRadius: "50px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#fff",
+          padding: "8px",
+          cursor: "pointer",
+        }}
+      >
         فیلتر برند
-      </div>
+      </Box>
       <FormControl>
         <RadioGroup
           aria-labelledby="demo-radio-buttons-group-label"
@@ -51,9 +72,19 @@ const ShopPageFilter = ({
           ))}
         </RadioGroup>
       </FormControl>
-      <div className="rounded-full flex justify-center items-center bg-white py-2 cursor-pointer">
+      <Box
+        sx={{
+          borderRadius: "50px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#fff",
+          padding: "8px",
+          cursor: "pointer",
+        }}
+      >
         فیلتر قیمت{" "}
-      </div>
+      </Box>
       <TextField
         sx={{
           backgroundColor: "#fff",
@@ -65,13 +96,20 @@ const ShopPageFilter = ({
         size="small"
         placeholder="قیمت را وارد نمایید "
       />
-      <button
+      <Button
         onClick={onDeleteFilter}
-        className="bg-[#E6E8EB] border-1 rounded-md border-gray-400 w-[90%] p-1 cursor-pointer"
+        sx={{
+          backgroundColor: "#E6E8EB",
+          border: "1px solid #99a1af  ",
+          borderRadius: "6px",
+          width: "90%",
+          padding: "4px",
+          cursor: "pointer",
+        }}
       >
         حذف فیلترها
-      </button>
-    </div>
+      </Button>
+    </Box>
   );
 };
 
