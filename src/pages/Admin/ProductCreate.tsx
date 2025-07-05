@@ -1,25 +1,16 @@
 import { Box, Button, Container, Typography } from "@mui/material";
 import { useRef, useState, type ChangeEvent } from "react";
-import server from "../../utils/axios";
 import { toast } from "react-toastify";
-import type { ApiResponse } from "../../types/ApiResponse";
-import type { CreateProductFormResponse } from "../../types/Product";
+import useCreateProduct from "../../hooks/useCreateProduct";
 const ProductCreate = () => {
-  const [createProductForm, setCreateProductForm] = useState<
-    ApiResponse<CreateProductFormResponse>
-  >({
-    loading: false,
-    data: null,
-    error: null,
-  });
+  const { mutate, isPending } = useCreateProduct();
   const [formData, setFormData] = useState({
-    productName: "",
+    name: "",
     price: "",
     brand: "",
     description: "",
     quantity: "",
-    status: "in-stock",
-    productImage: null as File | null,
+    image: "",
   });
   const [preview, setPreview] = useState("");
 
@@ -53,70 +44,18 @@ const ProductCreate = () => {
   const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const { productName, price, brand, description, quantity, productImage } =
-      formData;
+    const { name, price, brand, description, quantity, image } = formData;
 
-    if (
-      !productName ||
-      !price ||
-      !brand ||
-      !description ||
-      !quantity ||
-      !productImage
-    ) {
+    if (!name || !price || !brand || !description || !quantity || !image) {
       toast.error("لطفا تمام فیلد ها رو تکمیل نمایید و یک عکس بارگذاری کنید");
       return;
     }
 
-    setCreateProductForm({
-      loading: true,
-      data: null,
-      error: null,
+    mutate({
+      ...formData,
+      price: Number(formData.price),
+      quantity: Number(formData.quantity),
     });
-
-    const payload = new FormData();
-    payload.append("name", productName);
-    payload.append("description", description);
-    payload.append("price", price);
-    payload.append("quantity", quantity);
-    payload.append("status", formData.status);
-    payload.append("image", productImage);
-
-    try {
-      const response = await server.post("products", payload);
-
-      toast.success("محصول با موفقیت ساخته شد🎉");
-
-      setCreateProductForm({
-        loading: false,
-        data: response.data,
-        error: null,
-      });
-
-      setFormData({
-        productName: "",
-        price: "",
-        description: "",
-        brand: "",
-        quantity: "",
-        status: "in-stock",
-        productImage: null,
-      });
-
-      setPreview("");
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        "خطا در ایجاد محصول. لطفاً دوباره تلاش کنید.";
-      toast.error(message);
-
-      setCreateProductForm({
-        loading: false,
-        data: null,
-        error: message,
-      });
-    }
   };
 
   return (
@@ -146,8 +85,8 @@ const ProductCreate = () => {
             }}
           >
             <Typography sx={{ alignSelf: "center", color: "#58616C" }}>
-              {formData.productImage
-                ? `فایل انتخاب شده: ${formData.productImage}`
+              {formData.image
+                ? `فایل انتخاب شده: ${formData.image}`
                 : "آپلود عکس"}
             </Typography>
             <input
@@ -170,7 +109,7 @@ const ProductCreate = () => {
             <input
               id="productName"
               name="productName"
-              value={formData.productName}
+              value={formData.name}
               placeholder="نام محصول خود را وارد نمایید"
               className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
               onChange={handleChange}
@@ -232,9 +171,7 @@ const ProductCreate = () => {
               <select
                 id="productStatus"
                 name="status"
-                value={formData.status}
                 className="appearance-none cursor-pointer w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
-                onChange={handleChange}
               >
                 <option value="in-stock">موجود</option>
                 <option value="out-of-stock">ناموجود</option>
@@ -245,14 +182,12 @@ const ProductCreate = () => {
             <Button
               type="submit"
               variant="contained"
-              disabled={createProductForm.loading}
+              disabled={isPending}
               className={`${
-                createProductForm.loading ? "w-[100px]" : ""
+                isPending ? "w-[100px]" : ""
               } w-[15.5%] py-1 rounded-lg shadow-none bg-[#DB2777] whitespace-nowrap hover:bg-[#BE1D64]`}
             >
-              {createProductForm.loading
-                ? "در حال پردازش..."
-                : "ساخت محصول جدید"}
+              {isPending ? "در حال پردازش..." : "ساخت محصول جدید"}
             </Button>
           </Box>
         </form>
