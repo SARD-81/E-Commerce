@@ -51,6 +51,7 @@ function App() {
         </Button> */}
       
         <SideMenu></SideMenu>
+        <UsersList/>
       </ThemeProvider>
     </>
   );
