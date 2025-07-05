@@ -1,45 +1,18 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ProductCard from "../../components/ProductCard";
 import ShopPageFilter from "../../components/ShopPageFilter";
 import { CategoryMockData } from "../../mockData/CategoryMockData";
 import type { FilterProductType } from "../../types/filter";
-import type { ProductType } from "../../types/Product";
-import server from "../../utils/axios";
 import { Box } from "@mui/material";
+import useAllProducts from "../../hooks/useAllProducts";
 
 const Shop = () => {
-  const [productsResponse, setProductsResponse] = useState<ProductType>({
-    loading: false,
-    data: [],
-    error: null,
-  });
-
   const [filters, setFilters] = useState<FilterProductType>({
     categories: [],
     price: [],
   });
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setProductsResponse({ loading: true, data: [], error: null });
-        const res = await server.get("products/allproducts");
-        setProductsResponse({
-          loading: false,
-          data: res.data,
-          error: null,
-        });
-      } catch (error) {
-        setProductsResponse({
-          loading: false,
-          data: [],
-          error: `Failed to fetch products: ${error}`,
-        });
-      }
-    };
-
-    fetchProducts();
-  }, []);
+  const { data, isError, isLoading, error } = useAllProducts();
 
   const handleCategoryFilter = (categoryId: string) => {
     const temp = { ...filters };
@@ -60,12 +33,12 @@ const Shop = () => {
     });
   };
 
-  if (productsResponse.loading) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  if (productsResponse.error) {
-    return <div>Error: {productsResponse.error}</div>;
+  if (isError) {
+    return <div>Error: {error.message}</div>;
   }
 
   return (
@@ -93,7 +66,7 @@ const Shop = () => {
           flexWrap: "wrap",
         }}
       >
-        {productsResponse.data?.map((product) => (
+        {data?.map((product) => (
           <ProductCard
             title={product.name}
             price={product.price}

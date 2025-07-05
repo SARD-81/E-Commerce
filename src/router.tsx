@@ -3,7 +3,7 @@ import NotFoundPage from "./pages/Error404";
 import Layout from "./pages/Layout";
 import Shop from "./pages/User/Shop";
 import Profile from "./pages/User/Profile";
-import { Home } from "lucide-react";
+import  Home  from "./pages/User/Home";
 import ProtectedRoutes from "./ProtectedRoutes";
 import ProductCreate from "./pages/Admin/ProductCreate";
 import Login from "./pages/Login/Login";

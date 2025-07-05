@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { toast } from "react-toastify";
-import pic from "../../assets/appleIphone.jpg";
 import ProductCArd_Blank from "../../components/ProductCArd_Blank";
 import ProductSlider from "../../components/ProductSlider";
-
 import { Box, Typography } from "@mui/material";
 import useAuthStore from "../../state-management/stores/useAuthStore";
+import useAllProducts from "../../hooks/useAllProducts";
+import useNewProduct from "../../hooks/useNewProducts";
 
 const Home = () => {
   const { flashMessage, clearFlashMessage } = useAuthStore();
@@ -20,6 +20,36 @@ const Home = () => {
       }, 100);
     }
   }, [flashMessage, clearFlashMessage]);
+
+  const {
+    data: allProducts,
+    isError: isErrorAllProducts,
+    isLoading: isLoadingAllProducts,
+    error: errorAllProduct,
+  } = useAllProducts();
+
+  const {
+    data: newProduct,
+    isError: isErrorNewProduct,
+    isLoading: isLoadingNewProduct,
+    error: errorNewProduct,
+  } = useNewProduct();
+
+  if (isLoadingAllProducts) {
+    return <div>Loading...</div>;
+  }
+
+  if (isErrorAllProducts) {
+    return <div>Error: {errorAllProduct.message}</div>;
+  }
+
+  if (isLoadingNewProduct) {
+    return <div>Loading...</div>;
+  }
+
+  if (isErrorNewProduct) {
+    return <div>Error: {errorNewProduct.message}</div>;
+  }
   return (
     <Box>
       <Box
@@ -27,7 +57,7 @@ const Home = () => {
           display: "flex",
           marginBottom: "40px",
           width: "100%",
-          justifyContent: "center",
+          justifyContent: "space-between",
         }}
       >
         <Box
@@ -38,42 +68,40 @@ const Home = () => {
           }}
         >
           <Box>
-            <ProductCArd_Blank
-              size="small"
-              imageSrc={pic}
-              title="Apple iPad Pro 12.9-inch"
-              price={1000}
-              productId={1}
-            />
-            <ProductCArd_Blank
-              size="small"
-              imageSrc={pic}
-              title="Apple iPad Pro 12.9-inch"
-              price={1000}
-              productId={1}
-            />
+            {newProduct?.slice(0, 2).map((product) => (
+              <ProductCArd_Blank
+                size="small"
+                imageSrc={product.image}
+                title={product.name}
+                price={product.price}
+                productId={product._id}
+              />
+            ))}
           </Box>
           <Box>
-            <ProductCArd_Blank
-              size="small"
-              imageSrc={pic}
-              title="Apple iPad Pro 12.9-inch"
-              price={1000}
-              productId={1}
-            />
-            <ProductCArd_Blank
-              size="small"
-              imageSrc={pic}
-              title="Apple iPad Pro 12.9-inch"
-              price={1000}
-              productId={1}
-            />
+            {newProduct?.slice(3, 5).map((product) => (
+              <ProductCArd_Blank
+                size="small"
+                imageSrc={product.image}
+                title={product.name}
+                price={product.price}
+                productId={product._id}
+              />
+            ))}
           </Box>
         </Box>
         <ProductSlider />
       </Box>
-      <Box className="">
-        <Box className=" w-full flex justify-between items-center pb-4 ">
+      <Box>
+        <Box
+          sx={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingBottom: "4px",
+          }}
+        >
           <Typography
             component="p"
             variant="body1"
@@ -88,9 +116,9 @@ const Home = () => {
             component="p"
             variant="body1"
             sx={{
-              padding: "8px 16px",
+              padding: "4px 10px",
               color: "#FFFFFF",
-              borderRadius: "50%",
+              borderRadius: "25px",
               backgroundColor: "#DB2777",
             }}
           >
@@ -105,48 +133,15 @@ const Home = () => {
             gap: "16px",
           }}
         >
-          <ProductCArd_Blank
-            size="large"
-            imageSrc={pic}
-            title="Apple iPad Pro 12.9-inch"
-            price={10000}
-            productId={1}
-          />
-          <ProductCArd_Blank
-            size="large"
-            imageSrc={pic}
-            title="Apple iPad Pro 12.9-inch"
-            price={10000}
-            productId={1}
-          />
-          <ProductCArd_Blank
-            size="large"
-            imageSrc={pic}
-            title="Apple iPad Pro 12.9-inch"
-            price={10000}
-            productId={1}
-          />
-          <ProductCArd_Blank
-            size="large"
-            imageSrc={pic}
-            title="Apple iPad Pro 12.9-inch"
-            price={10000}
-            productId={1}
-          />
-          <ProductCArd_Blank
-            size="large"
-            imageSrc={pic}
-            title="Apple iPad Pro 12.9-inch"
-            price={10000}
-            productId={1}
-          />
-          <ProductCArd_Blank
-            size="large"
-            imageSrc={pic}
-            title="Apple iPad Pro 12.9-inch"
-            price={10000}
-            productId={1}
-          />
+          {allProducts?.map((product) => (
+            <ProductCArd_Blank
+              size="large"
+              imageSrc={product.image}
+              title={product.name}
+              price={product.price}
+              productId={product._id}
+            />
+          ))}
         </Box>
       </Box>
     </Box>

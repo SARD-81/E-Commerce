@@ -44,14 +44,14 @@ const ProductCArd_Blank = ({
           alignItems: "center",
         }}
       >
-        <Typography component="p" variant="body1" sx={{ fontWeight: "bold" }}>
+        <Typography component="p" variant="body1">
           {title}
         </Typography>
-        <Box sx={{ background: "#831747", px: 2, borderRadius: "50%" }}>
+        <Box sx={{ background: "#831747", px: 1, py: 1, borderRadius: "25px" }}>
           <Typography
             component="p"
             variant="body1"
-            sx={{ color: "#FFFFFF", fontSize: "14px" }}
+            sx={{ color: "#FFFFFF", fontSize: "10px" }}
           >
             {price} تومان
           </Typography>
