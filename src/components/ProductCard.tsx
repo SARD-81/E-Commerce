@@ -1,6 +1,7 @@
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import shoppingCard from "../assets/shop.svg";
 import { Box, Button, Typography } from "@mui/material";
+import FavoriteItem from "./Favorite";
 
 interface ProductCardProps {
   productId: number | string;
@@ -21,6 +22,10 @@ export default function wProductCard({
   onShowMore,
   onAddToBasket,
 }: ProductCardProps) {
+  const handleToggleFavorite = (itemId: string | number, isFavorite: boolean) => {
+    console.log(itemId, isFavorite);
+  };
+
   return (
     <Box sx={{ width: "384px" }}>
       <Box
@@ -32,9 +37,15 @@ export default function wProductCard({
           justifyContent: "center",
           height: "170px",
           overflow: "hidden",
+          position: "relative",
         }}
       >
-        <img src={imageSrc} alt="product-picture" />
+        <Box component="img" src={imageSrc} alt="product-picture" />
+        <FavoriteItem
+          itemId={productId}
+          initialIsFavorite={false}
+          onToggleFavorite={handleToggleFavorite}
+        />
       </Box>
 
       <Box

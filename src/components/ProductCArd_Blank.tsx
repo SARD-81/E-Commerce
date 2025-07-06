@@ -8,6 +8,7 @@ interface ProductCard_BlankProps {
   size: "small" | "large";
 }
 const ProductCArd_Blank = ({
+  productId,
   size = "small",
   title,
   price,
@@ -35,6 +36,7 @@ const ProductCArd_Blank = ({
         alt="product_card_blank"
         width={imageSize.width}
         height={imageSize.height}
+        data-product-id={productId}
       />
 
       <Box
@@ -44,14 +46,15 @@ const ProductCArd_Blank = ({
           alignItems: "center",
         }}
       >
-        <Typography component="p" variant="body1" sx={{ fontWeight: "bold" }}>
-          {title}
+        <Typography component="p" variant="body1">
+          {title.length > 11 ? "..." : ""}
+          {title.substring(0, 12)}
         </Typography>
-        <Box sx={{ background: "#831747", px: 2, borderRadius: "50%" }}>
+        <Box sx={{ background: "#831747", px: 1, py: 1, borderRadius: "25px" }}>
           <Typography
             component="p"
             variant="body1"
-            sx={{ color: "#FFFFFF", fontSize: "14px" }}
+            sx={{ color: "#FFFFFF", fontSize: "10px" }}
           >
             {price} تومان
           </Typography>
