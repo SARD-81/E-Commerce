@@ -1,6 +1,5 @@
-import React from "react";
-import { Box, Typography, Button, Card, CardMedia } from "@mui/material";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import { Box, Button, Card, CardMedia, Typography } from "@mui/material";
 
 interface ProductCardAllProductsProps {
   productId: number | string;

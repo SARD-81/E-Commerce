@@ -11,6 +11,7 @@ const ProductAllProduct = () => {
       ) : (
         products?.map((product) => (
           <ProductCard
+            key={product._id}
             title={product.name}
             price={product.price}
             imageSrc={product.image}

@@ -7,28 +7,16 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import loginBackground from "../../../public/images/loginBackGround.png";
 import "../../assets/fonts/font.css";
-import useAuthStore from "../../state-management/stores/useAuthStore";
-import type { ApiResponse } from "../../types/ApiResponse";
-import type {
-  LoginFormData,
-  LoginResponseData,
-} from "../../types/LoginFormData";
-import server from "../../utils/axios";
+import type { LoginFormData } from "../../types/LoginFormData";
+import useLogin from "../../hooks/useLogin";
+import { useNavigate } from "react-router-dom";
 
-const Login: React.FC = () => {
-  const { setId, setIsAdmin, setFlashMessage } = useAuthStore();
+const Login = () => {
+  const { mutate: login, isPending } = useLogin();
   const navigate = useNavigate();
-  const [LoginResponse, setLoginResponse] = useState<
-    ApiResponse<LoginResponseData>
-  >({
-    loading: false,
-    data: null,
-    error: null,
-  });
   const [LoginForm, setLoginForm] = useState<LoginFormData>({
     email: "",
     password: "",
@@ -49,43 +37,10 @@ const Login: React.FC = () => {
       return;
     }
 
-    setLoginResponse({
-      loading: true,
-      data: null,
-      error: null,
+    login(LoginForm, {
+      onSuccess: () => navigate("/", { replace: true }),
     });
-
-    try {
-      const response = await server.post<LoginResponseData>(
-        "users/auth",
-        LoginForm
-      );
-
-      setLoginResponse({ loading: false, data: response.data, error: null });
-
-      if (response.status === 200) {
-        const { _id, isAdmin } = response.data;
-        setId(_id);
-        setIsAdmin(isAdmin);
-        setFlashMessage("ثبت‌نام با موفقیت انجام شد 🎉");
-        navigate("/products", { replace: true });
-        setLoginForm({ email: "", password: "" });
-      }
-    } catch (error) {
-      setLoginResponse({
-        loading: false,
-        data: null,
-        error: error.response?.data?.message || "خطا در ورود به سیستم",
-      });
-
-      if (error.response?.status === 401) {
-        toast.error("ایمیل یا رمز عبور اشتباه است. لطفاً دوباره تلاش کنید.");
-      } else {
-        toast.error("خطا در ورود به سیستم. لطفاً دوباره تلاش کنید.");
-      }
-    }
   };
-
   return (
     <>
       <CssBaseline />
@@ -301,12 +256,12 @@ const Login: React.FC = () => {
                   <Button
                     type="submit"
                     variant="contained"
-                    disabled={LoginResponse.loading}
+                    disabled={isPending}
                     className={`${
-                      LoginResponse.loading ? "w-[100px]" : ""
+                      isPending ? "w-[100px]" : ""
                     } w-[12.5%] py-1 rounded-lg shadow-none bg-[#DB2777] whitespace-nowrap hover:bg-[#BE1D64]`}
                   >
-                    {LoginResponse.loading ? "در حال ورود" : "ورود"}
+                    {isPending ? "در حال ورود" : "ورود"}
                   </Button>
                 </Box>
 
