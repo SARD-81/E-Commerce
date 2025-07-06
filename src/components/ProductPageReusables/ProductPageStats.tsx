@@ -1,7 +1,7 @@
 const ProductStats = ({
   stats,
 }: {
-  stats: { icon: string; label: string; value: string }[];
+  stats: { icon?: string; label?: string; value?: string | number }[];
 }) => (
   <div className="space-y-4">
     {stats.map((item, idx) => (

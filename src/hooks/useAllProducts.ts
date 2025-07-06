@@ -3,7 +3,7 @@ import server from "../utils/axios";
 import type { ProductResponseType } from "../types/Product";
 const useAllProducts = () => {
   const fetchAllProducts = async () => {
-    const response = await server.get("products/allproducts");
+    const response = await server.get("/products/allproducts");
     return response.data;
   };
 
