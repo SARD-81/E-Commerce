@@ -19,3 +19,13 @@ export const updateUserRole = async (role: "Admin" | "User") => {
     throw error;
   }
 };
+
+export const updateUser = async (id: string, data: { name?: string; email?: string }) => {
+  const res = await axios.put(`/users/${id}`, data);
+  return res.data;
+};
+
+export const deleteUser = async (id: string) => {
+  const res = await axios.delete(`/users/${id}`);
+  return res.data;
+};
