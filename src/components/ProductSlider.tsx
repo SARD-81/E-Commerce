@@ -7,6 +7,8 @@ import WidgetsSharpIcon from "@mui/icons-material/WidgetsSharp";
 import WatchLaterSharpIcon from "@mui/icons-material/WatchLaterSharp";
 import QuestionAnswerSharpIcon from "@mui/icons-material/QuestionAnswerSharp";
 import { useState } from "react";
+import { Box, Button, Typography } from "@mui/material";
+import useNewProduct from "../hooks/useNewProducts";
 
 // Sample data - you can replace this with your own data or fetch from an API
 const productData = {
@@ -29,6 +31,12 @@ const productData = {
 
 const ProductSlider = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const {
+    data: newProduct,
+    isError: isErrorNewProduct,
+    isLoading: isLoadingNewProduct,
+    error: errorNewProduct,
+  } = useNewProduct();
 
   const handlePrev = () => {
     setCurrentIndex((prevIndex) =>
@@ -42,67 +50,195 @@ const ProductSlider = () => {
     );
   };
 
+  if (isLoadingNewProduct) {
+    return <div>Loading...</div>;
+  }
+
+  if (isErrorNewProduct) {
+    return <div>Error: {errorNewProduct.message}</div>;
+  }
+
+  if (newProduct === undefined) {
+    return null;
+  }
+
   return (
-    <div className="flex items-center justify-center font-sans w-3/5">
-      <div dir="rtl" className="w-full overflow-hidden">
-        <div className="relative shadow-md">
-          <img
-            src={productData.images[currentIndex]}
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "calc(3/5 * 100%)",
+      }}
+    >
+      <Box
+        sx={{
+          width: "full",
+          overflow: "hidden",
+        }}
+        dir="rtl"
+      >
+        <Box
+          sx={{
+            position: "relative",
+            boxShadow: "var(--tw-inset-shadow)",
+          }}
+        >
+          <Box
+            component="img"
             alt="Product"
-            className="w-full h-auto object-cover transition-opacity duration-500 ease-in-out rounded-lg"
+            src={newProduct[currentIndex].image}
             style={{ minHeight: "400px" }}
+            sx={{
+              width: "full",
+              height: "auto",
+              objectFit: "cover",
+              opacity: 1,
+              transition: "opacity 500ms ease-in-out",
+              borderRadius: "8px",
+            }}
           />
 
-          <button
+          <Button
             onClick={handlePrev}
-            className="absolute top-1/2 left-0 transform -translate-y-1/2 bg-white/50 hover:bg-white/80 rounded-full p-2 transition-colors focus:outline-none"
+            sx={{
+              position: "absolute",
+              top: "calc(1/2 * 100%)",
+              left: 0,
+              transform: "translateY(-50%)",
+              backgroundColor: "rgba(255, 255, 255, 0.5)",
+              "&:hover": {
+                backgroundColor: "rgba(255, 255, 255, 0.8)",
+              },
+              "&:focus": {
+                outline: "none",
+              },
+              borderRadius: "50px",
+              padding: "15px",
+              transition: "background-color 300ms ease-in-out",
+            }}
           >
-            <ArrowBackIosSharpIcon className="h-6 w-6 text-gray-800" />
-          </button>
-          <button
+            <ArrowBackIosSharpIcon
+              sx={{
+                height: "24px",
+                width: "24px",
+                color: "#1e2939",
+              }}
+            />
+          </Button>
+          <Button
             onClick={handleNext}
-            className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-white/50 hover:bg-white/80 rounded-full p-2 transition-colors focus:outline-none"
+            sx={{
+              position: "absolute",
+              top: "calc(1/2 * 100%)",
+              right: 0,
+              transform: "translateY(-50%)",
+              backgroundColor: "rgba(255, 255, 255, 0.5)",
+              "&:hover": {
+                backgroundColor: "rgba(255, 255, 255, 0.8)",
+              },
+              "&:focus": {
+                outline: "none",
+              },
+              borderRadius: "50px",
+              padding: "15px",
+              transition: "background-color 300ms ease-in-out",
+            }}
           >
-            <ArrowForwardIosSharpIcon className="h-6 w-6 text-gray-800" />
-          </button>
-        </div>
+            <ArrowForwardIosSharpIcon
+              sx={{
+                height: "24px",
+                width: "24px",
+                color: "#1e2939",
+              }}
+            />
+          </Button>
+        </Box>
 
-        <div className="pt-6 flex gap-6">
-          <div className="flex flex-col w-1/2 justify-between items-start mb-4 gap-y-4">
-            <h1 className="text-2xl font-bold text-gray-800 mb-2 md:mb-0">
-              {productData.title}
-            </h1>
-            <p className="text-2xl font-bold text-left text-gray-900">
-              {productData.price}
-            </p>
-            <p className="text-gray-700 leading-relaxed text-base">
-              {productData.description}
-            </p>
-          </div>
+        <Box
+          sx={{
+            paddingTop: "6px",
+            display: "flex",
+            gap: "6px",
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              width: "50%",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              marginBottom: "16px",
+              rowGap: "16px",
+            }}
+          >
+            <Typography
+              component="h1"
+              sx={{
+                fontSize: "24px",
+                fontWeight: "bold",
+                color: "#1e2939",
+                marginBottom: 0,
+              }}
+            >
+              {newProduct[currentIndex].name}
+            </Typography>
+            <Typography
+              sx={{
+                fontSize: "24px",
+                fontWeight: "bold",
+                textAlign: "left",
+                color: "#101828",
+              }}
+            >
+              {newProduct[currentIndex].price}
+            </Typography>
+            <Typography
+              sx={{
+                color: "#364153",
+                fontSize: "1rem",
+                lineHeight: 1.625,
+              }}
+            >
+              {newProduct[currentIndex].description}
+            </Typography>
+          </Box>
 
-          <div className="grid grid-cols-2 w-1/2 gap-y-4  text-sm text-gray-600 mb-6">
-            <p>
-              <StorefrontSharpIcon /> برند : {productData.brand}
-            </p>
-            <p>
-              <StarPurple500SharpIcon /> امتیاز : {productData.rating}{" "}
-            </p>
-            <p>
-              <LocalGroceryStoreSharpIcon /> تعداد : {productData.quantity}
-            </p>
-            <p>
-              <WatchLaterSharpIcon /> زمان بروزرسانی : {productData.lastUpdated}{" "}
-            </p>
-            <p>
-              <QuestionAnswerSharpIcon /> نظرات : {productData.reviews}{" "}
-            </p>
-            <p>
-              <WidgetsSharpIcon /> موجودی : {productData.stock}{" "}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "repeat(2, 1fr)",
+              width: "50%",
+              rowGap: "16px",
+              fontSize: "14px",
+              color: " #4a5565",
+              marginBottom: "24px",
+            }}
+          >
+            <Typography>
+              <StorefrontSharpIcon /> برند :{" "}
+              {newProduct[currentIndex].category.name}
+            </Typography>
+            <Typography>
+              <StarPurple500SharpIcon /> امتیاز : {newProduct[currentIndex].rating}{" "}
+            </Typography>
+            <Typography>
+              <LocalGroceryStoreSharpIcon /> تعداد : {newProduct[currentIndex].quantity}
+            </Typography>
+            <Typography>
+              <WatchLaterSharpIcon /> زمان بروزرسانی : {newProduct[currentIndex].updatedAt}{" "}
+            </Typography>
+            <Typography>
+              <QuestionAnswerSharpIcon /> نظرات : {newProduct[currentIndex].numReviews}{" "}
+            </Typography>
+            <Typography>
+              <WidgetsSharpIcon /> موجودی : {newProduct[currentIndex].countInStock}{" "}
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

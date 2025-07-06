@@ -1,18 +1,63 @@
-import { Box, Container, Typography } from "@mui/material";
-import { useRef, useState } from "react";
-
+import { Box, Button, Container, Typography } from "@mui/material";
+import { useRef, useState, type ChangeEvent } from "react";
+import { toast } from "react-toastify";
+import useCreateProduct from "../../hooks/useCreateProduct";
 const ProductCreate = () => {
-  const [filename, setFileName] = useState("");
+  const { mutate, isPending } = useCreateProduct();
+  const [formData, setFormData] = useState({
+    name: "",
+    price: "",
+    brand: "",
+    description: "",
+    quantity: "",
+    image: "",
+  });
+  const [preview, setPreview] = useState("");
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
   const handleClick = () => {
     fileInputRef.current?.click();
   };
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setFileName(file.name);
+      setFormData((prev) => ({
+        ...prev,
+        productImage: file,
+      }));
+      setPreview(URL.createObjectURL(file));
     }
   };
+
+  const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const { name, price, brand, description, quantity, image } = formData;
+
+    if (!name || !price || !brand || !description || !quantity || !image) {
+      toast.error("لطفا تمام فیلد ها رو تکمیل نمایید و یک عکس بارگذاری کنید");
+      return;
+    }
+
+    mutate({
+      ...formData,
+      price: Number(formData.price),
+      quantity: Number(formData.quantity),
+    });
+  };
+
   return (
     <Container maxWidth="md">
       <Box
@@ -25,12 +70,7 @@ const ProductCreate = () => {
         }}
       >
         <Typography variant="h5">محصول جدید</Typography>
-        <form
-          onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
-            e.preventDefault();
-          }}
-          className="flex flex-col w-full gap-6"
-        >
+        <form onSubmit={handleSubmit} className="flex flex-col w-full gap-6">
           <Box
             onClick={handleClick}
             sx={{
@@ -45,89 +85,110 @@ const ProductCreate = () => {
             }}
           >
             <Typography sx={{ alignSelf: "center", color: "#58616C" }}>
-              {filename ? `فایل انتخاب شده: ${filename}` : "آپلود عکس"}
+              {formData.image
+                ? `فایل انتخاب شده: ${formData.image}`
+                : "آپلود عکس"}
             </Typography>
             <input
               type="file"
               ref={fileInputRef}
               accept="image/*"
               className="hidden"
-              onChange={handleChange}
+              onChange={handleFileChange}
             />
           </Box>
+          {preview && (
+            <img
+              src={preview}
+              alt="Preview"
+              className="w-40 h-40 object-cover rounded"
+            />
+          )}
           <Box>
-            <label htmlFor="product-name">نام</label>
+            <label htmlFor="productName">نام</label>
             <input
-              type="text"
-              id="product-name"
-              name="product-name"
+              id="productName"
+              name="productName"
+              value={formData.name}
               placeholder="نام محصول خود را وارد نمایید"
-              className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white "
+              className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
+              onChange={handleChange}
             />
           </Box>
           <Box className="flex items-center justify-center gap-8">
             <div className="w-1/2">
-              <label htmlFor="product-price">قیمت</label>
+              <label htmlFor="productPrice">قیمت</label>
               <input
                 type="number"
-                id="product-price"
-                name="product-price"
+                name="price"
+                value={formData.price}
+                id="productPrice"
                 placeholder="قیمت محصول خود را وارد نمایید"
                 className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
+                onChange={handleChange}
               />
             </div>
             <div className="w-1/2">
-              <label htmlFor="product-brand">برند</label>
+              <label htmlFor="productBrand">برند</label>
               <input
                 type="text"
-                id="product-brand"
-                name="product-brand"
+                name="brand"
+                value={formData.brand}
+                id="productBrand"
+                placeholder="برند محصول را وارد نمایید"
                 className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
-                placeholder="برند محصول خود را وارد نمایید"
+                onChange={handleChange}
               />
             </div>
           </Box>
           <Box className="flex flex-col gap-3">
-            <label htmlFor="product-desc">توضیحات</label>
+            <label htmlFor="productDesc">توضیحات</label>
             <textarea
+              id="productDesc"
+              name="description"
+              value={formData.description}
               rows={4}
-              name="product-desc"
-              id="product-desc"
               placeholder="توضیحات محصول خود را وارد نمایید"
               className="w-full p-2 outline-none border border-[#CED2D7] rounded-lg bg-white resize-none"
+              onChange={handleChange}
             ></textarea>
           </Box>
           <Box className="flex items-center justify-center gap-8">
             <div className="w-1/2">
-              <label htmlFor="product-price">
-                تعداد قابل خرید را وارد نمایید
-              </label>
+              <label htmlFor="productQuantity">تعداد قابل خرید</label>
               <input
                 type="number"
-                id="product-price"
-                name="product-price"
-                placeholder="قیمت محصول خود را وارد نمایید"
+                name="quantity"
+                value={formData.quantity}
+                id="productQuantity"
+                placeholder="تعداد را وارد نمایید"
                 className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
+                onChange={handleChange}
               />
             </div>
             <div className="w-1/2">
-              <label htmlFor="product-brand">موجودی</label>
+              <label htmlFor="productStatus">موجودی</label>
               <select
-                id="product-brand"
-                name="product-brand"
+                id="productStatus"
+                name="status"
                 className="appearance-none cursor-pointer w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
               >
-                <option className="color-[]" value="in-stock">
-                  موجودی
-                </option>
+                <option value="in-stock">موجود</option>
                 <option value="out-of-stock">ناموجود</option>
               </select>
             </div>
           </Box>
-          <Box className="w-1/5 text-white flex items-center rounded-lg bg-[#DB2777]">
-            <button type="submit" className="m-auto h-[45px] cursor-pointer">
-              ساخت محصول جدید
-            </button>
+          <Box>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={isPending}
+              className={`${
+                isPending ? "w-[100px]" : ""
+              } w-[15.5%] py-1 rounded-lg shadow-none bg-[#DB2777] whitespace-nowrap hover:bg-[#BE1D64]`}
+            >
+              {isPending ? "در حال پردازش..." : "ساخت محصول جدید"}
+            </Button>
           </Box>
         </form>
       </Box>
