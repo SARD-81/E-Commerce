@@ -45,7 +45,8 @@ const ProductCArd_Blank = ({
         }}
       >
         <Typography component="p" variant="body1">
-          {title}
+          {title.length > 11 ? "..." : ""}
+          {title.substring(0, 12)}
         </Typography>
         <Box sx={{ background: "#831747", px: 1, py: 1, borderRadius: "25px" }}>
           <Typography
