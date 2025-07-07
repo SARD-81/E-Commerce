@@ -98,10 +98,10 @@ const AdminDropdown = () => {
           }}
         >
           {[
-            { text: "داشبورد", path: "/admin/dashboard" },
-            { text: "محصول جدید", path: "/admin/products/new" },
-            { text: "مدیریت کاربران", path: "/admin/users" },
-            { text: "سفارشات", path: "/admin/orders" },
+            { text: "داشبورد", path: "/dashboard" },
+            { text: "محصول جدید", path: "/products/new" },
+            { text: "مدیریت کاربران", path: "/users" },
+            { text: "سفارشات", path: "/orders" },
             { text: "پروفایل", path: "/profile" },
           ].map((item, index) => (
             <MenuItem
