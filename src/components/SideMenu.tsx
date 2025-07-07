@@ -17,6 +17,7 @@ import { useAuth } from "../context/AuthContext";
 import AdminDropdown from "./AdminDropdown";
 import UserDropdown from "./UserDropdown";
 import Preloader from "./Preloader";
+import useAuthStore from "../state-management/stores/useAuthStore";
 
 const drawerWidth = 300;
 
@@ -72,6 +73,10 @@ const SideMenu = ({ children }: SideMenuProps) => {
   const [open, setOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const { loading } = useAuth();
+  const { id, isAdmin } = useAuthStore((state) => ({
+    id: state.id,
+    isAdmin: state.isAdmin,
+  }));
 
   const handleDrawerOpen = () => setOpen(!open);
   const handleSelectItem = (id: number) => setSelectedIndex(id);
@@ -123,8 +128,8 @@ const SideMenu = ({ children }: SideMenuProps) => {
         <Box sx={{ marginTop: "auto" }}>
           <Divider />
 
-          {localStorage.getItem("id") ? (
-            localStorage.getItem("isAdmin") === "true" ? (
+          {id ? (
+            isAdmin ? (
               <AdminDropdown />
             ) : (
               <UserDropdown />

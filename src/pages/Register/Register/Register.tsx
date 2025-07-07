@@ -6,41 +6,84 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, type ChangeEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useMutation } from "@tanstack/react-query";
 import loginBackground from "../../../public/images/loginBackGround.png";
 import "../../assets/fonts/font.css";
-import type { LoginFormData } from "../../types/LoginFormData";
-import useLogin from "../../hooks/useLogin";
-import { useNavigate } from "react-router-dom";
+import useAuthStore from "../../state-management/stores/useAuthStore";
+import type { RegisterResponseData } from "../../types/RegisterFormData";
+import server from "../../utils/axios";
 
-const Login = () => {
-  const { mutate: login, isPending } = useLogin();
-  const navigate = useNavigate();
-  const [LoginForm, setLoginForm] = useState<LoginFormData>({
+const Register: React.FC = () => {
+  const { setId, setIsAdmin, setFlashMessage } = useAuthStore();
+  const [RegisterForm, setRegisterForm] = useState({
+    username: "",
     email: "",
     password: "",
+    confirm_Password: "",
+  });
+  const navigate = useNavigate();
+
+  const registerMutation = useMutation({
+    mutationFn: (payload: typeof RegisterForm) =>
+      server.post<RegisterResponseData>("users/", payload),
+    onSuccess: (response) => {
+      if (response.status === 201) {
+        const userInfo = {
+          id: response.data._id,
+          isAdmin: response.data.isAdmin,
+        };
+        setId(userInfo.id);
+        setIsAdmin(userInfo.isAdmin);
+        setFlashMessage("ثبت‌نام با موفقیت انجام شد 🎉");
+        navigate("/home", { replace: true });
+        setRegisterForm({
+          username: "",
+          email: "",
+          password: "",
+          confirm_Password: "",
+        });
+      }
+    },
+    onError: (error: any) => {
+      const message =
+        error.response?.data?.message ||
+        "خطا در ثبت نام. لطفا دوباره تلاش کنید.";
+      toast.error(message);
+    },
   });
 
-  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setLoginForm((prev) => ({
+    setRegisterForm((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!LoginForm.email || !LoginForm.password) {
-      toast.error("لطفاً ایمیل و رمزعبور خود را وارد کنید");
+    if (
+      !RegisterForm.username ||
+      !RegisterForm.email ||
+      !RegisterForm.password ||
+      !RegisterForm.confirm_Password
+    ) {
+      toast.error("لطفا تمام فیلد ها را پر کنید");
       return;
     }
 
-    login(LoginForm, {
-      onSuccess: () => navigate("/", { replace: true }),
+    registerMutation.mutate({
+      username: RegisterForm.username,
+      email: RegisterForm.email,
+      password: RegisterForm.password,
+      confirm_Password: RegisterForm.confirm_Password,
     });
   };
+
   return (
     <>
       <CssBaseline />
@@ -90,6 +133,7 @@ const Login = () => {
                 justifyContent: "center",
               }}
             >
+              {/* Title */}
               <Typography
                 component="h1"
                 variant="h4"
@@ -102,21 +146,80 @@ const Login = () => {
                   fontFamily: "vazir",
                 }}
               >
-                ورود
+                ثبت نام
               </Typography>
 
               <Box
                 component="form"
                 onSubmit={handleSubmit}
-                sx={{ mt: 1, width: "100%" }}
+                sx={{ mt: 1, width: "100%", textAlign: "right" }}
               >
-                {/* Email label */}
-                <Box
-                  sx={{
-                    mb: -1.25,
-                    width: "100%",
+                {/* Name label */}
+                <Box sx={{ mb: -1.25, width: "100%" }}>
+                  <Typography
+                    variant="body1"
+                    component="label"
+                    htmlFor="username"
+                    sx={{
+                      fontFamily: "vazir",
+                      textAlign: "right",
+                      fontWeight: "400",
+                      fontSize: "16px",
+                    }}
+                  >
+                    نام
+                  </Typography>
+                </Box>
+
+                {/* Name input */}
+                <TextField
+                  type="text"
+                  id="username"
+                  name="username"
+                  value={RegisterForm.username}
+                  onChange={handleChange}
+                  placeholder="نام خود را وارد نمایید"
+                  fullWidth
+                  required
+                  autoComplete="name"
+                  inputProps={{
+                    sx: {
+                      "::placeholder": {
+                        fontWeight: 400,
+                        fontSize: "16px",
+                        fontFamily: "Vazir, Arial, sans-serif",
+                        color: "#58616C",
+                      },
+                    },
                   }}
-                >
+                  InputProps={{
+                    sx: {
+                      backgroundColor: "#FFFFFF",
+                      borderRadius: "8px",
+                      border: "1px solid #ccc",
+                      "&.Mui-focused": {
+                        borderColor: "#000",
+                      },
+                      "& fieldset": {
+                        border: "none",
+                      },
+                    },
+                  }}
+                  margin="normal"
+                  sx={{
+                    "& .MuiInputBase-root": {
+                      height: 38,
+                    },
+                    "& input": {
+                      padding: "6px 8px",
+                      fontSize: "0.9rem",
+                      textAlign: "right",
+                    },
+                  }}
+                />
+
+                {/* Email label */}
+                <Box sx={{ mb: -1.25, width: "100%" }}>
                   <Typography
                     variant="body1"
                     component="label"
@@ -137,13 +240,12 @@ const Login = () => {
                   type="email"
                   id="email"
                   name="email"
-                  value={LoginForm.email}
+                  value={RegisterForm.email}
                   onChange={handleChange}
                   placeholder="ایمیل خود را وارد نمایید"
                   fullWidth
                   required
                   autoComplete="email"
-                  autoFocus
                   inputProps={{
                     sx: {
                       "::placeholder": {
@@ -182,12 +284,7 @@ const Login = () => {
 
                 {/* Password label */}
                 <Box
-                  sx={{
-                    mb: -1.25,
-                    width: "100%",
-                    textAlign: "right",
-                    mt: 1.5,
-                  }}
+                  sx={{ mb: -1.25, width: "100%", textAlign: "right", mt: 1.5 }}
                 >
                   <Typography
                     variant="body1"
@@ -206,15 +303,81 @@ const Login = () => {
 
                 {/* Password input */}
                 <TextField
+                  type="password"
                   id="password"
                   name="password"
-                  value={LoginForm.password}
-                  type="password"
+                  value={RegisterForm.password}
                   onChange={handleChange}
                   placeholder="رمزعبور خود را وارد نمایید"
                   fullWidth
                   required
-                  autoComplete="current-password"
+                  autoComplete="new-password"
+                  inputProps={{
+                    sx: {
+                      "::placeholder": {
+                        fontWeight: 400,
+                        fontSize: "16px",
+                        fontFamily: "Vazir, Arial, sans-serif",
+                        color: "#58616C",
+                      },
+                    },
+                  }}
+                  InputProps={{
+                    sx: {
+                      backgroundColor: "#FFFFFF",
+                      borderRadius: "8px",
+                      border: "1px solid #ccc",
+                      "&.Mui-focused": {
+                        borderColor: "#000",
+                      },
+                      "& fieldset": {
+                        border: "none",
+                      },
+                    },
+                  }}
+                  margin="normal"
+                  sx={{
+                    "& .MuiInputBase-root": {
+                      height: 38,
+                    },
+                    "& input": {
+                      padding: "6px 8px",
+                      fontSize: "0.9rem",
+                      textAlign: "right",
+                    },
+                  }}
+                />
+
+                {/* Confirm Password label */}
+                <Box
+                  sx={{ mb: -1.25, width: "100%", textAlign: "right", mt: 1.5 }}
+                >
+                  <Typography
+                    variant="body1"
+                    component="label"
+                    htmlFor="confirm_Password"
+                    sx={{
+                      fontFamily: "vazir",
+                      textAlign: "right",
+                      fontWeight: "400",
+                      fontSize: "16px",
+                    }}
+                  >
+                    تکرار رمزعبور
+                  </Typography>
+                </Box>
+
+                {/* Confirm Password input */}
+                <TextField
+                  type="password"
+                  id="confirm_Password"
+                  name="confirm_Password"
+                  value={RegisterForm.confirm_Password}
+                  onChange={handleChange}
+                  placeholder="رمزعبور خود را دوباره وارد نمایید"
+                  fullWidth
+                  required
+                  autoComplete="new-password"
                   inputProps={{
                     sx: {
                       "::placeholder": {
@@ -256,15 +419,18 @@ const Login = () => {
                   <Button
                     type="submit"
                     variant="contained"
-                    disabled={isPending}
+                    disabled={registerMutation.isPending}
                     className={`${
-                      isPending ? "w-[100px]" : ""
+                      registerMutation.isPending ? "w-[100px]" : ""
                     } w-[12.5%] py-1 rounded-lg shadow-none bg-[#DB2777] whitespace-nowrap hover:bg-[#BE1D64]`}
                   >
-                    {isPending ? "در حال ورود" : "ورود"}
+                    {registerMutation.isPending
+                      ? "در حال ثبت نام..."
+                      : "ثبت نام"}
                   </Button>
                 </Box>
 
+                {/* Bottom text */}
                 <Typography
                   variant="body2"
                   sx={{
@@ -274,9 +440,9 @@ const Login = () => {
                     fontFamily: "vazir",
                   }}
                 >
-                  عضو نیستید ؟{" "}
+                  عضو هستید ؟{" "}
                   <Button
-                    onClick={() => navigate("/register")}
+                    onClick={() => navigate("/login")}
                     sx={{
                       color: "#DB2777",
                       "&:hover": {
@@ -291,7 +457,7 @@ const Login = () => {
                       fontFamily: "vazir",
                     }}
                   >
-                    ثبت نام
+                    ورود
                   </Button>
                 </Typography>
               </Box>
@@ -303,4 +469,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

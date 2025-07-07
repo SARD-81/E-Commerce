@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import { create } from "zustand";
 
 type AuthStoreType = {
@@ -26,12 +27,16 @@ const useAuthStore = create<AuthStoreType>((set) => ({
   },
   setFlashMessage: (message: string) => set({ flashMessage: message }),
   clearFlashMessage: () => set({ flashMessage: null }),
-  logout: () =>
+  logout: () => {
     set({
       id: null,
       isAdmin: false,
       flashMessage: null,
-    }),
+    });
+    localStorage.removeItem("isAdmin");
+    localStorage.removeItem("id");
+    toast.error("خارج شدید.");
+  },
 }));
 
 export default useAuthStore;

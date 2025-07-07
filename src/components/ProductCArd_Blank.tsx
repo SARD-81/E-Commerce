@@ -8,6 +8,7 @@ interface ProductCard_BlankProps {
   size: "small" | "large";
 }
 const ProductCArd_Blank = ({
+  productId,
   size = "small",
   title,
   price,
@@ -35,6 +36,7 @@ const ProductCArd_Blank = ({
         alt="product_card_blank"
         width={imageSize.width}
         height={imageSize.height}
+        data-product-id={productId}
       />
 
       <Box
