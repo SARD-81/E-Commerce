@@ -6,7 +6,7 @@ const useCreateProduct = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: CreateProductPayload) =>
-      server.post("products", payload),
+      server.post("/products", payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["all-products"] });
       toast.success("محصول با موفقیت ساخته شد🎉");

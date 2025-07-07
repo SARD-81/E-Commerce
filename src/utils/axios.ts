@@ -10,18 +10,21 @@ const server = axios.create({
 });
 
 // Add this to log requests
-server.interceptors.request.use(config => {
+server.interceptors.request.use((config) => {
   console.log("Sending request to:", config.url);
   return config;
 });
 
 // Add this to log responses
-server.interceptors.response.use(response => {
-  console.log("Response from:", response.config.url, response);
-  return response;
-}, error => {
-  console.error("API Error:", error);
-  return Promise.reject(error);
-});
+server.interceptors.response.use(
+  (response) => {
+    console.log("Response from:", response.config.url, response);
+    return response;
+  },
+  (error) => {
+    console.error("API Error:", error);
+    return Promise.reject(error);
+  }
+);
 
 export default server;

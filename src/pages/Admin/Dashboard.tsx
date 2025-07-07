@@ -6,7 +6,6 @@ import {
   CardContent,
   Typography,
   Avatar,
-  CircularProgress,
   Skeleton,
   Alert,
 } from "@mui/material";

@@ -1,68 +1,80 @@
 import {
   createContext,
-  useState,
+  type ReactNode,
   useContext,
   useEffect,
-  type ReactNode,
+  useMemo,
 } from "react";
+import useAuthStore, {
+  useSetAuthUser,
+  useSetAuthId,
+  useSetAuthIsAdmin,
+  useSetAuthLoading,
+} from "../state-management/stores/useAuthStore";
+import { getUserData } from "../api/userService";
 import server from "../utils/axios";
 
-interface User {
-  _id: string;
-  username: string;
-  email: string;
-  isAdmin: boolean;
-}
-
 interface AuthContextType {
-  user: User | null;
-  loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  loading: false,
-  login: async () => {},
-  logout: async () => {},
-});
+const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const fetchUserProfile = async () => {
-    try {
-      const response = await server.get("/users/profile");
-      setUser(response.data);
-    } catch (error) {
-      console.error("User not authenticated", error);
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchUserProfile();
-  }, []);
-
-  const login = async (email: string, password: string) => {
-    const response = await server.post("/users/auth", { email, password });
-    setUser(response.data);
-  };
-
-  const logout = async () => {
-    await server.post("/users/logout");
-    setUser(null);
-  };
-
-  return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+export const useAuth = (): AuthContextType => {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+  return ctx;
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const setUser = useSetAuthUser();
+  const setId = useSetAuthId();
+  const setIsAdmin = useSetAuthIsAdmin();
+  const setLoading = useSetAuthLoading();
+  const logoutAction = useAuthStore((s) => s.logout);
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      try {
+        const data = await getUserData();
+        setUser(data);
+        setId(data._id);
+        setIsAdmin(data.isAdmin);
+      } catch {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [setUser, setId, setIsAdmin, setLoading]);
+
+  const value = useMemo<AuthContextType>(() => {
+    const login = async (email: string, password: string) => {
+      setLoading(true);
+      try {
+        const resp = await server.post("/users/auth", { email, password });
+        setUser(resp.data);
+        setId(resp.data._id);
+        setIsAdmin(resp.data.isAdmin);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const logout = async () => {
+      setLoading(true);
+      try {
+        await server.get("/users/logout");
+        logoutAction();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    return { login, logout };
+  }, [logoutAction, setId, setIsAdmin, setLoading, setUser]);
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};

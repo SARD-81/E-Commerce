@@ -1,71 +1,39 @@
-import React from "react";
-import { Box, Container } from "@mui/material";
+import useAllProducts from "../hooks/useAllProducts";
 import ProductCardAllProducts from "./ProductCardAllProducts";
+import { Box, Typography, CircularProgress } from "@mui/material";
 
-const products = [
-  {
-    productId: 1,
-    title: "Apple iPhone 14 Pro",
-    description:
-      "آیفون 14 پرو دارای صفحه نمایش 6.1 اینچی Super Retina XDR است، فناوری ProMotion، تراشه A16 Bionic و سیستم دوربین سه‌گانه ...",
-    price: 10000000,
-    date: "۳۱ مرداد ۱۴۰۳",
-    imageSrc: "https://via.placeholder.com/120x120",
-  },
-  {
-    productId: 2,
-    title: "Apple iPhone 14 Pro",
-    description:
-      "آیفون 14 پرو دارای صفحه نمایش 6.1 اینچی Super Retina XDR است، فناوری ProMotion، تراشه A16 Bionic و سیستم دوربین سه‌گانه ...",
-    price: 10000000,
-    date: "۳۱ مرداد ۱۴۰۳",
-    imageSrc: "https://via.placeholder.com/120x120",
-  },
-  {
-    productId: 3,
-    title: "Apple iPhone 14 Pro",
-    description:
-      "آیفون 14 پرو دارای صفحه نمایش 6.1 اینچی Super Retina XDR است، فناوری ProMotion، تراشه A16 Bionic و سیستم دوربین سه‌گانه ...",
-    price: 10000000,
-    date: "۳۱ مرداد ۱۴۰۳",
-    imageSrc: "https://via.placeholder.com/120x120",
-  },
-  {
-    productId: 4,
-    title: "Apple iPhone 14 Pro",
-    description:
-      "آیفون 14 پرو دارای صفحه نمایش 6.1 اینچی Super Retina XDR است، فناوری ProMotion، تراشه A16 Bionic و سیستم دوربین سه‌گانه ...",
-    price: 10000000,
-    date: "۳۱ مرداد ۱۴۰۳",
-    imageSrc: "https://via.placeholder.com/120x120",
-  },
-];
+const AllProducts = () => {
+  const { data: products, isLoading, isError } = useAllProducts();
 
-export default function AllProducts() {
-  return (
-    <Container sx={{ py: 4 }}>
-      <Box
-        sx={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: { xs: "center", md: "space-between" },
-          gap: 2,
-        }}
-      >
-        {products.map((product) => (
-          <Box
-            key={product.productId}
-            sx={{
-              flex: {
-                xs: "1 1 100%", // موبایل: کل عرض
-                md: "1 1 calc(50% - 16px)", // دسکتاپ: نصف عرض با فاصله بینشون
-              },
-            }}
-          >
-            <ProductCardAllProducts {...product} />
-          </Box>
-        ))}
+  if (isLoading)
+    return (
+      <Box display="flex" justifyContent="center" mt={4}>
+        <CircularProgress />
       </Box>
-    </Container>
+    );
+
+  if (isError)
+    return (
+      <Box display="flex" justifyContent="center" mt={4}>
+        <Typography color="error">خطا در دریافت محصولات</Typography>
+      </Box>
+    );
+
+  return (
+    <Box display="flex" flexWrap="wrap" gap={3} justifyContent="center" p={2}>
+      {products?.map((product) => (
+        <ProductCardAllProducts
+          key={product._id}
+          productId={product._id}
+          title={product.name}
+          price={product.price}
+          imageSrc={product.image}
+          description={product.description}
+          date={product.createdAt}
+        />
+      ))}
+    </Box>
   );
-}
+};
+
+export default AllProducts;

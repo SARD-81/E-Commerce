@@ -13,11 +13,14 @@ import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import { useState } from "react";
 import SideMenuHeader from "./SlideMenuReuseables/SideMenuHeader";
 import SlideMenuList from "./SlideMenuReuseables/SlideMenuList";
-import { useAuth } from "../context/AuthContext";
 import AdminDropdown from "./AdminDropdown";
 import UserDropdown from "./UserDropdown";
 import Preloader from "./Preloader";
-
+import {
+  useAuthId,
+  useAuthIsAdmin,
+  useAuthLoading,
+} from "../state-management/stores/useAuthStore";
 const drawerWidth = 300;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -71,10 +74,17 @@ const SideMenu = ({ children }: SideMenuProps) => {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const { loading } = useAuth();
+
+  const loading = useAuthLoading();
+  const id = useAuthId();
+  const isAdmin = useAuthIsAdmin();
+
+  if (loading) {
+    return <Preloader />;
+  }
 
   const handleDrawerOpen = () => setOpen(!open);
-  const handleSelectItem = (id: number) => setSelectedIndex(id);
+  const handleSelectItem = (idx: number) => setSelectedIndex(idx);
 
   const mainMenuItems = [
     { text: "داشبورد", icon: <HomeOutlinedIcon />, to: "/" },
@@ -122,9 +132,8 @@ const SideMenu = ({ children }: SideMenuProps) => {
 
         <Box sx={{ marginTop: "auto" }}>
           <Divider />
-
-          {localStorage.getItem("id") ? (
-            localStorage.getItem("isAdmin") === "true" ? (
+          {id ? (
+            isAdmin ? (
               <AdminDropdown />
             ) : (
               <UserDropdown />

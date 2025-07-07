@@ -41,7 +41,7 @@ const ProductCreate = () => {
     }
   };
 
-  const handleSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const { name, price, brand, description, quantity, image } = formData;

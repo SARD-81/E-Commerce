@@ -64,7 +64,7 @@ const Home = () => {
           sx={{
             display: "flex",
             justifyContent: "space-around",
-            width: "20%",
+            width: "40%",
           }}
         >
           <Box>
