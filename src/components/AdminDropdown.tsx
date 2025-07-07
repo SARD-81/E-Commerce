@@ -35,7 +35,8 @@ const AdminDropdown = () => {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    handleClose();
+    navigate("/");
   };
 
   const handleNavigation = (path: string) => {

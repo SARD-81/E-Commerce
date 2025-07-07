@@ -1,23 +1,28 @@
 import {
+  Box,
+  ClickAwayListener,
+  IconButton,
   Menu,
   MenuItem,
-  IconButton,
-  ClickAwayListener,
-  Box,
   Typography,
 } from "@mui/material";
+import { useRef, useState } from "react";
 import { IoChevronDownSharp } from "react-icons/io5";
-import { useState, useRef } from "react";
-import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import useAuthStore from "../state-management/stores/useAuthStore";
 
 const UserDropdown = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isOpen = Boolean(anchorEl);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const { logout } = useAuth();
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
+  const { id, logout } = useAuthStore((state) => ({
+    id: state.id,
+    logout: state.logout,
+  }));
+
+  if (!id) return null;
 
   const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
