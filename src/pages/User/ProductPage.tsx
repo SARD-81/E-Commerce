@@ -35,6 +35,7 @@ import useAllProducts from "../../hooks/useAllProducts";
 import useProduct from "../../hooks/useProduct";
 import useSubmitReview from "../../hooks/useSubmitReview";
 import type { Review } from "../../types/Product";
+import ProductCArd_Blank from "../../components/ProductCArd_Blank";
 
 interface IUserComments {
   score: string;
@@ -86,12 +87,15 @@ const ProductPage = () => {
     { icon: timeUpdate, label: "زمان بروزرسانی", value: product?.updatedAt },
     { icon: comment, label: "نظرات", value: product?.numReviews },
   ];
+
   const toPersianDigits = (str: string) => {
     return str.replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[parseInt(d)]);
   };
-  const jalaaliDate = toPersianDigits(
-    moment().locale("fa").format("jYYYY/jMM/jDD")
-  );
+
+  function toJalali(isDate: string): string {
+    return toPersianDigits(moment(isDate).format("jYYYY/jMM/jDD"));
+  }
+
   return (
     <Box sx={{ bgcolor: theme.palette.background.default, minHeight: "100vh" }}>
       <Container maxWidth="lg" sx={{ py: 5, mt: 3 }}>
@@ -275,7 +279,9 @@ const ProductPage = () => {
                     >
                       <div className="flex text-[#58616C] items-center justify-between">
                         <p>{review.name}</p>
-                        <span className="ml-2">{review.createdAt}</span>
+                        <span className="ml-2">
+                          {toJalali(review.createdAt)}
+                        </span>
                       </div>
                       <div className="space-y-6">
                         <p className="text-black">{review.comment}</p>
@@ -301,20 +307,15 @@ const ProductPage = () => {
               </Typography>
               <Stack>
                 <Grid container spacing={2} mt={2}>
-                  {[1, 2, 3, 4].map((id) => (
-                    <Grid key={id}>
-                      <ProductCard
-                        productId={id}
-                        title={`محصول ${id}`}
-                        price={1000000 + id * 100000}
-                        description={`توضیحات محصول ${id}`}
-                        imageSrc={laptop}
-                        onShowMore={() =>
-                          console.log(`Show more for product ${id}`)
-                        }
-                        onAddToBasket={() =>
-                          console.log(`Add product ${id} to basket`)
-                        }
+                  {products?.map((product) => (
+                    <Grid key={product._id}>
+                      <ProductCArd_Blank
+                        productId={product._id}
+                        title={product.name}
+                        price={product.price}
+                        imageSrc={product.image}
+                        alt={product.name}
+                        size="small"
                       />
                     </Grid>
                   ))}
