@@ -4,14 +4,11 @@ import ProtectedRoutes from "./ProtectedRoutes";
 import ProductUploadImage from "./pages/Admin/ProductUploadImage";
 import NotFoundPage from "./pages/Error404";
 import Layout from "./pages/Layout";
-import ProductCreate from "./pages/Admin/ProductCreate";
+import Shop from "./pages/User/Shop";
+import Profile from "./pages/User/Profile";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
-import AllProducts from "./components/AllProducts";
-import Profile from "./pages/User/Profile";
-import Shop from "./pages/User/Shop";
 import ProductPage from "./pages/User/ProductPage";
-
 
 const router = createBrowserRouter([
   {
@@ -21,7 +18,6 @@ const router = createBrowserRouter([
     children: [
       { index: true, Component: Home },
       { path: "shop", Component: Shop },
-      { path: "all-products", Component: AllProducts },
 
       { path: "login", Component: Login },
       { path: "register", Component: Register },
