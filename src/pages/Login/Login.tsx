@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -6,45 +7,49 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
 import { toast } from "react-toastify";
 import loginBackground from "../../../public/images/loginBackGround.png";
 import "../../assets/fonts/font.css";
 import type { LoginFormData } from "../../types/LoginFormData";
-import useLogin from "../../hooks/useLogin";
+import { useLogin, useAuthIsAdmin, useAuthLoading } from "../../state-management/stores/useAuthStore";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const { mutate: login, isPending } = useLogin();
+  const [form, setForm] = useState<LoginFormData>({ email: "", password: "" });
+  const login    = useLogin();
+  const isAdmin  = useAuthIsAdmin();
+  const loading  = useAuthLoading();
   const navigate = useNavigate();
-  const [LoginForm, setLoginForm] = useState<LoginFormData>({
-    email: "",
-    password: "",
-  });
 
-  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setLoginForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!LoginForm.email || !LoginForm.password) {
+    if (!form.email || !form.password) {
       toast.error("لطفاً ایمیل و رمزعبور خود را وارد کنید");
       return;
     }
 
-    login(LoginForm, {
-      onSuccess: () => navigate("/", { replace: true }),
-    });
+    try {
+      await login(form.email, form.password);
+      // redirect based on role
+      if (isAdmin) {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate("/", { replace: true });
+      }
+    } catch {
+      // error already handled/toasted in store
+    }
   };
+
   return (
     <>
       <CssBaseline />
-      {/* Main container */}
       <Box
         sx={{
           display: "flex",
@@ -97,7 +102,7 @@ const Login = () => {
                   mb: 3,
                   width: "100%",
                   textAlign: "right",
-                  fontWeight: "500",
+                  fontWeight: 500,
                   fontSize: "24px",
                   fontFamily: "vazir",
                 }}
@@ -105,39 +110,21 @@ const Login = () => {
                 ورود
               </Typography>
 
-              <Box
-                component="form"
-                onSubmit={handleSubmit}
-                sx={{ mt: 1, width: "100%" }}
-              >
-                {/* Email label */}
-                <Box
-                  sx={{
-                    mb: -1.25,
-                    width: "100%",
-                  }}
+              <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: "100%" }}>
+                {/* Email */}
+                <Typography
+                  variant="body1"
+                  component="label"
+                  htmlFor="email"
+                  sx={{ fontFamily: "vazir", textAlign: "right", fontWeight: 400, fontSize: "16px" }}
                 >
-                  <Typography
-                    variant="body1"
-                    component="label"
-                    htmlFor="email"
-                    sx={{
-                      fontFamily: "vazir",
-                      textAlign: "right",
-                      fontWeight: "400",
-                      fontSize: "16px",
-                    }}
-                  >
-                    ایمیل
-                  </Typography>
-                </Box>
-
-                {/* Email input */}
+                  ایمیل
+                </Typography>
                 <TextField
                   type="email"
                   id="email"
                   name="email"
-                  value={LoginForm.email}
+                  value={form.email}
                   onChange={handleChange}
                   placeholder="ایمیل خود را وارد نمایید"
                   fullWidth
@@ -159,57 +146,31 @@ const Login = () => {
                       backgroundColor: "#FFFFFF",
                       borderRadius: "8px",
                       border: "1px solid #ccc",
-                      "&.Mui-focused": {
-                        borderColor: "#000",
-                      },
-                      "& fieldset": {
-                        border: "none",
-                      },
+                      "&.Mui-focused": { borderColor: "#000" },
+                      "& fieldset": { border: "none" },
                     },
                   }}
                   margin="normal"
                   sx={{
-                    "& .MuiInputBase-root": {
-                      height: 38,
-                    },
-                    "& input": {
-                      padding: "6px 8px",
-                      fontSize: "0.9rem",
-                      textAlign: "right",
-                    },
+                    "& .MuiInputBase-root": { height: 38 },
+                    "& input": { padding: "6px 8px", fontSize: "0.9rem", textAlign: "right" },
                   }}
                 />
 
-                {/* Password label */}
-                <Box
-                  sx={{
-                    mb: -1.25,
-                    width: "100%",
-                    textAlign: "right",
-                    mt: 1.5,
-                  }}
+                {/* Password */}
+                <Typography
+                  variant="body1"
+                  component="label"
+                  htmlFor="password"
+                  sx={{ fontFamily: "vazir", textAlign: "right", fontWeight: 400, fontSize: "16px", mt: 1.5 }}
                 >
-                  <Typography
-                    variant="body1"
-                    component="label"
-                    htmlFor="password"
-                    sx={{
-                      fontFamily: "vazir",
-                      textAlign: "right",
-                      fontWeight: "400",
-                      fontSize: "16px",
-                    }}
-                  >
-                    رمزعبور
-                  </Typography>
-                </Box>
-
-                {/* Password input */}
+                  رمزعبور
+                </Typography>
                 <TextField
                   id="password"
                   name="password"
-                  value={LoginForm.password}
                   type="password"
+                  value={form.password}
                   onChange={handleChange}
                   placeholder="رمزعبور خود را وارد نمایید"
                   fullWidth
@@ -230,59 +191,39 @@ const Login = () => {
                       backgroundColor: "#FFFFFF",
                       borderRadius: "8px",
                       border: "1px solid #ccc",
-                      "&.Mui-focused": {
-                        borderColor: "#000",
-                      },
-                      "& fieldset": {
-                        border: "none",
-                      },
+                      "&.Mui-focused": { borderColor: "#000" },
+                      "& fieldset": { border: "none" },
                     },
                   }}
                   margin="normal"
                   sx={{
-                    "& .MuiInputBase-root": {
-                      height: 38,
-                    },
-                    "& input": {
-                      padding: "6px 8px",
-                      fontSize: "0.9rem",
-                      textAlign: "right",
-                    },
+                    "& .MuiInputBase-root": { height: 38 },
+                    "& input": { padding: "6px 8px", fontSize: "0.9rem", textAlign: "right" },
                   }}
                 />
 
-                {/* Submit button */}
+                {/* Submit */}
                 <Box sx={{ width: "100%", textAlign: "right", mt: 3, mb: 2 }}>
                   <Button
                     type="submit"
                     variant="contained"
-                    disabled={isPending}
-                    className={`${
-                      isPending ? "w-[100px]" : ""
-                    } w-[12.5%] py-1 rounded-lg shadow-none bg-[#DB2777] whitespace-nowrap hover:bg-[#BE1D64]`}
+                    disabled={loading}
+                    className={`w-[12.5%] py-1 rounded-lg shadow-none bg-[#DB2777] whitespace-nowrap hover:bg-[#BE1D64]`}
                   >
-                    {isPending ? "در حال ورود" : "ورود"}
+                    {loading ? "در حال ورود" : "ورود"}
                   </Button>
                 </Box>
 
                 <Typography
                   variant="body2"
-                  sx={{
-                    textAlign: "right",
-                    fontWeight: "400",
-                    fontSize: "16px",
-                    fontFamily: "vazir",
-                  }}
+                  sx={{ textAlign: "right", fontWeight: 400, fontSize: "16px", fontFamily: "vazir" }}
                 >
                   عضو نیستید ؟{" "}
                   <Button
                     onClick={() => navigate("/register")}
                     sx={{
                       color: "#DB2777",
-                      "&:hover": {
-                        color: "#BE1D64",
-                        backgroundColor: "transparent",
-                      },
+                      "&:hover": { color: "#BE1D64", backgroundColor: "transparent" },
                       textTransform: "none",
                       p: 0,
                       minWidth: "unset",

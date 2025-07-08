@@ -1,25 +1,43 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import { AuthProvider } from "./context/AuthContext";
-import "./index.css";
-import "./assets/fonts/font.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+// src/main.tsx
 
+import React, { useEffect } from "react";
+import { createRoot } from "react-dom/client";
+import { RouterProvider } from "react-router-dom";
+import router from "./router";
+
+// Zustand auth store
+import { useFetchUser, useAuthLoading } from "./state-management/stores/useAuthStore";
+
+// React Query imports
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+// Create a single QueryClient instance
 const queryClient = new QueryClient();
 
-import App from "./App";
+function AppInitializer({ children }: { children: React.ReactNode }) {
+  const fetchUser = useFetchUser();
+  const loading   = useAuthLoading();
 
-const container = document.getElementById("root");
-if (!container) throw new Error("Root element not found");
+  useEffect(() => {
+    // Fire off the user‐fetch when the app boots
+    fetchUser().catch((err) => {
+      console.error("Initial user fetch failed:", err);
+      // You could show a toast here if you like
+    });
+  }, [fetchUser]);
 
-createRoot(container).render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-      <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
-    </QueryClientProvider>
-  </StrictMode>
+  // Global loader until we know auth state
+  if (loading) {
+    return <div>Loading…</div>;
+  }
+  return <>{children}</>;
+}
+
+const root = createRoot(document.getElementById("root")!);
+root.render(
+  <QueryClientProvider client={queryClient}>
+    <AppInitializer>
+      <RouterProvider router={router} />
+    </AppInitializer>
+  </QueryClientProvider>
 );

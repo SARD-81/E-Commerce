@@ -1,5 +1,8 @@
-import { toast } from "react-toastify";
+// src/state-management/stores/useAuthStore.ts
+
 import { create } from "zustand";
+import server from "../../utils/axios";
+import { toast } from "react-toastify";
 
 interface User {
   _id: string;
@@ -11,27 +14,29 @@ interface User {
 type AuthStoreType = {
   id: string | null;
   isAdmin: boolean;
-  flashMessage: string | null;
   loading: boolean;
   user: User | null;
-  setId: (id: string) => void;
+  setId: (id: string | null) => void;
   setIsAdmin: (isAdmin: boolean) => void;
-  setFlashMessage: (message: string) => void;
-  clearFlashMessage: () => void;
   setUser: (user: User | null) => void;
   setLoading: (loading: boolean) => void;
-  logout: () => void;
+
+  fetchUser: () => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
 };
 
 const useAuthStore = create<AuthStoreType>((set) => ({
+  // Initial state
   id: localStorage.getItem("id"),
   isAdmin: localStorage.getItem("isAdmin") === "true",
-  flashMessage: null,
-  loading: true,            // start in “loading” state
+  loading: true,
   user: null,
 
+  // Synchronous setters
   setId: (id) => {
-    localStorage.setItem("id", id);
+    if (id) localStorage.setItem("id", id);
+    else localStorage.removeItem("id");
     set({ id });
   },
   setIsAdmin: (isAdmin) => {
@@ -41,25 +46,69 @@ const useAuthStore = create<AuthStoreType>((set) => ({
   setUser: (user) => set({ user }),
   setLoading: (loading) => set({ loading }),
 
-  setFlashMessage: (message) => set({ flashMessage: message }),
-  clearFlashMessage: () => set({ flashMessage: null }),
+  // Fetch current user on app load
+  fetchUser: async () => {
+    set({ loading: true });
+    try {
+      const { data } = await server.get("/users/auth");
+      set({
+        user: data,
+        id: data._id,
+        isAdmin: data.isAdmin,
+      });
+    } catch {
+      set({
+        user: null,
+        id: null,
+        isAdmin: false,
+      });
+    } finally {
+      set({ loading: false });
+    }
+  },
 
-  logout: () => {
-    set({ id: null, isAdmin: false, flashMessage: null, user: null });
-    localStorage.removeItem("id");
-    localStorage.removeItem("isAdmin");
-    toast.error("خارج شدید.");
+  // Log in with credentials
+  login: async (email, password) => {
+    set({ loading: true });
+    try {
+      const { data } = await server.post("/users/auth", { email, password });
+      set({
+        user: data,
+        id: data._id,
+        isAdmin: data.isAdmin,
+      });
+    } catch {
+      toast.error("Login failed");
+      throw new Error("Login failed");
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  // Log out
+  logout: async () => {
+    set({ loading: true });
+    try {
+      await server.get("/users/logout");
+      set({ user: null, id: null, isAdmin: false });
+      localStorage.removeItem("id");
+      localStorage.removeItem("isAdmin");
+      toast.info("Logged out.");
+    } finally {
+      set({ loading: false });
+    }
   },
 }));
 
-// slice-hooks
+// Slice‑hooks for components
 export const useAuthId      = () => useAuthStore((s) => s.id);
 export const useAuthIsAdmin = () => useAuthStore((s) => s.isAdmin);
 export const useAuthUser    = () => useAuthStore((s) => s.user);
 export const useAuthLoading = () => useAuthStore((s) => s.loading);
-export const useSetAuthLoading = () => useAuthStore((s) => s.setLoading);
-export const useSetAuthUser    = () => useAuthStore((s) => s.setUser);
-export const useSetAuthId      = () => useAuthStore((s) => s.setId);
-export const useSetAuthIsAdmin = () => useAuthStore((s) => s.setIsAdmin);
+
+// Async actions from store
+export const useFetchUser = () => useAuthStore((s) => s.fetchUser);
+export const useLogin     = () => useAuthStore((s) => s.login);
+export const useLogout    = () => useAuthStore((s) => s.logout);
 
 export default useAuthStore;
