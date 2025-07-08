@@ -17,7 +17,7 @@ import AdminDropdown from "./AdminDropdown";
 import UserDropdown from "./UserDropdown";
 import Preloader from "./Preloader";
 import {
-  useAuthId,
+  useAuthUser,
   useAuthIsAdmin,
   useAuthLoading,
 } from "../state-management/stores/useAuthStore";
@@ -76,7 +76,8 @@ const SideMenu = ({ children }: SideMenuProps) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const loading = useAuthLoading();
-  const id = useAuthId();
+  const user = useAuthUser();
+  const id = user?._id || null;
   const isAdmin = useAuthIsAdmin();
 
   if (loading) {
