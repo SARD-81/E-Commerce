@@ -1,9 +1,10 @@
 import { Box, Typography, TextField, Button } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useUpdateUser from "../../hooks/useUpdateUser";
+import { useAuthUser } from "../../state-management/stores/useAuthStore";
 
 type ProfileInputValues = {
-  name: string;
+  username: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -16,7 +17,7 @@ const inputs: {
   placeholder: string;
   key: InputKey;
 }[] = [
-  { label: "نام", placeholder: "نام خود را وارد نمایید", key: "name" },
+  { label: "نام", placeholder: "نام خود را وارد نمایید", key: "username" },
   {
     label: "ایمیل",
     placeholder: "ایمیل خود را وارد نمایید",
@@ -36,11 +37,22 @@ const inputs: {
 
 const ProfileForm = () => {
   const [profileInput, setProfileInput] = useState<ProfileInputValues>({
-    name: "",
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+
+  const userInfo = useAuthUser();
+
+  useEffect(() => {
+    setProfileInput({
+      username: userInfo?.username || "",
+      email: userInfo?.email || "",
+      password: "",
+      confirmPassword: "",
+    });
+  }, [userInfo]);
 
   const updateProfileMutation = useUpdateUser();
 
@@ -175,12 +187,7 @@ const ProfileForm = () => {
               backgroundColor: "#c41f6d",
             },
           }}
-          onClick={() =>
-            updateProfileMutation.mutate({
-              ...profileInput,
-              userId: "6867b74de700e7d8beb7c56a",
-            })
-          }
+          onClick={() => updateProfileMutation.mutate(profileInput)}
         >
           بروزرسانی
         </Button>
