@@ -2,7 +2,7 @@ import server from "../utils/axios";
 
 export const getUserData = async () => {
   try {
-    const response = await server.get("/user");
+    const response = await server.get("/users/profile");
     return response.data;
   } catch (error) {
     console.error("Error fetching user data", error);
@@ -12,7 +12,7 @@ export const getUserData = async () => {
 
 export const updateUserRole = async (role: "Admin" | "User") => {
   try {
-    const response = await server.patch("/user/role", { role });
+    const response = await server.patch("/users/role/:id", { role });
     return response.data;
   } catch (error) {
     console.error("Error updating user role", error);

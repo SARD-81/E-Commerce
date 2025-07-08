@@ -1,3 +1,6 @@
+// src/components/AdminDropdown.tsx
+
+import React, { useState, useRef } from "react";
 import {
   Box,
   ClickAwayListener,
@@ -6,27 +9,31 @@ import {
   MenuItem,
   Typography,
 } from "@mui/material";
-import { useRef, useState } from "react";
 import { IoChevronDownSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import {
+  useAuthId,
+  useAuthIsAdmin,
+} from "../state-management/stores/useAuthStore";
 import useAuthStore from "../state-management/stores/useAuthStore";
 
 const AdminDropdown = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const isOpen = Boolean(anchorEl);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();
-  const { id, isAdmin, logout } = useAuthStore((state) => ({
-    id: state.id,
-    isAdmin: state.isAdmin,
-    logout: state.logout,
-  }));
 
-  // only render when user is admin
-  if (!id || !isAdmin) return null;
+  const id = useAuthId();
+  const isAdmin = useAuthIsAdmin();
+  const logout = useAuthStore((s) => s.logout);
 
-  const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(anchorEl ? null : event.currentTarget);
+  if (!id || !isAdmin) {
+    return null;
+  }
+
+  const isOpen = Boolean(anchorEl);
+
+  const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl((prev) => (prev ? null : e.currentTarget));
   };
 
   const handleClose = () => {
@@ -35,13 +42,16 @@ const AdminDropdown = () => {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/login", { replace: true });
   };
 
-  const handleNavigation = (path: string) => {
-    handleClose();
-    navigate(path);
-  };
+  const menuItems = [
+    { text: "داشبورد", path: "/admin" },
+    { text: "محصول جدید", path: "/admin/products/new" },
+    { text: "مدیریت کاربران", path: "/admin/users" },
+    { text: "سفارشات", path: "/admin/orders" },
+    { text: "پروفایل", path: "/profile" },
+  ];
 
   return (
     <ClickAwayListener onClickAway={handleClose}>
@@ -60,28 +70,20 @@ const AdminDropdown = () => {
           sx={{
             display: "flex",
             flexDirection: "row-reverse",
-            gap: "8px",
-            fontSize: "16px",
-            fontWeight: 400,
-            lineHeight: "24px",
+            gap: 1,
             alignItems: "center",
             color: "text.primary",
             backgroundColor: "transparent",
-            "&:hover": {
-              backgroundColor: "transparent",
-            },
+            "&:hover": { backgroundColor: "transparent" },
           }}
         >
           <IoChevronDownSharp
             style={{
-              transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+              transform: isOpen ? "rotate(180deg)" : undefined,
               transition: "transform 0.1s ease",
-              marginTop: "4px",
             }}
           />
-          <Typography variant="body1" component="span">
-            ادمین
-          </Typography>
+          <Typography>ادمین</Typography>
         </IconButton>
 
         <Menu
@@ -91,55 +93,35 @@ const AdminDropdown = () => {
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
           transformOrigin={{ vertical: "bottom", horizontal: "right" }}
           PaperProps={{
-            sx: {
-              width: 169,
-              borderRadius: "8px",
-              border: "1px solid #CED2D7",
-              boxShadow: 3,
-              py: 1,
-              px: 1,
-            },
+            sx: { width: 169, borderRadius: 1, boxShadow: 3, p: 1 },
           }}
         >
-          {[
-            { text: "داشبورد", path: "/dashboard" },
-            { text: "محصول جدید", path: "/products/new" },
-            { text: "مدیریت کاربران", path: "/users" },
-            { text: "سفارشات", path: "/orders" },
-            { text: "پروفایل", path: "/profile" },
-          ].map((item, index) => (
+          {menuItems.map(({ text, path }, idx) => (
             <MenuItem
-              key={index}
-              onClick={() => handleNavigation(item.path)}
+              key={idx}
+              onClick={() => {
+                handleClose();
+                navigate(path);
+              }}
               sx={{
-                borderRadius: "8px",
-                fontSize: "16px",
-                fontWeight: 400,
-                lineHeight: "21px",
-                px: 1,
-                py: 1,
+                borderRadius: 1,
                 textAlign: "right",
                 ":hover": {
-                  backgroundColor: "#DB277714",
+                  backgroundColor: "rgba(219,39,119,0.08)",
                   color: "#DB2777",
                 },
               }}
             >
-              {item.text}
+              {text}
             </MenuItem>
           ))}
           <MenuItem
             onClick={handleLogout}
             sx={{
-              borderRadius: "8px",
-              fontSize: "16px",
-              fontWeight: 400,
-              lineHeight: "21px",
-              px: 1,
-              py: 1,
+              borderRadius: 1,
               textAlign: "right",
               ":hover": {
-                backgroundColor: "#DB277714",
+                backgroundColor: "rgba(219,39,119,0.08)",
                 color: "#DB2777",
               },
             }}
