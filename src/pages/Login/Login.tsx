@@ -10,15 +10,13 @@ import {
 import { toast } from "react-toastify";
 import loginBackground from "../../../public/images/loginBackGround.png";
 import "../../assets/fonts/font.css";
-import type { LoginFormData } from "../../types/LoginFormData";
-import { useLogin, useAuthIsAdmin, useAuthLoading } from "../../state-management/stores/useAuthStore";
 import { useNavigate } from "react-router-dom";
+import { useLogin, useAuthLoading } from "../../state-management/stores/useAuthStore";
 
 const Login = () => {
-  const [form, setForm] = useState<LoginFormData>({ email: "", password: "" });
-  const login    = useLogin();
-  const isAdmin  = useAuthIsAdmin();
-  const loading  = useAuthLoading();
+  const [form, setForm] = useState({ email: "", password: "" });
+  const login = useLogin();
+  const loading = useAuthLoading();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,15 +33,16 @@ const Login = () => {
     }
 
     try {
-      await login(form.email, form.password);
-      // redirect based on role
-      if (isAdmin) {
-        navigate("/admin", { replace: true });
+      const user = await login(form.email, form.password);
+      
+      // Redirect based on admin status
+      if (user?.isAdmin) {
+        navigate("/admin/dashboard", { replace: true });
       } else {
         navigate("/", { replace: true });
       }
     } catch {
-      // error already handled/toasted in store
+      // Error handled in store
     }
   };
 

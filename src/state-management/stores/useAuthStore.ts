@@ -1,6 +1,5 @@
-// src/state-management/stores/useAuthStore.ts
-
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import server from "../../utils/axios";
 import { toast } from "react-toastify";
 
@@ -12,103 +11,111 @@ interface User {
 }
 
 type AuthStoreType = {
-  id: string | null;
-  isAdmin: boolean;
-  loading: boolean;
+  token: string | null;
   user: User | null;
-  setId: (id: string | null) => void;
-  setIsAdmin: (isAdmin: boolean) => void;
-  setUser: (user: User | null) => void;
+  loading: boolean;
+
+  setToken: (token: string) => void;
+  setUser: (user: User) => void;
   setLoading: (loading: boolean) => void;
 
-  fetchUser: () => Promise<void>;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
   logout: () => Promise<void>;
+  fetchUser: () => Promise<void>;
 };
 
-const useAuthStore = create<AuthStoreType>((set) => ({
-  // Initial state
-  id: localStorage.getItem("id"),
-  isAdmin: localStorage.getItem("isAdmin") === "true",
-  loading: true,
+const initialState = {
+  token: null,
   user: null,
+  loading: true,
+};
 
-  // Synchronous setters
-  setId: (id) => {
-    if (id) localStorage.setItem("id", id);
-    else localStorage.removeItem("id");
-    set({ id });
-  },
-  setIsAdmin: (isAdmin) => {
-    localStorage.setItem("isAdmin", JSON.stringify(isAdmin));
-    set({ isAdmin });
-  },
-  setUser: (user) => set({ user }),
-  setLoading: (loading) => set({ loading }),
+const useAuthStore = create<AuthStoreType>()(
+  persist(
+    (set) => ({  // Removed unused 'get' parameter here
+      ...initialState,
 
-  // Fetch current user on app load
-  fetchUser: async () => {
-    set({ loading: true });
-    try {
-      const { data } = await server.get("/users/auth");
-      set({
-        user: data,
-        id: data._id,
-        isAdmin: data.isAdmin,
-      });
-    } catch {
-      set({
-        user: null,
-        id: null,
-        isAdmin: false,
-      });
-    } finally {
-      set({ loading: false });
+      setToken: (token) => set({ token }),
+      setUser: (user) => set({ user }),
+      setLoading: (loading) => set({ loading }),
+
+      login: async (email, password) => {
+        set({ loading: true });
+        try {
+          const { data } = await server.post("/users/auth", { email, password });
+          
+          // Ensure admin flag exists and is boolean
+          const userData = {
+            ...data.user,
+            isAdmin: Boolean(data.user?.isAdmin)
+          };
+          
+          set({
+            token: data.token,
+            user: userData,
+          });
+          toast.success("Logged in successfully");
+          return userData;
+        } catch (error) {
+          toast.error("Login failed");
+          throw error;
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      logout: async () => {
+        set({ loading: true });
+        try {
+          await server.post("/users/logout");
+          set(initialState);
+          localStorage.removeItem("auth-storage");
+          toast.info("Logged out successfully");
+        } catch (error) {
+          toast.error("Failed to log out");
+          console.error(error);
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      fetchUser: async () => {
+        set({ loading: true });
+        try {
+          const { data } = await server.get("/users/profile");
+          // Ensure admin flag is properly set
+          set({ 
+            user: {
+              ...data,
+              isAdmin: Boolean(data?.isAdmin)
+            } 
+          });
+        } catch {
+          set(initialState);
+        } finally {
+          set({ loading: false });
+        }
+      },
+    }),
+    {
+      name: "auth-storage",
+      partialize: (state) => ({
+        token: state.token,
+        user: state.user,
+        loading: state.loading,
+      }),
     }
-  },
+  )
+);
 
-  // Log in with credentials
-  login: async (email, password) => {
-    set({ loading: true });
-    try {
-      const { data } = await server.post("/users/auth", { email, password });
-      set({
-        user: data,
-        id: data._id,
-        isAdmin: data.isAdmin,
-      });
-    } catch {
-      toast.error("Login failed");
-      throw new Error("Login failed");
-    } finally {
-      set({ loading: false });
-    }
-  },
-
-  // Log out
-  logout: async () => {
-    set({ loading: true });
-    try {
-      await server.get("/users/logout");
-      set({ user: null, id: null, isAdmin: false });
-      localStorage.removeItem("id");
-      localStorage.removeItem("isAdmin");
-      toast.info("Logged out.");
-    } finally {
-      set({ loading: false });
-    }
-  },
-}));
-
-// Slice‑hooks for components
-export const useAuthId      = () => useAuthStore((s) => s.id);
-export const useAuthIsAdmin = () => useAuthStore((s) => s.isAdmin);
-export const useAuthUser    = () => useAuthStore((s) => s.user);
+// Selectors
+export const useAuthToken = () => useAuthStore((s) => s.token);
+export const useAuthUser = () => useAuthStore((s) => s.user);
 export const useAuthLoading = () => useAuthStore((s) => s.loading);
-
-// Async actions from store
+export const useAuthIsAdmin = () => 
+  useAuthStore((s) => s.user?.isAdmin || false);
+export const useLogin = () => useAuthStore((s) => s.login);
+export const useLogout = () => useAuthStore((s) => s.logout);
 export const useFetchUser = () => useAuthStore((s) => s.fetchUser);
-export const useLogin     = () => useAuthStore((s) => s.login);
-export const useLogout    = () => useAuthStore((s) => s.logout);
 
 export default useAuthStore;

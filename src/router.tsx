@@ -49,7 +49,8 @@ const router = createBrowserRouter([
         path: "admin",
         Component: AdminRoutes,
         children: [
-          { index: true, Component: Dashboard },
+          { index: true, Component: Dashboard }, // Default admin route
+          { path: "dashboard", Component: Dashboard },
           { path: "orders", Component: Orders },
           { path: "orders/:orderId", Component: OrderDetails },
           { path: "products", Component: AllProducts },

@@ -1,32 +1,19 @@
-// src/components/AdminDropdown.tsx
-
 import React, { useState, useRef } from "react";
-import {
-  Box,
-  ClickAwayListener,
-  IconButton,
-  Menu,
-  MenuItem,
-  Typography,
-} from "@mui/material";
+import { Box, ClickAwayListener, IconButton, Menu, MenuItem, Typography } from "@mui/material";
 import { IoChevronDownSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
-import {
-  useAuthId,
-  useAuthIsAdmin,
-} from "../state-management/stores/useAuthStore";
-import useAuthStore from "../state-management/stores/useAuthStore";
+import { useAuthUser, useAuthIsAdmin, useLogout } from "../state-management/stores/useAuthStore";
 
 const AdminDropdown = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();
 
-  const id = useAuthId();
+  const user = useAuthUser();
   const isAdmin = useAuthIsAdmin();
-  const logout = useAuthStore((s) => s.logout);
+  const logout = useLogout();
 
-  if (!id || !isAdmin) {
+  if (!user || !isAdmin) {
     return null;
   }
 
@@ -40,8 +27,8 @@ const AdminDropdown = () => {
     setAnchorEl(null);
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate("/login", { replace: true });
   };
 
@@ -55,13 +42,7 @@ const AdminDropdown = () => {
 
   return (
     <ClickAwayListener onClickAway={handleClose}>
-      <Box
-        sx={{
-          position: "relative",
-          display: "inline-block",
-          textAlign: "right",
-        }}
-      >
+      <Box sx={{ position: "relative", display: "inline-block", textAlign: "right" }}>
         <IconButton
           onClick={handleToggle}
           ref={buttonRef}
@@ -106,10 +87,7 @@ const AdminDropdown = () => {
               sx={{
                 borderRadius: 1,
                 textAlign: "right",
-                ":hover": {
-                  backgroundColor: "rgba(219,39,119,0.08)",
-                  color: "#DB2777",
-                },
+                ":hover": { backgroundColor: "rgba(219,39,119,0.08)", color: "#DB2777" },
               }}
             >
               {text}
@@ -120,10 +98,7 @@ const AdminDropdown = () => {
             sx={{
               borderRadius: 1,
               textAlign: "right",
-              ":hover": {
-                backgroundColor: "rgba(219,39,119,0.08)",
-                color: "#DB2777",
-              },
+              ":hover": { backgroundColor: "rgba(219,39,119,0.08)", color: "#DB2777" },
             }}
           >
             خروج از حساب
