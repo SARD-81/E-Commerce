@@ -1,22 +1,24 @@
-import { StrictMode } from "react";
+import React from "react";
 import { createRoot } from "react-dom/client";
-import "./index.css";
-import "./assets/fonts/font.css";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
-const queryClient = new QueryClient();
-
 import App from "./App";
 
-const container = document.getElementById("root");
-if (!container) throw new Error("Root element not found");
+// Create a single QueryClient instance
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
-createRoot(container).render(
-  <StrictMode>
+const root = createRoot(document.getElementById("root")!);
+root.render(
+  <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <App />
-      <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
     </QueryClientProvider>
-  </StrictMode>
+  </React.StrictMode>
 );

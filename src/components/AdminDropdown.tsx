@@ -1,29 +1,25 @@
 import {
-  Box,
-  ClickAwayListener,
-  IconButton,
   Menu,
   MenuItem,
+  IconButton,
   Typography,
+  ClickAwayListener,
+  Box,
 } from "@mui/material";
-import { useRef, useState } from "react";
 import { IoChevronDownSharp } from "react-icons/io5";
-import { useNavigate } from "react-router-dom";
+import { useState, useRef } from "react";
 import useAuthStore from "../state-management/stores/useAuthStore";
+import { useNavigate } from "react-router-dom";
 
 const AdminDropdown = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isOpen = Boolean(anchorEl);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const navigate = useNavigate();
-  const { id, isAdmin, logout } = useAuthStore((state) => ({
-    id: state.id,
-    isAdmin: state.isAdmin,
+  const { logout } = useAuthStore((state) => ({
     logout: state.logout,
-  }));
+  }));  const navigate = useNavigate();
 
-  // only render when user is admin
-  if (!id || !isAdmin) return null;
+  // if (!user || !user.isAdmin) return null;
 
   const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
@@ -35,7 +31,8 @@ const AdminDropdown = () => {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    handleClose();
+    navigate("/");
   };
 
   const handleNavigation = (path: string) => {
@@ -102,10 +99,10 @@ const AdminDropdown = () => {
           }}
         >
           {[
-            { text: "داشبورد", path: "/admin/dashboard" },
-            { text: "محصول جدید", path: "/admin/products/new" },
-            { text: "مدیریت کاربران", path: "/admin/users" },
-            { text: "سفارشات", path: "/admin/orders" },
+            { text: "داشبورد", path: "/dashboard" },
+            { text: "محصول جدید", path: "/products/new" },
+            { text: "مدیریت کاربران", path: "/users" },
+            { text: "سفارشات", path: "/orders" },
             { text: "پروفایل", path: "/profile" },
           ].map((item, index) => (
             <MenuItem

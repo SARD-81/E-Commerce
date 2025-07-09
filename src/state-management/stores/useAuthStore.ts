@@ -1,42 +1,65 @@
-import { toast } from "react-toastify";
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import server from "../../utils/axios";
+
+interface User {
+  _id: string;
+  username: string;
+  email: string;
+  isAdmin: boolean;
+}
 
 type AuthStoreType = {
-  id: string | null;
-  isAdmin: boolean;
+  user: User | null;
+  loading: boolean;
   flashMessage: string | null;
-  setId: (id: string) => void;
-  setIsAdmin: (isAdmin: boolean) => void;
+
+  fetchUser: () => Promise<void>;
+  login: (email: string, password: string | number) => Promise<void>;
+  logout: () => Promise<void>;
+
   setFlashMessage: (message: string) => void;
   clearFlashMessage: () => void;
-  logout: () => void;
 };
 
-const useAuthStore = create<AuthStoreType>((set) => ({
-  id: localStorage.getItem("id"),
-  isAdmin: localStorage.getItem("isAdmin") === "true" ? true : false,
-  flashMessage: null,
-  hasShownFlash: false,
-  setId: (id: string) => {
-    set({ id });
-    localStorage.setItem("id", id);
-  },
-  setIsAdmin: (isAdmin: boolean) => {
-    set({ isAdmin });
-    localStorage.setItem("isAdmin", JSON.stringify(isAdmin));
-  },
-  setFlashMessage: (message: string) => set({ flashMessage: message }),
-  clearFlashMessage: () => set({ flashMessage: null }),
-  logout: () => {
-    set({
-      id: null,
-      isAdmin: false,
-      flashMessage: null,
-    });
-    localStorage.removeItem("isAdmin");
-    localStorage.removeItem("id");
-    toast.error("خارج شدید.");
-  },
-}));
+const useAuthStore = create<AuthStoreType>();
+persist<AuthStoreType>(
+  (set) => ({
+    user: null,
+    loading: true,
+    flashMessage: null,
+
+    fetchUser: async () => {
+      set({ loading: true });
+      try {
+        const { data } = await server.get("/users/profile");
+        set({ user: data });
+      } catch {
+        set({ user: null });
+      } finally {
+        set({ loading: false });
+      }
+    },
+
+    login: async (email, password) => {
+      set({ loading: true });
+      const { data } = await server.post("/users/auth", { email, password });
+      set({ user: data, loading: false });
+    },
+
+    logout: async () => {
+      await server.post("/users/logout");
+      set({ user: null });
+    },
+
+    setFlashMessage: (message) => set({ flashMessage: message }),
+    clearFlashMessage: () => set({ flashMessage: null }),
+  }),
+  {
+    name: "auth-storage",
+    storage: createJSONStorage(() => localStorage),
+    partialize: (state) => ({ user: state.user }),
+  }
+);
 
 export default useAuthStore;

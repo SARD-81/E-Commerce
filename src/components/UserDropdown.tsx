@@ -8,16 +8,17 @@ import {
 } from "@mui/material";
 import { IoChevronDownSharp } from "react-icons/io5";
 import { useState, useRef } from "react";
-import { useAuth } from "../context/AuthContext";
+import useAuthStore from "../state-management/stores/useAuthStore";
 import { useNavigate } from "react-router-dom";
 
 const UserDropdown = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isOpen = Boolean(anchorEl);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const { logout } = useAuth();
+  const { logout } = useAuthStore((state) => ({
+    logout: state.logout,
+  }));
   const navigate = useNavigate();
-
 
   const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
