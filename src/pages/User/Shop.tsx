@@ -1,10 +1,11 @@
 import { useState } from "react";
 import ProductCard from "../../components/ProductCard";
 import ShopPageFilter from "../../components/ShopPageFilter";
-import { CategoryMockData } from "../../mockData/CategoryMockData";
 import type { FilterProductType } from "../../types/filter";
 import { Box } from "@mui/material";
 import useAllProducts from "../../hooks/useAllProducts";
+import useGetAllCategories from "../../hooks/useCategories";
+import useFilterProducts from "../../hooks/useFilters";
 
 const Shop = () => {
   const [filters, setFilters] = useState<FilterProductType>({
@@ -14,16 +15,24 @@ const Shop = () => {
 
   const { data, isError, isLoading, error } = useAllProducts();
 
+  const { data: allCategories, isLoading: allCategoriesIsLoading } =
+    useGetAllCategories();
+
+  const { mutate: filterMutation, data: filteredProducts } =
+    useFilterProducts();
+
   const handleCategoryFilter = (categoryId: string) => {
     const temp = { ...filters };
     temp.categories = [categoryId];
     setFilters(temp);
+    filterMutation(temp);
   };
 
   const handlePriceFilter = (price: string) => {
     const priceTemp = { ...filters };
-    priceTemp.price = [Number(price)];
+    priceTemp.price = [1, Number(price)];
     setFilters(priceTemp);
+    filterMutation(priceTemp);
   };
 
   const handleDeleteFilter = () => {
@@ -33,13 +42,17 @@ const Shop = () => {
     });
   };
 
-  if (isLoading) {
+  if (isLoading || allCategoriesIsLoading) {
     return <div>Loading...</div>;
   }
 
   if (isError) {
     return <div>Error: {error.message}</div>;
   }
+
+  const dataToDisplay = filteredProducts || data;
+
+  console.log("dataToDisplay", dataToDisplay);
 
   return (
     <Box
@@ -55,7 +68,7 @@ const Shop = () => {
       <ShopPageFilter
         onPriceFilter={handlePriceFilter}
         onDeleteFilter={handleDeleteFilter}
-        categories={CategoryMockData}
+        categories={allCategories}
         onCategoryFilter={handleCategoryFilter}
       />
       <Box
@@ -66,15 +79,18 @@ const Shop = () => {
           flexWrap: "wrap",
         }}
       >
-        {data?.map((product) => (
-          <ProductCard
-            title={product.name}
-            price={product.price}
-            imageSrc={product.image}
-            productId={product._id}
-            description={product.description}
-          />
-        ))}
+        {dataToDisplay &&
+          dataToDisplay.map((product) => (
+            <ProductCard
+              key={product._id}
+              product={product}
+              title={product.name}
+              price={product.price}
+              imageSrc={product.image}
+              productId={product._id}
+              description={product.description}
+            />
+          ))}
       </Box>
     </Box>
   );
