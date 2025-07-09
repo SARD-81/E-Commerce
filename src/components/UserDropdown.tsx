@@ -1,42 +1,48 @@
-import React, { useState, useRef } from "react";
-import { Box, ClickAwayListener, IconButton, Menu, MenuItem, Typography } from "@mui/material";
+import {
+  Menu,
+  MenuItem,
+  IconButton,
+  ClickAwayListener,
+  Box,
+  Typography,
+} from "@mui/material";
 import { IoChevronDownSharp } from "react-icons/io5";
+import { useState, useRef } from "react";
+import useAuthStore from "../state-management/stores/useAuthStore";
 import { useNavigate } from "react-router-dom";
-import { useAuthUser, useAuthLoading, useLogout } from "../state-management/stores/useAuthStore";
 
 const UserDropdown = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const isOpen = Boolean(anchorEl);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const { logout } = useAuthStore((state) => ({
+    logout: state.logout,
+  }));
   const navigate = useNavigate();
 
-  const user = useAuthUser();
-  const loading = useAuthLoading();
-  const logout = useLogout();
-
-  if (!user || loading) {
-    return null;
-  }
-
-  const isOpen = Boolean(anchorEl);
-
-  const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl((prev) => (prev ? null : e.currentTarget));
+  const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(anchorEl ? null : event.currentTarget);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
   };
 
-  const handleLogout = async () => {
-    await logout();
-    navigate("/login", { replace: true });
+  const handleLogout = () => {
+    logout();
+    handleClose();
+    navigate("/");
   };
-
-  const menuItems = [{ text: "پروفایل", path: "/profile" }];
 
   return (
     <ClickAwayListener onClickAway={handleClose}>
-      <Box sx={{ position: "relative", display: "inline-block", textAlign: "right" }}>
+      <Box
+        sx={{
+          position: "relative",
+          display: "inline-block",
+          textAlign: "right",
+        }}
+      >
         <IconButton
           onClick={handleToggle}
           ref={buttonRef}
@@ -45,20 +51,28 @@ const UserDropdown = () => {
           sx={{
             display: "flex",
             flexDirection: "row-reverse",
-            gap: 1,
+            gap: "8px",
+            fontSize: "16px",
+            fontWeight: 400,
+            lineHeight: "24px",
             alignItems: "center",
             color: "text.primary",
             backgroundColor: "transparent",
-            "&:hover": { backgroundColor: "transparent" },
+            "&:hover": {
+              backgroundColor: "transparent",
+            },
           }}
         >
           <IoChevronDownSharp
             style={{
-              transform: isOpen ? "rotate(180deg)" : undefined,
+              transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
               transition: "transform 0.1s ease",
+              marginTop: "4px",
             }}
           />
-          <Typography>کاربر</Typography>
+          <Typography variant="body1" component="span">
+            کاربر
+          </Typography>
         </IconButton>
 
         <Menu
@@ -68,31 +82,48 @@ const UserDropdown = () => {
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
           transformOrigin={{ vertical: "bottom", horizontal: "right" }}
           PaperProps={{
-            sx: { width: 169, borderRadius: 1, boxShadow: 3, p: 1 },
+            sx: {
+              width: 169,
+              borderRadius: "8px",
+              border: "1px solid #CED2D7",
+              boxShadow: 3,
+              py: 1,
+              px: 1,
+            },
           }}
         >
-          {menuItems.map(({ text, path }, idx) => (
-            <MenuItem
-              key={idx}
-              onClick={() => {
-                handleClose();
-                navigate(path);
-              }}
-              sx={{
-                borderRadius: 1,
-                textAlign: "right",
-                ":hover": { backgroundColor: "rgba(219,39,119,0.08)", color: "#DB2777" },
-              }}
-            >
-              {text}
-            </MenuItem>
-          ))}
+          <MenuItem
+            onClick={() => navigate("/profile")}
+            sx={{
+              borderRadius: "8px",
+              fontSize: "16px",
+              fontWeight: 400,
+              lineHeight: "21px",
+              textAlign: "right",
+              px: 1,
+              py: 1,
+              ":hover": {
+                backgroundColor: "#DB277714",
+                color: "#DB2777",
+              },
+            }}
+          >
+            پروفایل
+          </MenuItem>
           <MenuItem
             onClick={handleLogout}
             sx={{
-              borderRadius: 1,
+              borderRadius: "8px",
+              fontSize: "16px",
+              fontWeight: 400,
+              lineHeight: "21px",
               textAlign: "right",
-              ":hover": { backgroundColor: "rgba(219,39,119,0.08)", color: "#DB2777" },
+              px: 1,
+              py: 1,
+              ":hover": {
+                backgroundColor: "#DB277714",
+                color: "#DB2777",
+              },
             }}
           >
             خروج از حساب
