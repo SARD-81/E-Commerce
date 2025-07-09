@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import emptyHeart from "../assets/non-favorite.png";
 import favorite from '../assets/favoriteIcon.png';
 import { Box } from "@mui/material";
