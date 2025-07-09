@@ -1,54 +1,48 @@
-import {
-  Menu,
-  MenuItem,
-  IconButton,
-  Typography,
-  ClickAwayListener,
-  Box,
-} from "@mui/material";
+import React, { useState, useRef } from "react";
+import { Box, ClickAwayListener, IconButton, Menu, MenuItem, Typography } from "@mui/material";
 import { IoChevronDownSharp } from "react-icons/io5";
-import { useState, useRef } from "react";
-import useAuthStore from "../state-management/stores/useAuthStore";
 import { useNavigate } from "react-router-dom";
+import { useAuthUser, useAuthIsAdmin, useLogout } from "../state-management/stores/useAuthStore";
 
 const AdminDropdown = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const isOpen = Boolean(anchorEl);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const { logout } = useAuthStore((state) => ({
-    logout: state.logout,
-  }));  const navigate = useNavigate();
+  const navigate = useNavigate();
 
-  // if (!user || !user.isAdmin) return null;
+  const user = useAuthUser();
+  const isAdmin = useAuthIsAdmin();
+  const logout = useLogout();
 
-  const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(anchorEl ? null : event.currentTarget);
+  if (!user || !isAdmin) {
+    return null;
+  }
+
+  const isOpen = Boolean(anchorEl);
+
+  const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl((prev) => (prev ? null : e.currentTarget));
   };
 
   const handleClose = () => {
     setAnchorEl(null);
   };
 
-  const handleLogout = () => {
-    logout();
-    handleClose();
-    navigate("/");
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login", { replace: true });
   };
 
-  const handleNavigation = (path: string) => {
-    handleClose();
-    navigate(path);
-  };
+  const menuItems = [
+    { text: "داشبورد", path: "/admin" },
+    { text: "محصول جدید", path: "/admin/products/new" },
+    { text: "مدیریت کاربران", path: "/admin/users" },
+    { text: "سفارشات", path: "/admin/orders" },
+    { text: "پروفایل", path: "/profile" },
+  ];
 
   return (
     <ClickAwayListener onClickAway={handleClose}>
-      <Box
-        sx={{
-          position: "relative",
-          display: "inline-block",
-          textAlign: "right",
-        }}
-      >
+      <Box sx={{ position: "relative", display: "inline-block", textAlign: "right" }}>
         <IconButton
           onClick={handleToggle}
           ref={buttonRef}
@@ -57,28 +51,20 @@ const AdminDropdown = () => {
           sx={{
             display: "flex",
             flexDirection: "row-reverse",
-            gap: "8px",
-            fontSize: "16px",
-            fontWeight: 400,
-            lineHeight: "24px",
+            gap: 1,
             alignItems: "center",
             color: "text.primary",
             backgroundColor: "transparent",
-            "&:hover": {
-              backgroundColor: "transparent",
-            },
+            "&:hover": { backgroundColor: "transparent" },
           }}
         >
           <IoChevronDownSharp
             style={{
-              transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+              transform: isOpen ? "rotate(180deg)" : undefined,
               transition: "transform 0.1s ease",
-              marginTop: "4px",
             }}
           />
-          <Typography variant="body1" component="span">
-            ادمین
-          </Typography>
+          <Typography>ادمین</Typography>
         </IconButton>
 
         <Menu
@@ -88,57 +74,31 @@ const AdminDropdown = () => {
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
           transformOrigin={{ vertical: "bottom", horizontal: "right" }}
           PaperProps={{
-            sx: {
-              width: 169,
-              borderRadius: "8px",
-              border: "1px solid #CED2D7",
-              boxShadow: 3,
-              py: 1,
-              px: 1,
-            },
+            sx: { width: 169, borderRadius: 1, boxShadow: 3, p: 1 },
           }}
         >
-          {[
-            { text: "داشبورد", path: "/dashboard" },
-            { text: "محصول جدید", path: "/products/new" },
-            { text: "مدیریت کاربران", path: "/users" },
-            { text: "سفارشات", path: "/orders" },
-            { text: "پروفایل", path: "/profile" },
-          ].map((item, index) => (
+          {menuItems.map(({ text, path }, idx) => (
             <MenuItem
-              key={index}
-              onClick={() => handleNavigation(item.path)}
+              key={idx}
+              onClick={() => {
+                handleClose();
+                navigate(path);
+              }}
               sx={{
-                borderRadius: "8px",
-                fontSize: "16px",
-                fontWeight: 400,
-                lineHeight: "21px",
-                px: 1,
-                py: 1,
+                borderRadius: 1,
                 textAlign: "right",
-                ":hover": {
-                  backgroundColor: "#DB277714",
-                  color: "#DB2777",
-                },
+                ":hover": { backgroundColor: "rgba(219,39,119,0.08)", color: "#DB2777" },
               }}
             >
-              {item.text}
+              {text}
             </MenuItem>
           ))}
           <MenuItem
             onClick={handleLogout}
             sx={{
-              borderRadius: "8px",
-              fontSize: "16px",
-              fontWeight: 400,
-              lineHeight: "21px",
-              px: 1,
-              py: 1,
+              borderRadius: 1,
               textAlign: "right",
-              ":hover": {
-                backgroundColor: "#DB277714",
-                color: "#DB2777",
-              },
+              ":hover": { backgroundColor: "rgba(219,39,119,0.08)", color: "#DB2777" },
             }}
           >
             خروج از حساب

@@ -1,6 +1,7 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 import server from "../../utils/axios";
+import { toast } from "react-toastify";
 
 interface User {
   _id: string;
@@ -10,56 +11,111 @@ interface User {
 }
 
 type AuthStoreType = {
+  token: string | null;
   user: User | null;
   loading: boolean;
-  flashMessage: string | null;
 
-  fetchUser: () => Promise<void>;
-  login: (email: string, password: string | number) => Promise<void>;
+  setToken: (token: string) => void;
+  setUser: (user: User) => void;
+  setLoading: (loading: boolean) => void;
+
+  login: (email: string, password: string) => Promise<User>;
   logout: () => Promise<void>;
-
-  setFlashMessage: (message: string) => void;
-  clearFlashMessage: () => void;
+  fetchUser: () => Promise<void>;
 };
 
-const useAuthStore = create<AuthStoreType>();
-persist<AuthStoreType>(
-  (set) => ({
-    user: null,
-    loading: true,
-    flashMessage: null,
+const initialState = {
+  token: null,
+  user: null,
+  loading: true,
+};
 
-    fetchUser: async () => {
-      set({ loading: true });
-      try {
-        const { data } = await server.get("/users/profile");
-        set({ user: data });
-      } catch {
-        set({ user: null });
-      } finally {
-        set({ loading: false });
-      }
-    },
+const useAuthStore = create<AuthStoreType>()(
+  persist(
+    (set) => ({  // Removed unused 'get' parameter here
+      ...initialState,
 
-    login: async (email, password) => {
-      set({ loading: true });
-      const { data } = await server.post("/users/auth", { email, password });
-      set({ user: data, loading: false });
-    },
+      setToken: (token) => set({ token }),
+      setUser: (user) => set({ user }),
+      setLoading: (loading) => set({ loading }),
 
-    logout: async () => {
-      await server.post("/users/logout");
-      set({ user: null });
-    },
+      login: async (email, password) => {
+        set({ loading: true });
+        try {
+          const { data } = await server.post("/users/auth", { email, password });
+          
+          // Ensure admin flag exists and is boolean
+          const userData = {
+            ...data.user,
+            isAdmin: Boolean(data.user?.isAdmin)
+          };
+          
+          set({
+            token: data.token,
+            user: userData,
+          });
+          toast.success("Logged in successfully");
+          return userData;
+        } catch (error) {
+          toast.error("Login failed");
+          throw error;
+        } finally {
+          set({ loading: false });
+        }
+      },
 
-    setFlashMessage: (message) => set({ flashMessage: message }),
-    clearFlashMessage: () => set({ flashMessage: null }),
-  }),
-  {
-    name: "auth-storage",
-    storage: createJSONStorage(() => localStorage),
-    partialize: (state) => ({ user: state.user }),
-  }
+      logout: async () => {
+        set({ loading: true });
+        try {
+          await server.post("/users/logout");
+          set(initialState);
+          localStorage.removeItem("auth-storage");
+          toast.info("Logged out successfully");
+        } catch (error) {
+          toast.error("Failed to log out");
+          console.error(error);
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      fetchUser: async () => {
+        set({ loading: true });
+        try {
+          const { data } = await server.get("/users/profile");
+          // Ensure admin flag is properly set
+          set({ 
+            user: {
+              ...data,
+              isAdmin: Boolean(data?.isAdmin)
+            } 
+          });
+        } catch {
+          set(initialState);
+        } finally {
+          set({ loading: false });
+        }
+      },
+    }),
+    {
+      name: "auth-storage",
+      partialize: (state) => ({
+        token: state.token,
+        user: state.user,
+        loading: state.loading,
+      }),
+    }
+  )
 );
+
+// Selectors
+export const useAuthToken = () => useAuthStore((s) => s.token);
+export const useAuthUser = () => useAuthStore((s) => s.user);
+export const useAuthLoading = () => useAuthStore((s) => s.loading);
+export const useAuthIsAdmin = () => 
+  useAuthStore((s) => s.user?.isAdmin || false);
+export const useLogin = () => useAuthStore((s) => s.login);
+export const useLogout = () => useAuthStore((s) => s.logout);
+export const useFetchUser = () => useAuthStore((s) => s.fetchUser);
 
 export default useAuthStore;
