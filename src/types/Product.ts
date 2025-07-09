@@ -11,6 +11,14 @@ interface Review {
   updatedAt: string;
 }
 
+interface Product {
+  id: string;
+  name: string;
+  image: string;
+  price: number;
+}
+
+
 interface ProductResponseType {
   _id: string;
   name: string;
@@ -39,4 +47,4 @@ type CreateProductPayload = {
   image: string;
 };
 
-export type { ProductType, ProductResponseType, CreateProductPayload, Review };
+export type { ProductType, ProductResponseType, CreateProductPayload, Review , Product};
