@@ -8,15 +8,16 @@ import {
 } from "@mui/material";
 import { IoChevronDownSharp } from "react-icons/io5";
 import { useState, useRef } from "react";
-import { useAuth } from "../context/AuthContext";
+import useAuthStore from "../state-management/stores/useAuthStore";
 import { useNavigate } from "react-router-dom";
 
 const AdminDropdown = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isOpen = Boolean(anchorEl);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const { logout } = useAuth();
-  const navigate = useNavigate();
+  const { logout } = useAuthStore((state) => ({
+    logout: state.logout,
+  }));  const navigate = useNavigate();
 
   // if (!user || !user.isAdmin) return null;
 
