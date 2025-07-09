@@ -1,62 +1,51 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter } from "react-router";
 import Layout from "./pages/Layout";
-import NotFoundPage from "./pages/Error404";
-
-// User pages
+import AuthPage from "./pages/AuthPage";
+import CreateProductPage from "./pages/Admin/ProductCreate";
+import DashboardPage from "./pages/Admin/Dashboard";
+import ProfilePage from "./pages/User/Profile";
+import ShopPage from "./pages/User/Shop";
+import UsersPage from "./pages/Admin/usersList";
+import ProtectedRoutes from "./ProtectedRoutes";
 import Home from "./pages/User/Home";
-import Shop from "./pages/User/Shop";
-import Profile from "./pages/User/Profile";
-import ProductPage from "./pages/User/ProductPage";
-
-// Auth
-import Login from "./pages/Login/Login";
-import Register from "./pages/Register/Register";
-
-// Admin pages
-import Dashboard from "./pages/Admin/Dashboard";
-import Orders from "./pages/Admin/Orders";
-import OrderDetails from "./pages/Admin/Orders_Details";
-import AllProducts from "./pages/Admin/ProductAllProduct";
-import ProductCreate from "./pages/Admin/ProductCreate";
-import UsersList from "./pages/Admin/UsersList";
-import ProductUploadImage from "./pages/Admin/ProductUploadImage";
-
-import ProtectedRoutes, { AdminRoutes } from "./ProtectedRoutes";
 
 const router = createBrowserRouter([
   {
     path: "/",
     Component: Layout,
-    errorElement: <NotFoundPage />,
     children: [
-      // Public
-      { index: true, Component: Home },
-      { path: "shop", Component: Shop },
-      { path: "products/:productId", Component: ProductPage },
-      { path: "login", Component: Login },
-      { path: "register", Component: Register },
-
-      // Authenticated users (any role)
+      {
+        index: true,
+        Component: Home,
+      },
+      {
+        path: "auth",
+        Component: AuthPage,
+      },
+      {
+        path: "shop",
+        Component: ShopPage,
+      },
       {
         Component: ProtectedRoutes,
         children: [
-          { path: "profile", Component: Profile },
-        ],
-      },
+          {
+            path: "profile",
+            Component: ProfilePage,
+          },
 
-      // Admin-only
-      {
-        path: "admin",
-        Component: AdminRoutes,
-        children: [
-          { index: true, Component: Dashboard }, // Default admin route
-          { path: "dashboard", Component: Dashboard },
-          { path: "orders", Component: Orders },
-          { path: "orders/:orderId", Component: OrderDetails },
-          { path: "products", Component: AllProducts },
-          { path: "products/new", Component: ProductCreate },
-          { path: "products/upload", Component: ProductUploadImage },
-          { path: "users", Component: UsersList },
+          {
+            path: "users",
+            Component: UsersPage,
+          },
+          {
+            path: "dashboard",
+            Component: DashboardPage,
+          },
+          {
+            path: "create-product",
+            Component: CreateProductPage,
+          },
         ],
       },
     ],

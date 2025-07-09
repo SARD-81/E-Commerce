@@ -1,21 +1,24 @@
-import type { AuthResponseModel, LoginPayloadModel } from "../types/auth.model";
-import  axiosInstance  from "../utils/axios";
+import type {
+  AuthResponseModel,
+  RegisterPayloadModel,
+} from "../types/auth.model";
+import axiosInstance from "../utils/axios";
 import useAuthStore from "../state-management/stores/useAuthStore";
 import { useMutation } from "@tanstack/react-query";
 import type { AxiosResponse } from "axios";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 
-const useLogin = () => {
+const useRegister = () => {
   const navigate = useNavigate();
   const { setIsAdmin, setId } = useAuthStore();
 
   return useMutation({
-    mutationFn: async (payload: LoginPayloadModel) => {
+    mutationFn: async (payload: RegisterPayloadModel) => {
       const res = await axiosInstance.post<
-        LoginPayloadModel,
+        RegisterPayloadModel,
         AxiosResponse<AuthResponseModel>
-      >("/users/auth", payload);
+      >("/users", payload);
 
       setIsAdmin(res.data.isAdmin);
       setId(res.data._id);
@@ -24,12 +27,12 @@ const useLogin = () => {
     },
     onSuccess: () => {
       navigate("/");
-      toast.success("ورود موفق");
+      toast.success("ثبت نام موفق");
     },
-    onError() {
-      toast.error("خطا در ورود");
+    onError: () => {
+      toast.error("خطا در ثبت نام");
     },
   });
 };
 
-export default useLogin;
+export default useRegister;

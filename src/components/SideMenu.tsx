@@ -1,26 +1,34 @@
-import { styled, useTheme } from "@mui/material/styles";
-import { CssBaseline } from "@mui/material";
-import type { Theme, CSSObject } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import MuiDrawer from "@mui/material/Drawer";
-import Divider from "@mui/material/Divider";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
-import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
-import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
-import LoginIcon from "@mui/icons-material/Login";
-import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import { useState } from "react";
-import SideMenuHeader from "./SlideMenuReuseables/SideMenuHeader";
-import SlideMenuList from "./SlideMenuReuseables/SlideMenuList";
-import AdminDropdown from "./AdminDropdown";
-import UserDropdown from "./UserDropdown";
-import Preloader from "./Preloader";
 import {
-  useAuthUser,
-  useAuthIsAdmin,
-  useAuthLoading,
-} from "../state-management/stores/useAuthStore";
+  Box,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  IconButton,
+  Drawer,
+  styled,
+  type Theme,
+  type CSSObject,
+  useTheme,
+  CssBaseline,
+} from "@mui/material";
+import {
+  HomeOutlined,
+  ShoppingBagOutlined,
+  ShoppingCartOutlined,
+  FavoriteOutlined,
+  Login,
+  PersonAddOutlined,
+  Menu as MenuIcon,
+  ChevronRight,
+} from "@mui/icons-material";
+import { Link as RouterLink, useLocation } from "react-router-dom";
+import useAuthStore from "../state-management/stores/useAuthStore";
+import SideDropdown from "../components/SideDropdown";
+
 const drawerWidth = 300;
 
 const openedMixin = (theme: Theme): CSSObject => ({
@@ -44,27 +52,28 @@ const closedMixin = (theme: Theme): CSSObject => ({
   },
 });
 
-interface ISideMenuProps {
-  open?: boolean;
-  theme?: Theme;
-}
-
-const StyledDrawer = styled(MuiDrawer, {
+const StyledDrawer = styled(Drawer, {
   shouldForwardProp: (prop) => prop !== "open",
-})<ISideMenuProps>(({ theme, open }) => ({
+})<{ open?: boolean }>(({ theme, open }) => ({
   width: drawerWidth,
   flexShrink: 0,
   whiteSpace: "nowrap",
   boxSizing: "border-box",
   ...(open && {
-    ...openedMixin(theme!),
-    "& .MuiDrawer-paper": openedMixin(theme!),
+    ...openedMixin(theme),
+    "& .MuiDrawer-paper": openedMixin(theme),
   }),
   ...(!open && {
-    ...closedMixin(theme!),
-    "& .MuiDrawer-paper": closedMixin(theme!),
+    ...closedMixin(theme),
+    "& .MuiDrawer-paper": closedMixin(theme),
   }),
 }));
+
+interface MenuItem {
+  text: string;
+  icon: React.ReactNode;
+  path: string;
+}
 
 interface SideMenuProps {
   children: React.ReactNode;
@@ -72,40 +81,33 @@ interface SideMenuProps {
 
 const SideMenu = ({ children }: SideMenuProps) => {
   const theme = useTheme();
+  const location = useLocation();
   const [open, setOpen] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const loading = useAuthLoading();
-  const user = useAuthUser();
-  const id = user?._id || null;
-  const isAdmin = useAuthIsAdmin();
+  const id = useAuthStore((state) => state.id);
 
-  if (loading) {
-    return <Preloader />;
-  }
-
-  const handleDrawerOpen = () => setOpen(!open);
-  const handleSelectItem = (idx: number) => setSelectedIndex(idx);
-
-  const mainMenuItems = [
-    { text: "داشبورد", icon: <HomeOutlinedIcon />, to: "/" },
-    { text: "فروشگاه", icon: <ShoppingBagOutlinedIcon />, to: "/shop" },
-    { text: "سبد خرید", icon: <ShoppingCartOutlinedIcon />, to: "/cart" },
-    { text: "علاقه‌مندی‌ها", icon: <FavoriteOutlinedIcon />, to: "/wishlist" },
+  const mainMenuItems: MenuItem[] = [
+    { text: "داشبورد", icon: <HomeOutlined />, path: "/" },
+    { text: "فروشگاه", icon: <ShoppingBagOutlined />, path: "/shop" },
+    { text: "سبد خرید", icon: <ShoppingCartOutlined />, path: "/cart" },
+    { text: "علاقه‌مندی‌ها", icon: <FavoriteOutlined />, path: "/wishlist" },
   ];
 
-  const authMenuItems = [
-    { text: "ورود", icon: <LoginIcon />, to: "/login" },
-    { text: "ثبت‌نام", icon: <PersonAddOutlinedIcon />, to: "/register" },
+  const authMenuItems: MenuItem[] = [
+    { text: "ورود", icon: <Login />, path: "/auth?mode=login" },
+    {
+      text: "ثبت‌نام",
+      icon: <PersonAddOutlined />,
+      path: "/auth?mode=register",
+    },
   ];
 
-  if (loading) {
-    return <Preloader />;
-  }
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
       <CssBaseline />
+
       <StyledDrawer
         variant="permanent"
         open={open}
@@ -120,36 +122,120 @@ const SideMenu = ({ children }: SideMenuProps) => {
           justifyContent: "space-between",
         }}
       >
-        <SideMenuHeader open={open} onDrawerOpen={handleDrawerOpen} />
-
-        <Box sx={{ flexGrow: 1 }}>
-          <SlideMenuList
-            items={mainMenuItems}
-            open={open}
-            selectedIndex={selectedIndex}
-            onItemClick={handleSelectItem}
-          />
+        {/* Header */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            padding: theme.spacing(0, 1),
+            minHeight: "64px",
+          }}
+        >
+          <IconButton onClick={() => setOpen(!open)}>
+            {open ? <ChevronRight /> : <MenuIcon />}
+          </IconButton>
         </Box>
+        <Divider />
 
+        {/* Main Menu Items */}
+        <List sx={{ flexGrow: 1 }}>
+          {mainMenuItems.map((item) => (
+            <ListItem key={item.path} sx={{ display: "block" }}>
+              <ListItemButton
+                component={RouterLink}
+                to={item.path}
+                selected={isActive(item.path)}
+                sx={{
+                  minHeight: 48,
+                  borderRadius: "10px",
+                  mb: 1,
+                  justifyContent: open ? "initial" : "center",
+                  "&.Mui-selected": {
+                    backgroundColor: "rgba(219,39,119,0.1)",
+                    color: "#DB2777",
+                    "&:hover": {
+                      backgroundColor: "rgba(219,39,119,0.15)",
+                    },
+                  },
+                  "&:hover": {
+                    backgroundColor: "rgba(219,39,119,0.08)",
+                  },
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    justifyContent: "center",
+                    mr: open ? 3 : "auto",
+                    color: isActive(item.path) ? "#DB2777" : "inherit",
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText
+                  primary={item.text}
+                  sx={{
+                    opacity: open ? 1 : 0,
+                    textAlign: "right",
+                    color: isActive(item.path) ? "#DB2777" : "inherit",
+                    fontWeight: isActive(item.path) ? 700 : "normal",
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+
+        {/* Bottom Section */}
         <Box sx={{ marginTop: "auto" }}>
           <Divider />
           {id ? (
-            isAdmin ? (
-              <AdminDropdown />
-            ) : (
-              <UserDropdown />
-            )
+            <Box sx={{ p: 1, display: "flex", justifyContent: "center" }}>
+              <SideDropdown />
+            </Box>
           ) : (
-            <SlideMenuList
-              items={authMenuItems}
-              open={open}
-              selectedIndex={-1}
-              onItemClick={() => {}}
-            />
+            <List>
+              {authMenuItems.map((item) => (
+                <ListItem key={item.path} sx={{ display: "block" }}>
+                  <ListItemButton
+                    component={RouterLink}
+                    to={item.path}
+                    sx={{
+                      minHeight: 48,
+                      borderRadius: "10px",
+                      mb: 1,
+                      justifyContent: open ? "initial" : "center",
+                      "&:hover": {
+                        backgroundColor: "rgba(219,39,119,0.08)",
+                      },
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        justifyContent: "center",
+                        mr: open ? 3 : "auto",
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={item.text}
+                      sx={{
+                        opacity: open ? 1 : 0,
+                        textAlign: "right",
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
           )}
         </Box>
       </StyledDrawer>
 
+      {/* Main Content */}
       <Box
         component="main"
         sx={{
