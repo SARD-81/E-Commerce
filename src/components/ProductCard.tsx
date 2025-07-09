@@ -2,10 +2,10 @@ import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import shoppingCard from "../assets/shop.svg";
 import { Box, Button, Typography } from "@mui/material";
 import FavoriteItem from "./heartButton";
-import type { Product } from "../types/Product";
+import type { ProductResponseType } from "../types/Product";
 
 interface ProductCardProps {
-  product: Product;
+  product: ProductResponseType;
   productId: number | string;
   title: string;
   price: number;
@@ -25,7 +25,10 @@ export default function wProductCard({
   onShowMore,
   onAddToBasket,
 }: ProductCardProps) {
-  const handleToggleFavorite = (itemId: string | number, isFavorite: boolean) => {
+  const handleToggleFavorite = (
+    itemId: string | number,
+    isFavorite: boolean
+  ) => {
     console.log(itemId, isFavorite);
   };
 
@@ -45,10 +48,10 @@ export default function wProductCard({
       >
         <Box component="img" src={imageSrc} alt="product-picture" />
         <FavoriteItem
-        product={product}
+          product={product}
           // itemId={productId}
           // initialIsFavorite={false}
-          // onToggleFavorite={handleToggleFavorite}
+          onToggleFavorite={handleToggleFavorite}
         />
       </Box>
 
