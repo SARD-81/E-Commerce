@@ -1,4 +1,10 @@
 import React from "react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
+import {
+  useAuthIsAdmin,
+  useAuthLoading,
+} from "../../state-management/stores/useAuthStore";
 import Grid from "@mui/material/Grid";
 import {
   Box,
@@ -6,7 +12,6 @@ import {
   CardContent,
   Typography,
   Avatar,
-  CircularProgress,
   Skeleton,
   Alert,
 } from "@mui/material";
@@ -25,6 +30,9 @@ import { useDashboardStats, useSalesData } from "../../hooks/useDashboard";
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
 
 const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
+  const isAdmin = useAuthIsAdmin();
+  const loading = useAuthLoading();
   const {
     data: stats,
     isLoading: statsLoading,
@@ -36,6 +44,12 @@ const Dashboard: React.FC = () => {
     isLoading: salesLoading,
     isError: salesError,
   } = useSalesData(6);
+
+  useEffect(() => {
+    if (!loading && !isAdmin) {
+      navigate("/", { replace: true });
+    }
+  }, [isAdmin, loading, navigate]);
 
   // Format currency for display
   const formatCurrency = (amount: number) => {

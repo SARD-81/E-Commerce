@@ -10,25 +10,6 @@ import { useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import useNewProduct from "../hooks/useNewProducts";
 
-// Sample data - you can replace this with your own data or fetch from an API
-const productData = {
-  images: [
-    "https://placehold.co/800x600/f0f0f0/333?text=iPhone+14+Pro",
-    "https://placehold.co/800x600/e0e0e0/333?text=Side+View",
-    "https://placehold.co/800x600/d0d0d0/333?text=Back+View",
-  ],
-  title: "Apple iPhone 14 Pro",
-  price: "۱۵,۵۰۰,۰۰۰ تومان",
-  brand: "اپل",
-  rating: "۵",
-  quantity: "۵۲",
-  lastUpdated: "چند لحظه قبل",
-  reviews: "۴۲۰۲",
-  stock: "۱۰",
-  description:
-    "آیفون 14 پرو دارای صفحه نمایش 6.1 اینچی Super Retina XDR است. صفحه نمایش با فناوری ProMotion، تراشه A16 Bionic و سیستم دوربین سه گانه ...",
-};
-
 const ProductSlider = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const {
@@ -38,15 +19,19 @@ const ProductSlider = () => {
     error: errorNewProduct,
   } = useNewProduct();
 
+  if (newProduct === undefined) {
+    return null;
+  }
+
   const handlePrev = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? productData.images.length - 1 : prevIndex - 1
+      prevIndex === 0 ? newProduct.length - 1 : prevIndex - 1
     );
   };
 
   const handleNext = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === productData.images.length - 1 ? 0 : prevIndex + 1
+      prevIndex === newProduct.length - 1 ? 0 : prevIndex + 1
     );
   };
 
@@ -58,17 +43,13 @@ const ProductSlider = () => {
     return <div>Error: {errorNewProduct.message}</div>;
   }
 
-  if (newProduct === undefined) {
-    return null;
-  }
-
   return (
     <Box
       sx={{
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        width: "calc(3/5 * 100%)",
+        width: "50%",
       }}
     >
       <Box
@@ -166,7 +147,7 @@ const ProductSlider = () => {
             sx={{
               display: "flex",
               flexDirection: "column",
-              width: "50%",
+              width: "40%",
               justifyContent: "space-between",
               alignItems: "flex-start",
               marginBottom: "16px",
@@ -176,7 +157,7 @@ const ProductSlider = () => {
             <Typography
               component="h1"
               sx={{
-                fontSize: "24px",
+                fontSize: "20px",
                 fontWeight: "bold",
                 color: "#1e2939",
                 marginBottom: 0,
@@ -186,13 +167,13 @@ const ProductSlider = () => {
             </Typography>
             <Typography
               sx={{
-                fontSize: "24px",
+                fontSize: "18px",
                 fontWeight: "bold",
-                textAlign: "left",
+                textAlign:'left',
                 color: "#101828",
               }}
             >
-              {newProduct[currentIndex].price}
+              {newProduct[currentIndex].price} تومان
             </Typography>
             <Typography
               sx={{
@@ -209,7 +190,7 @@ const ProductSlider = () => {
             sx={{
               display: "grid",
               gridTemplateColumns: "repeat(2, 1fr)",
-              width: "50%",
+              width: "60%",
               rowGap: "16px",
               fontSize: "14px",
               color: " #4a5565",
@@ -221,19 +202,24 @@ const ProductSlider = () => {
               {newProduct[currentIndex].category.name}
             </Typography>
             <Typography>
-              <StarPurple500SharpIcon /> امتیاز : {newProduct[currentIndex].rating}{" "}
+              <StarPurple500SharpIcon /> امتیاز :{" "}
+              {newProduct[currentIndex].rating}{" "}
             </Typography>
             <Typography>
-              <LocalGroceryStoreSharpIcon /> تعداد : {newProduct[currentIndex].quantity}
+              <LocalGroceryStoreSharpIcon /> تعداد :{" "}
+              {newProduct[currentIndex].quantity}
             </Typography>
             <Typography>
-              <WatchLaterSharpIcon /> زمان بروزرسانی : {newProduct[currentIndex].updatedAt}{" "}
+              <WatchLaterSharpIcon /> زمان بروزرسانی :{" "}
+              {newProduct[currentIndex].updatedAt}{" "}
             </Typography>
             <Typography>
-              <QuestionAnswerSharpIcon /> نظرات : {newProduct[currentIndex].numReviews}{" "}
+              <QuestionAnswerSharpIcon /> نظرات :{" "}
+              {newProduct[currentIndex].numReviews}{" "}
             </Typography>
             <Typography>
-              <WidgetsSharpIcon /> موجودی : {newProduct[currentIndex].countInStock}{" "}
+              <WidgetsSharpIcon /> موجودی :{" "}
+              {newProduct[currentIndex].countInStock}{" "}
             </Typography>
           </Box>
         </Box>

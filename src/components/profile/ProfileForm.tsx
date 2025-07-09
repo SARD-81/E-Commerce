@@ -1,6 +1,67 @@
 import { Box, Typography, TextField, Button } from "@mui/material";
+import { useEffect, useState } from "react";
+import useUpdateUser from "../../hooks/useUpdateUser";
+import { useAuthUser } from "../../state-management/stores/useAuthStore";
+
+type ProfileInputValues = {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
+
+type InputKey = keyof ProfileInputValues;
+
+const inputs: {
+  label: string;
+  placeholder: string;
+  key: InputKey;
+}[] = [
+  { label: "نام", placeholder: "نام خود را وارد نمایید", key: "username" },
+  {
+    label: "ایمیل",
+    placeholder: "ایمیل خود را وارد نمایید",
+    key: "email",
+  },
+  {
+    label: "رمزعبور",
+    placeholder: "رمزعبور خود را وارد نمایید",
+    key: "password",
+  },
+  {
+    label: "تکرار رمزعبور",
+    placeholder: "تکرار رمزعبور خود را وارد نمایید",
+    key: "confirmPassword",
+  },
+];
 
 const ProfileForm = () => {
+  const [profileInput, setProfileInput] = useState<ProfileInputValues>({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const userInfo = useAuthUser();
+
+  useEffect(() => {
+    setProfileInput({
+      username: userInfo?.username || "",
+      email: userInfo?.email || "",
+      password: "",
+      confirmPassword: "",
+    });
+  }, [userInfo]);
+
+  const updateProfileMutation = useUpdateUser();
+
+  const handleChangeInputs = (value: string, key: InputKey) => {
+    const tempInputValues = { ...profileInput };
+    tempInputValues[key] = value;
+    setProfileInput(tempInputValues);
+  };
+
   return (
     <Box
       sx={{
@@ -24,16 +85,8 @@ const ProfileForm = () => {
       </Typography>
 
       {/* Inputs */}
-      {[
-        { label: "نام", placeholder: "نام خود را وارد نمایید" },
-        { label: "ایمیل", placeholder: "ایمیل خود را وارد نمایید" },
-        { label: "رمزعبور", placeholder: "رمزعبور خود را وارد نمایید" },
-        {
-          label: "تکرار رمزعبور",
-          placeholder: "تکرار رمزعبور خود را وارد نمایید",
-        },
-      ].map((field, index) => (
-        <Box key={index}>
+      {inputs.map((field) => (
+        <Box key={field.key}>
           <Typography
             sx={{
               fontSize: "16px",
@@ -48,6 +101,13 @@ const ProfileForm = () => {
             fullWidth
             placeholder={field.placeholder}
             variant="outlined"
+            value={profileInput[field.key]}
+            onChange={(e) => handleChangeInputs(e.target.value, field.key)}
+            type={
+              field.key === "password" || field.key === "confirmPassword"
+                ? "password"
+                : "text"
+            }
             InputProps={{
               sx: {
                 height: "42px",
@@ -127,6 +187,7 @@ const ProfileForm = () => {
               backgroundColor: "#c41f6d",
             },
           }}
+          onClick={() => updateProfileMutation.mutate(profileInput)}
         >
           بروزرسانی
         </Button>

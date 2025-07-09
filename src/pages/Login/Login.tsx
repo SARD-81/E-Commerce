@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -6,90 +7,48 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import loginBackground from "../../../public/images/loginBackGround.png";
 import "../../assets/fonts/font.css";
-import useAuthStore from "../../state-management/stores/useAuthStore";
-import type { ApiResponse } from "../../types/ApiResponse";
-import type {
-  LoginFormData,
-  LoginResponseData,
-} from "../../types/LoginFormData";
-import server from "../../utils/axios";
+import { useNavigate } from "react-router-dom";
+import { useLogin, useAuthLoading } from "../../state-management/stores/useAuthStore";
 
-const Login: React.FC = () => {
-  const { setId, setIsAdmin, setFlashMessage } = useAuthStore();
+const Login = () => {
+  const [form, setForm] = useState({ email: "", password: "" });
+  const login = useLogin();
+  const loading = useAuthLoading();
   const navigate = useNavigate();
-  const [LoginResponse, setLoginResponse] = useState<
-    ApiResponse<LoginResponseData>
-  >({
-    loading: false,
-    data: null,
-    error: null,
-  });
-  const [LoginForm, setLoginForm] = useState<LoginFormData>({
-    email: "",
-    password: "",
-  });
 
-  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setLoginForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!LoginForm.email || !LoginForm.password) {
+    if (!form.email || !form.password) {
       toast.error("لطفاً ایمیل و رمزعبور خود را وارد کنید");
       return;
     }
 
-    setLoginResponse({
-      loading: true,
-      data: null,
-      error: null,
-    });
-
     try {
-      const response = await server.post<LoginResponseData>(
-        "users/auth",
-        LoginForm
-      );
-
-      setLoginResponse({ loading: false, data: response.data, error: null });
-
-      if (response.status === 200) {
-        const { _id, isAdmin } = response.data;
-        setId(_id);
-        setIsAdmin(isAdmin);
-        setFlashMessage("ثبت‌نام با موفقیت انجام شد 🎉");
-        navigate("/products", { replace: true });
-        setLoginForm({ email: "", password: "" });
-      }
-    } catch (error) {
-      setLoginResponse({
-        loading: false,
-        data: null,
-        error: error.response?.data?.message || "خطا در ورود به سیستم",
-      });
-
-      if (error.response?.status === 401) {
-        toast.error("ایمیل یا رمز عبور اشتباه است. لطفاً دوباره تلاش کنید.");
+      const user = await login(form.email, form.password);
+      
+      // Redirect based on admin status
+      if (user?.isAdmin) {
+        navigate("/admin/dashboard", { replace: true });
       } else {
-        toast.error("خطا در ورود به سیستم. لطفاً دوباره تلاش کنید.");
+        navigate("/", { replace: true });
       }
+    } catch {
+      // Error handled in store
     }
   };
 
   return (
     <>
       <CssBaseline />
-      {/* Main container */}
       <Box
         sx={{
           display: "flex",
@@ -142,7 +101,7 @@ const Login: React.FC = () => {
                   mb: 3,
                   width: "100%",
                   textAlign: "right",
-                  fontWeight: "500",
+                  fontWeight: 500,
                   fontSize: "24px",
                   fontFamily: "vazir",
                 }}
@@ -150,39 +109,21 @@ const Login: React.FC = () => {
                 ورود
               </Typography>
 
-              <Box
-                component="form"
-                onSubmit={handleSubmit}
-                sx={{ mt: 1, width: "100%" }}
-              >
-                {/* Email label */}
-                <Box
-                  sx={{
-                    mb: -1.25,
-                    width: "100%",
-                  }}
+              <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: "100%" }}>
+                {/* Email */}
+                <Typography
+                  variant="body1"
+                  component="label"
+                  htmlFor="email"
+                  sx={{ fontFamily: "vazir", textAlign: "right", fontWeight: 400, fontSize: "16px" }}
                 >
-                  <Typography
-                    variant="body1"
-                    component="label"
-                    htmlFor="email"
-                    sx={{
-                      fontFamily: "vazir",
-                      textAlign: "right",
-                      fontWeight: "400",
-                      fontSize: "16px",
-                    }}
-                  >
-                    ایمیل
-                  </Typography>
-                </Box>
-
-                {/* Email input */}
+                  ایمیل
+                </Typography>
                 <TextField
                   type="email"
                   id="email"
                   name="email"
-                  value={LoginForm.email}
+                  value={form.email}
                   onChange={handleChange}
                   placeholder="ایمیل خود را وارد نمایید"
                   fullWidth
@@ -204,57 +145,31 @@ const Login: React.FC = () => {
                       backgroundColor: "#FFFFFF",
                       borderRadius: "8px",
                       border: "1px solid #ccc",
-                      "&.Mui-focused": {
-                        borderColor: "#000",
-                      },
-                      "& fieldset": {
-                        border: "none",
-                      },
+                      "&.Mui-focused": { borderColor: "#000" },
+                      "& fieldset": { border: "none" },
                     },
                   }}
                   margin="normal"
                   sx={{
-                    "& .MuiInputBase-root": {
-                      height: 38,
-                    },
-                    "& input": {
-                      padding: "6px 8px",
-                      fontSize: "0.9rem",
-                      textAlign: "right",
-                    },
+                    "& .MuiInputBase-root": { height: 38 },
+                    "& input": { padding: "6px 8px", fontSize: "0.9rem", textAlign: "right" },
                   }}
                 />
 
-                {/* Password label */}
-                <Box
-                  sx={{
-                    mb: -1.25,
-                    width: "100%",
-                    textAlign: "right",
-                    mt: 1.5,
-                  }}
+                {/* Password */}
+                <Typography
+                  variant="body1"
+                  component="label"
+                  htmlFor="password"
+                  sx={{ fontFamily: "vazir", textAlign: "right", fontWeight: 400, fontSize: "16px", mt: 1.5 }}
                 >
-                  <Typography
-                    variant="body1"
-                    component="label"
-                    htmlFor="password"
-                    sx={{
-                      fontFamily: "vazir",
-                      textAlign: "right",
-                      fontWeight: "400",
-                      fontSize: "16px",
-                    }}
-                  >
-                    رمزعبور
-                  </Typography>
-                </Box>
-
-                {/* Password input */}
+                  رمزعبور
+                </Typography>
                 <TextField
                   id="password"
                   name="password"
-                  value={LoginForm.password}
                   type="password"
+                  value={form.password}
                   onChange={handleChange}
                   placeholder="رمزعبور خود را وارد نمایید"
                   fullWidth
@@ -275,59 +190,39 @@ const Login: React.FC = () => {
                       backgroundColor: "#FFFFFF",
                       borderRadius: "8px",
                       border: "1px solid #ccc",
-                      "&.Mui-focused": {
-                        borderColor: "#000",
-                      },
-                      "& fieldset": {
-                        border: "none",
-                      },
+                      "&.Mui-focused": { borderColor: "#000" },
+                      "& fieldset": { border: "none" },
                     },
                   }}
                   margin="normal"
                   sx={{
-                    "& .MuiInputBase-root": {
-                      height: 38,
-                    },
-                    "& input": {
-                      padding: "6px 8px",
-                      fontSize: "0.9rem",
-                      textAlign: "right",
-                    },
+                    "& .MuiInputBase-root": { height: 38 },
+                    "& input": { padding: "6px 8px", fontSize: "0.9rem", textAlign: "right" },
                   }}
                 />
 
-                {/* Submit button */}
+                {/* Submit */}
                 <Box sx={{ width: "100%", textAlign: "right", mt: 3, mb: 2 }}>
                   <Button
                     type="submit"
                     variant="contained"
-                    disabled={LoginResponse.loading}
-                    className={`${
-                      LoginResponse.loading ? "w-[100px]" : ""
-                    } w-[12.5%] py-1 rounded-lg shadow-none bg-[#DB2777] whitespace-nowrap hover:bg-[#BE1D64]`}
+                    disabled={loading}
+                    className={`w-[12.5%] py-1 rounded-lg shadow-none bg-[#DB2777] whitespace-nowrap hover:bg-[#BE1D64]`}
                   >
-                    {LoginResponse.loading ? "در حال ورود" : "ورود"}
+                    {loading ? "در حال ورود" : "ورود"}
                   </Button>
                 </Box>
 
                 <Typography
                   variant="body2"
-                  sx={{
-                    textAlign: "right",
-                    fontWeight: "400",
-                    fontSize: "16px",
-                    fontFamily: "vazir",
-                  }}
+                  sx={{ textAlign: "right", fontWeight: 400, fontSize: "16px", fontFamily: "vazir" }}
                 >
                   عضو نیستید ؟{" "}
                   <Button
                     onClick={() => navigate("/register")}
                     sx={{
                       color: "#DB2777",
-                      "&:hover": {
-                        color: "#BE1D64",
-                        backgroundColor: "transparent",
-                      },
+                      "&:hover": { color: "#BE1D64", backgroundColor: "transparent" },
                       textTransform: "none",
                       p: 0,
                       minWidth: "unset",

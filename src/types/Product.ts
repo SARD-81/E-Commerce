@@ -1,5 +1,16 @@
 import type { CategoryType } from "./Category";
 import type { ApiResponse } from "./ApiResponse";
+
+interface Review {
+  name: string;
+  rating: number;
+  comment: string;
+  user: string;
+  _id: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface ProductResponseType {
   _id: string;
   name: string;
@@ -11,7 +22,7 @@ interface ProductResponseType {
   numReviews: number;
   price: number;
   countInStock: number;
-  reviews: string[];
+  reviews: Review[];
   createdAt: string;
   updatedAt: string;
   __v: number;
@@ -28,4 +39,4 @@ type CreateProductPayload = {
   image: string;
 };
 
-export type { ProductType, ProductResponseType, CreateProductPayload };
+export type { ProductType, ProductResponseType, CreateProductPayload, Review };

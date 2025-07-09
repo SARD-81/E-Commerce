@@ -1,16 +1,21 @@
 import { Typography } from "@mui/material";
 
-const ProductInfo = () => (
+interface ProductInfoProbs {
+  name?: string;
+  description?: string;
+  price?: number;
+}
+
+const ProductInfo = ({ name, description, price }: ProductInfoProbs) => (
   <>
     <Typography variant="h5" gutterBottom>
-      Apple MacBook Air M2
+      {name}
     </Typography>
     <Typography variant="body2" gutterBottom>
-      مک بوک ایر با تراشه M2 دارای صفحه نمایش 13.6 اینچی رتینا است. تا 18 ساعت
-      عمر باتری و طراحی بدون فن.
+      {description}
     </Typography>
     <Typography variant="h4" color="text.primary" sx={{ my: 2 }}>
-      ۱۰,۰۰۰ تومان
+      {price} تومان
     </Typography>
   </>
 );
