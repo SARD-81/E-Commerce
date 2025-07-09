@@ -1,8 +1,7 @@
 import { Box, Typography, TextField, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import useUpdateUser from "../../hooks/useUpdateUser";
-import { useAuthUser } from "../../state-management/stores/useAuthStore";
-
+import user from '../../hooks/useUpdateUser'
 type ProfileInputValues = {
   username: string;
   email: string;
@@ -43,12 +42,12 @@ const ProfileForm = () => {
     confirmPassword: "",
   });
 
-  const userInfo = useAuthUser();
+  const userInfo = user();
 
   useEffect(() => {
     setProfileInput({
-      username: userInfo?.username || "",
-      email: userInfo?.email || "",
+      username: userInfo?.variables?.username || "",
+      email: userInfo?.variables?.email || "",
       password: "",
       confirmPassword: "",
     });

@@ -1,10 +1,7 @@
 import React from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import {
-  useAuthIsAdmin,
-  useAuthLoading,
-} from "../../state-management/stores/useAuthStore";
+import useAuthStore from "../../state-management/stores/useAuthStore";
 import Grid from "@mui/material/Grid";
 import {
   Box,
@@ -31,8 +28,8 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const isAdmin = useAuthIsAdmin();
-  const loading = useAuthLoading();
+  const isAdmin = useAuthStore();
+  const loading = useAuthStore();
   const {
     data: stats,
     isLoading: statsLoading,
