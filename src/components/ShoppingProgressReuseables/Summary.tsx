@@ -11,6 +11,7 @@ import {
   Button,
 } from "@mui/material";
 import { type IAddressData } from "./AddressForm";
+import { useNavigate } from "react-router-dom";
 
 export interface IProduct {
   name: string;
@@ -32,6 +33,7 @@ const Summary: React.FC<ISummaryProps> = ({
   paymentMethod,
   onPlaceOrder,
 }) => {
+  const navigate = useNavigate();
   const subtotal = products.reduce((sum, p) => sum + p.price * p.quantity, 0);
   const shipping = 10000;
   const tax = 10000;
@@ -58,7 +60,9 @@ const Summary: React.FC<ISummaryProps> = ({
               </TableCell>
               <TableCell align="right">{p.name}</TableCell>
               <TableCell align="center">{p.quantity}</TableCell>
-              <TableCell align="center">{p.price.toLocaleString()} تومان</TableCell>
+              <TableCell align="center">
+                {p.price.toLocaleString()} تومان
+              </TableCell>
               <TableCell align="center">
                 {(p.price * p.quantity).toLocaleString()} تومان
               </TableCell>
@@ -149,7 +153,10 @@ const Summary: React.FC<ISummaryProps> = ({
         variant="contained"
         fullWidth
         sx={{ height: 48, mt: 3, borderRadius: "100px" }}
-        onClick={onPlaceOrder}
+        onClick={() => {
+          onPlaceOrder();
+          navigate("/checkout");
+        }}
       >
         ثبت سفارش
       </Button>

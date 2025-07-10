@@ -6,27 +6,25 @@ import Summary from "../../components/ShoppingProgressReuseables/Summary";
 import { useCartStore } from "../../state-management/stores/useCartStore";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import useCheckoutStore from "../../state-management/stores/useCheckoutStore";
 
 const ShoppingProgress: React.FC = () => {
   const navigate = useNavigate();
   const { items, clearCart } = useCartStore();
+  const checkoutStore = useCheckoutStore();
   const [step, setStep] = useState(1);
-  const [addressData, setAddressData] = useState<IAddressData>({
-    address: "",
-    city: "",
-    country: "",
-    postal: "",
-  });
-  const [paymentMethod, setPaymentMethod] = useState("pasargad");
 
   const handleNext = () => setStep(2);
 
   const handleFieldChange = (field: keyof IAddressData, value: string) => {
-    setAddressData((prev) => ({ ...prev, [field]: value }));
+    checkoutStore.setAddressInfo({
+      ...checkoutStore.addressInfo,
+      [field]: value,
+    });
   };
 
   const handlePlaceOrder = () => {
-    toast.success('سفارش شما با موفقیت ثبت شد!', {
+    toast.success("سفارش شما با موفقیت ثبت شد!", {
       position: "top-right",
       autoClose: 4000,
       hideProgressBar: false,
@@ -35,20 +33,20 @@ const ShoppingProgress: React.FC = () => {
       draggable: true,
       rtl: true,
     });
-    
+
     // Clear cart after successful order
     setTimeout(() => {
       clearCart();
-      navigate('/');
+      navigate("/");
     }, 4000);
   };
 
   // Map cart items to IProduct format
-  const products = items.map(item => ({
+  const products = items.map((item) => ({
     name: item.name,
     image: item.image,
     price: item.price,
-    quantity: item.quantity
+    quantity: item.quantity,
   }));
 
   return (
@@ -57,18 +55,18 @@ const ShoppingProgress: React.FC = () => {
 
       {step === 1 && (
         <AddressForm
-          data={addressData}
+          data={checkoutStore.addressInfo}
           onChange={handleFieldChange}
-          payment={paymentMethod}
-          onPaymentChange={setPaymentMethod}
+          payment={checkoutStore.paymentMethod}
+          onPaymentChange={checkoutStore.setPaymentMethod}
           onNext={handleNext}
         />
       )}
       {step === 2 && (
         <Summary
           products={products}
-          addressData={addressData}
-          paymentMethod={paymentMethod}
+          addressData={checkoutStore.addressInfo}
+          paymentMethod={checkoutStore.paymentMethod}
           onPlaceOrder={handlePlaceOrder}
         />
       )}
