@@ -2,10 +2,14 @@ import React, { useState } from "react";
 import StepperHeader from "../../components/ShoppingProgressReuseables/StepperHeader";
 import AddressForm from "../../components/ShoppingProgressReuseables/AddressForm";
 import { type IAddressData } from "../../components/ShoppingProgressReuseables/AddressForm";
-import { type IProduct } from "../../components/ShoppingProgressReuseables/Summary";
 import Summary from "../../components/ShoppingProgressReuseables/Summary";
+import { useCartStore } from "../../state-management/stores/useCartStore";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const ShoppingProgress: React.FC = () => {
+  const navigate = useNavigate();
+  const { items, clearCart } = useCartStore();
   const [step, setStep] = useState(1);
   const [addressData, setAddressData] = useState<IAddressData>({
     address: "",
@@ -15,32 +19,37 @@ const ShoppingProgress: React.FC = () => {
   });
   const [paymentMethod, setPaymentMethod] = useState("pasargad");
 
-  const products: IProduct[] = [
-    {
-      name: "Apple iPhone 14 Pro",
-      image: "/images/iphone14pro.jpg",
-      price: 999,
-      quantity: 1,
-    },
-    {
-      name: "Apple MacBook Air M2",
-      image: "/images/macbookAirM2.jpg",
-      price: 999,
-      quantity: 1,
-    },
-    {
-      name: "Apple iPad Pro 12.9-inch",
-      image: "/images/ipadPro12.jpg",
-      price: 999,
-      quantity: 1,
-    },
-  ];
-
   const handleNext = () => setStep(2);
 
   const handleFieldChange = (field: keyof IAddressData, value: string) => {
     setAddressData((prev) => ({ ...prev, [field]: value }));
   };
+
+  const handlePlaceOrder = () => {
+    toast.success('سفارش شما با موفقیت ثبت شد!', {
+      position: "top-right",
+      autoClose: 4000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      rtl: true,
+    });
+    
+    // Clear cart after successful order
+    setTimeout(() => {
+      clearCart();
+      navigate('/');
+    }, 4000);
+  };
+
+  // Map cart items to IProduct format
+  const products = items.map(item => ({
+    name: item.name,
+    image: item.image,
+    price: item.price,
+    quantity: item.quantity
+  }));
 
   return (
     <>
@@ -60,6 +69,7 @@ const ShoppingProgress: React.FC = () => {
           products={products}
           addressData={addressData}
           paymentMethod={paymentMethod}
+          onPlaceOrder={handlePlaceOrder}
         />
       )}
     </>
