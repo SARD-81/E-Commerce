@@ -1,98 +1,52 @@
-import { Box, Button, Typography } from "@mui/material";
-import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
-import { toast } from "react-toastify";
-import useProductUpload from "../../hooks/useProductUpload";
+import { useRef, useState, type ChangeEvent } from "react";
 
-const ProductUploadImage = () => {
-  const { mutate, isPending } = useProductUpload();
-  const [preview, setPreview] = useState("");
-  const [image, setImage] = useState<File | null>(null);
-  const imageInputRef = useRef<HTMLInputElement | null>(null);
+interface IUploadImageProps {
+  onUploadImage: (file: File) => void;
+}
 
-  const handleClick = () => {
-    imageInputRef.current?.click();
-  };
+const UploadImage = ({ onUploadImage }: IUploadImageProps) => {
+  const [image, setImage] = useState<File>();
+  const [preview, setPreview] = useState<string>("");
+  const ImageRef = useRef<HTMLInputElement | null>(null);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    onUploadImage(file!);
     if (file) {
       setImage(file);
       setPreview(URL.createObjectURL(file));
     }
   };
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    if (!image) {
-      toast.error("لطفا عکس آپلود کنید");
-      return;
-    }
-    const fd = new FormData();
-    fd.append("image", image);
-    for (const [key, value] of fd.entries()) {
-      console.log(`${key}:ss`, value);
-    }
-
-    mutate(fd);
+  const handleClick = () => {
+    ImageRef.current?.click();
   };
   return (
-    <Box className="mt-3">
-      <Typography variant="h5" sx={{ mb: "30px" }}>
-        آپلود عکس
-      </Typography>
-      <form
-        method="post"
-        onSubmit={handleSubmit}
-        className="flex flex-col items-center gap-6"
-      >
-        {preview && (
+    <section className="flex flex-col items-center gap-7 mb-3">
+      {image && (
+        <figure className="w-52 h-56 overflow-hidden rounded-md">
           <img
             src={preview}
-            alt="preview"
-            className="w-1/2 h-1/4 object-cover rounded"
+            alt="image"
+            className="w-full h-full object-cover"
           />
-        )}
-        <Box
-          onClick={handleClick}
-          className=""
-          sx={{
-            border: "1px dashed #CED2D7",
-            borderRadius: "8px",
-            display: "flex",
-            justifyContent: "center",
-            cursor: "pointer",
-            mb: 4,
-            height: "100px",
-            width: "70%",
-            backgroundColor: "#fff",
-          }}
-        >
-          <Typography sx={{ alignSelf: "center", color: "#58616C" }}>
-            {image ? `فایل انتخاب شده ${image.name}` : "آپلود فایل"}
-          </Typography>
-          <input
-            type="file"
-            className="hidden"
-            ref={imageInputRef}
-            accept="image/*"
-            name="image"
-            // id={}
-            onChange={handleFileChange}
-          />
-        </Box>
-        <Box mt={2}>
-          <Button
-            type="submit"
-            variant="contained"
-            disabled={isPending || !image}
-            className="w-[100px] py-1 rounded-lg shadow-none bg-[#DB2777] whitespace-nowrap hover:bg-[#BE1D64]"
-          >
-            {isPending ? "در حال پردازش" : "آپلود عکس"}
-          </Button>
-        </Box>
-      </form>
-    </Box>
+        </figure>
+      )}
+      <label
+        htmlFor="image"
+        onClick={handleClick}
+        className="border label-text w-full text-center p-7 rounded-md border-dashed input-bordered"
+      >
+        {image ? `Image Uploaded: ${image.name}` : "Upload image"}
+      </label>
+      <input
+        type="file"
+        id="image"
+        onChange={handleFileChange}
+        accept="image/*"
+        hidden
+      />
+    </section>
   );
 };
 
-export default ProductUploadImage;
+export default UploadImage;

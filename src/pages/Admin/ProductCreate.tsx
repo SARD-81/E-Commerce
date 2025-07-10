@@ -1,61 +1,24 @@
 import { Box, Button, Container, Typography } from "@mui/material";
-import { useRef, useState, type ChangeEvent } from "react";
-import { toast } from "react-toastify";
-import useCreateProduct from "../../hooks/useCreateProduct";
+import { useForm } from "react-hook-form";
+import useCategories from "../../hooks/useCategories";
+import useCreateProduct, {
+  type CreateProductType,
+} from "../../hooks/useCreateProduct";
+import useUploadImage from "../../hooks/useUploadImage";
+import UploadImage from "./ProductUploadImage";
 const ProductCreate = () => {
-  const { mutate, isPending } = useCreateProduct();
-  const [formData, setFormData] = useState({
-    name: "",
-    price: "",
-    brand: "",
-    description: "",
-    quantity: "",
-    image: "",
-  });
-  const [preview, setPreview] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateProductType>();
 
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const { data: categories } = useCategories();
+  const { mutate: uploadImage, data: UploadedImage } = useUploadImage();
+  const { mutate, isPending } = useCreateProduct(UploadedImage?.image);
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-  const handleClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        productImage: file,
-      }));
-      setPreview(URL.createObjectURL(file));
-    }
-  };
-
-  const handleSubmit = (e: ChangeEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const { name, price, brand, description, quantity, image } = formData;
-
-    if (!name || !price || !brand || !description || !quantity || !image) {
-      toast.error("لطفا تمام فیلد ها رو تکمیل نمایید و یک عکس بارگذاری کنید");
-      return;
-    }
-
-    mutate({
-      ...formData,
-      price: Number(formData.price),
-      quantity: Number(formData.quantity),
-    });
+  const onSubmit = (data: CreateProductType) => {
+    mutate(data);
   };
 
   return (
@@ -70,87 +33,62 @@ const ProductCreate = () => {
         }}
       >
         <Typography variant="h5">محصول جدید</Typography>
-        <form onSubmit={handleSubmit} className="flex flex-col w-full gap-6">
-          <Box
-            onClick={handleClick}
-            sx={{
-              border: "1px dashed #CED2D7",
-              borderRadius: "8px",
-              display: "flex",
-              justifyContent: "center",
-              cursor: "pointer",
-              mb: 4,
-              height: "150px",
-              backgroundColor: "#fff",
-            }}
-          >
-            <Typography sx={{ alignSelf: "center", color: "#58616C" }}>
-              {formData.image
-                ? `فایل انتخاب شده: ${formData.image}`
-                : "آپلود عکس"}
-            </Typography>
-            <input
-              type="file"
-              ref={fileInputRef}
-              accept="image/*"
-              className="hidden"
-              onChange={handleFileChange}
-            />
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col w-full gap-6"
+        >
+          <Box component="div">
+            <UploadImage onUploadImage={(file) => uploadImage(file)} />
           </Box>
-          {preview && (
-            <img
-              src={preview}
-              alt="Preview"
-              className="w-40 h-40 object-cover rounded"
-            />
-          )}
           <Box>
             <label htmlFor="productName">نام</label>
             <input
-              id="productName"
-              name="productName"
-              value={formData.name}
+              id="name"
+              {...register("name", {
+                required: true,
+                minLength: 3,
+              })}
               placeholder="نام محصول خود را وارد نمایید"
               className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
-              onChange={handleChange}
             />
+            {errors.name?.type === "required" && (
+              <p className="text-error text-sm">این فیلد اجباری است</p>
+            )}
+            {errors.name?.type === "minLength" && (
+              <p className="text-error text-sm">حداقل باید 3 کارکتر باشد</p>
+            )}
           </Box>
           <Box className="flex items-center justify-center gap-8">
             <div className="w-1/2">
               <label htmlFor="productPrice">قیمت</label>
               <input
                 type="number"
-                name="price"
-                value={formData.price}
+                {...register("price")}
                 id="productPrice"
                 placeholder="قیمت محصول خود را وارد نمایید"
                 className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
-                onChange={handleChange}
               />
             </div>
             <div className="w-1/2">
-              <label htmlFor="productBrand">برند</label>
-              <input
-                type="text"
-                name="brand"
-                value={formData.brand}
-                id="productBrand"
-                placeholder="برند محصول را وارد نمایید"
-                className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
-                onChange={handleChange}
-              />
+              <label htmlFor="productBrand">دسته بندی</label>
+
+              <select {...register("category")} id="category">
+                {categories?.map((category) => (
+                  <option key={category._id} value={category._id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
             </div>
           </Box>
           <Box className="flex flex-col gap-3">
             <label htmlFor="productDesc">توضیحات</label>
             <textarea
               id="productDesc"
-              name="description"
-              value={formData.description}
               rows={4}
+              {...register("description")}
               placeholder="توضیحات محصول خود را وارد نمایید"
               className="w-full p-2 outline-none border border-[#CED2D7] rounded-lg bg-white resize-none"
-              onChange={handleChange}
             ></textarea>
           </Box>
           <Box className="flex items-center justify-center gap-8">
@@ -158,12 +96,10 @@ const ProductCreate = () => {
               <label htmlFor="productQuantity">تعداد قابل خرید</label>
               <input
                 type="number"
-                name="quantity"
-                value={formData.quantity}
+                {...register("quantity")}
                 id="productQuantity"
                 placeholder="تعداد را وارد نمایید"
                 className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
-                onChange={handleChange}
               />
             </div>
             <div className="w-1/2">
