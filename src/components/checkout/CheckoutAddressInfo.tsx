@@ -1,14 +1,13 @@
 import { Box, Typography } from "@mui/material";
-
-const addressInfo = {
-  orderId: "۲۹۲۳۹۱۰",
-  name: "علی موسوی",
-  email: "Robert@gmail.com",
-  address: "تهران، خ آزادی، نبش کوچه قنبری، پلاک ۱۹۲",
-  payment: "درگاه پرداخت پاسارگاد",
-};
+import useCheckoutStore from "../../state-management/stores/useCheckoutStore";
 
 const CheckoutAddressInfo = () => {
+  const checkoutStore = useCheckoutStore();
+
+  const makeAddress = () => {
+    const address = checkoutStore.returnAddress();
+    return `${address.country}، ${address.city}، ${address.address}، ${address.postal}`;
+  };
   return (
     <Box
       sx={{
@@ -36,11 +35,11 @@ const CheckoutAddressInfo = () => {
         }}
       >
         {[
-          ["شماره سفارش:", addressInfo.orderId],
-          ["نام:", addressInfo.name],
-          ["ایمیل:", addressInfo.email],
-          ["آدرس:", addressInfo.address],
-          ["روش پرداخت:", addressInfo.payment],
+          ["شماره سفارش:", checkoutStore.orderId],
+          // ["نام:", addressInfo.name],
+          // ["ایمیل:", addressInfo.email],
+          ["آدرس:", makeAddress()],
+          ["روش پرداخت:", checkoutStore.paymentMethod],
         ].map(([label, value], index) => (
           <Box key={index} sx={{ display: "flex", gap: "10px" }}>
             <Typography

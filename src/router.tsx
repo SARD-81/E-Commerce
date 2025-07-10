@@ -11,6 +11,8 @@ import Home from "./pages/User/Home";
 import NotFoundPage from "./pages/Error404";
 import Favorite from "./pages/User/favorite";
 import ProductPage from "./pages/User/ProductPage";
+import Checkout from "./pages/User/Checkout";
+import ShoppingProgress from "./pages/User/ShoppingProgress";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -43,8 +45,14 @@ const router = createBrowserRouter([
           {
             path: "profile",
             Component: ProfilePage,
+          },{
+            path:'shooping-progress',
+            Component:ShoppingProgress
           },
-
+          {
+            path: "checkout",
+            Component: Checkout,
+          },
           {
             path: "users",
             Component: UsersPage,

@@ -4,16 +4,11 @@ import AddressForm from "../../components/ShoppingProgressReuseables/AddressForm
 import { type IAddressData } from "../../components/ShoppingProgressReuseables/AddressForm";
 import { type IProduct } from "../../components/ShoppingProgressReuseables/Summary";
 import Summary from "../../components/ShoppingProgressReuseables/Summary";
+import useCheckoutStore from "../../state-management/stores/useCheckoutStore";
 
 const ShoppingProgress: React.FC = () => {
+  const checkoutStore = useCheckoutStore();
   const [step, setStep] = useState(1);
-  const [addressData, setAddressData] = useState<IAddressData>({
-    address: "",
-    city: "",
-    country: "",
-    postal: "",
-  });
-  const [paymentMethod, setPaymentMethod] = useState("pasargad");
 
   const products: IProduct[] = [
     {
@@ -39,7 +34,10 @@ const ShoppingProgress: React.FC = () => {
   const handleNext = () => setStep(2);
 
   const handleFieldChange = (field: keyof IAddressData, value: string) => {
-    setAddressData((prev) => ({ ...prev, [field]: value }));
+    checkoutStore.setAddressInfo({
+      ...checkoutStore.addressInfo,
+      [field]: value,
+    });
   };
 
   return (
@@ -48,18 +46,18 @@ const ShoppingProgress: React.FC = () => {
 
       {step === 1 && (
         <AddressForm
-          data={addressData}
+          data={checkoutStore.addressInfo}
           onChange={handleFieldChange}
-          payment={paymentMethod}
-          onPaymentChange={setPaymentMethod}
+          payment={checkoutStore.paymentMethod}
+          onPaymentChange={checkoutStore.setPaymentMethod}
           onNext={handleNext}
         />
       )}
       {step === 2 && (
         <Summary
           products={products}
-          addressData={addressData}
-          paymentMethod={paymentMethod}
+          addressData={checkoutStore.addressInfo}
+          paymentMethod={checkoutStore.paymentMethod}
         />
       )}
     </>

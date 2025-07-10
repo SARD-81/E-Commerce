@@ -10,7 +10,8 @@ import {
   Paper,
   Button,
 } from "@mui/material";
-import { type AddressData } from "./AddressForm";
+import { type IAddressData } from "./AddressForm";
+import { useNavigate } from "react-router-dom";
 
 export interface IProduct {
   name: string;
@@ -21,7 +22,7 @@ export interface IProduct {
 
 interface ISummaryProps {
   products: IProduct[];
-  addressData: AddressData;
+  addressData: IAddressData;
   paymentMethod: string;
 }
 
@@ -30,6 +31,7 @@ const Summary: React.FC<ISummaryProps> = ({
   addressData,
   paymentMethod,
 }) => {
+  const navigate = useNavigate();
   const subtotal = products.reduce((sum, p) => sum + p.price * p.quantity, 0);
   const shipping = 10000;
   const tax = 10000;
@@ -147,7 +149,7 @@ const Summary: React.FC<ISummaryProps> = ({
         variant="contained"
         fullWidth
         sx={{ height: 48, mt: 3, borderRadius: "100px" }}
-        onClick={() => alert("خرید انجام شد")}
+        onClick={() => navigate("/checkout")}
       >
         ثبت سفارش
       </Button>
