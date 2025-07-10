@@ -9,12 +9,14 @@ import useEditProduct from "../../hooks/useEditProduct";
 import useProductById from "../../hooks/useProductById";
 import useUploadImage from "../../hooks/useUploadImage";
 import UploadImage from "./ProductUploadImage";
+import { useEffect } from "react";
 
 const EditProduct = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<IEditProduct>();
   const { data: categories } = useGetAllCategories();
   const { mutate: deleteProduct } = useDeleteProduct();
@@ -22,8 +24,17 @@ const EditProduct = () => {
   const { id } = useParams();
   const { data: product, isLoading } = useProductById(id);
   const { mutate } = useEditProduct(uploadedImage?.image);
-  console.log(mutate);
 
+  useEffect(() => {
+    if (product) {
+      reset({
+        name: product.name,
+        price: product.price,
+        description: product.description,
+        quantity: product.quantity,
+      });
+    }
+  }, [product, reset]);
   const onSubmit = (data: IEditProduct) => {
     mutate(data);
   };
@@ -60,7 +71,7 @@ const EditProduct = () => {
             <input
               id="name"
               {...register("name", {
-                required: false,
+                required: true,
                 minLength: 3,
               })}
               placeholder="نام محصول خود را وارد نمایید"
@@ -91,7 +102,7 @@ const EditProduct = () => {
               <label htmlFor="category">دسته‌بندی</label>
               <select
                 id="category"
-                {...register("category", { required: true })}
+                {...register("category", { required: false })}
                 className="appearance-none cursor-pointer w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
               >
                 <option value="">انتخاب دسته‌بندی</option>

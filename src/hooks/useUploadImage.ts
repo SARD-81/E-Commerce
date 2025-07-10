@@ -8,7 +8,7 @@ const useUploadImage = () => {
       const formData = new FormData();
       formData.append("image", data);
       return server
-        .post("upload", formData, {
+        .post("/upload", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },

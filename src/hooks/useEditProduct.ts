@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import server from "../utils/axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -12,6 +12,7 @@ export interface IEditProduct {
 }
 
 const useEditProduct = (image: string | undefined) => {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { id } = useParams();
   return useMutation({
@@ -27,6 +28,7 @@ const useEditProduct = (image: string | undefined) => {
         }
       ),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["all-products"] });
       toast.success("محصول با موفقیت آپدیت شد");
       navigate("/all-product");
     },

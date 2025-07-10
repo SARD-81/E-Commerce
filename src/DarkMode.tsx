@@ -18,17 +18,14 @@ const DarkMode = () => {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <button
-        onClick={handleToggleClick}
-        className={`cursor-pointer fixed top-7 left-7 z-999 text-3xl transition-all duration-300 ease-in-out ${
-          mode === "light" ? "text-[#1A237E]" : "text-[#FFEB3B]"
-        }`}
-      >
-        {mode === "light" ? <FiMoon /> : <FiSun />}
-      </button>
-    </ThemeProvider>
+    <button
+      onClick={handleToggleClick}
+      className={`cursor-pointer fixed top-7 left-7 z-999 text-3xl transition-all duration-300 ease-in-out ${
+        mode === "light" ? "text-[#1A237E]" : "text-[#FFEB3B]"
+      }`}
+    >
+      {mode === "light" ? <FiMoon /> : <FiSun />}
+    </button>
   );
 };
 

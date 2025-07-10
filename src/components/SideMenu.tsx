@@ -28,6 +28,8 @@ import {
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import useAuthStore from "../state-management/stores/useAuthStore";
 import SideDropdown from "../components/SideDropdown";
+import useThemeStore from "../state-management/stores/useThemeStore";
+import { FiMoon, FiSun } from "react-icons/fi";
 
 const drawerWidth = 300;
 
@@ -104,157 +106,175 @@ const SideMenu = ({ children }: SideMenuProps) => {
 
   const isActive = (path: string) => location.pathname === path;
 
+  const { mode, toggleMode } = useThemeStore();
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh" }}>
-      <CssBaseline />
-
-      <StyledDrawer
-        variant="permanent"
-        open={open}
-        anchor="right"
+    <div>
+      <Box
         sx={{
           position: "fixed",
-          right: 0,
-          height: "100%",
-          zIndex: theme.zIndex.drawer,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
+          bottom: 40,
+          right: 10,
+          zIndex: theme.zIndex.drawer + 1,
         }}
       >
-        {/* Header */}
-        <Box
+        <IconButton onClick={toggleMode}>
+          {mode === "light" ? (
+            <FiMoon style={{ fontSize: 22, color: "#1A237E" }} />
+          ) : (
+            <FiSun style={{ fontSize: 22, color: "#FFEB3B" }} />
+          )}
+        </IconButton>
+      </Box>
+      <Box sx={{ display: "flex", minHeight: "100vh" }}>
+        <CssBaseline />
+
+        <StyledDrawer
+          variant="permanent"
+          open={open}
+          anchor="right"
           sx={{
+            position: "fixed",
+            right: 0,
+            height: "100%",
+            zIndex: theme.zIndex.drawer,
             display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-end",
-            padding: theme.spacing(0, 1),
-            minHeight: "64px",
+            flexDirection: "column",
+            justifyContent: "space-between",
           }}
         >
-          <IconButton onClick={() => setOpen(!open)}>
-            {open ? <ChevronRight /> : <MenuIcon />}
-          </IconButton>
-        </Box>
-        <Divider />
+          {/* Header */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+              padding: theme.spacing(0, 1),
+              minHeight: "64px",
+            }}
+          >
+            <IconButton onClick={() => setOpen(!open)}>
+              {open ? <ChevronRight /> : <MenuIcon />}
+            </IconButton>
+          </Box>
 
-        {/* Main Menu Items */}
-        <List sx={{ flexGrow: 1 }}>
-          {mainMenuItems.map((item) => (
-            <ListItem key={item.path} sx={{ display: "block" }}>
-              <ListItemButton
-                component={RouterLink}
-                to={item.path}
-                selected={isActive(item.path)}
-                sx={{
-                  minHeight: 48,
-                  borderRadius: "10px",
-                  mb: 1,
-                  justifyContent: open ? "initial" : "center",
-                  "&.Mui-selected": {
-                    backgroundColor: "rgba(219,39,119,0.1)",
-                    color: "#DB2777",
-                    "&:hover": {
-                      backgroundColor: "rgba(219,39,119,0.15)",
-                    },
-                  },
-                  "&:hover": {
-                    backgroundColor: "rgba(219,39,119,0.08)",
-                  },
-                }}
-              >
-                <ListItemIcon
+          {/* Main Menu Items */}
+          <List sx={{ flexGrow: 1 }}>
+            {mainMenuItems.map((item) => (
+              <ListItem key={item.path} sx={{ display: "block" }}>
+                <ListItemButton
+                  component={RouterLink}
+                  to={item.path}
+                  selected={isActive(item.path)}
                   sx={{
-                    minWidth: 0,
-                    justifyContent: "center",
-                    mr: open ? 3 : "auto",
-                    color: isActive(item.path) ? "#DB2777" : "inherit",
+                    minHeight: 48,
+                    borderRadius: "10px",
+                    mb: 1,
+                    justifyContent: open ? "initial" : "center",
+                    "&.Mui-selected": {
+                      backgroundColor: "rgba(219,39,119,0.1)",
+                      color: "#DB2777",
+                      "&:hover": {
+                        backgroundColor: "rgba(219,39,119,0.15)",
+                      },
+                    },
+                    "&:hover": {
+                      backgroundColor: "rgba(219,39,119,0.08)",
+                    },
                   }}
                 >
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={item.text}
-                  sx={{
-                    opacity: open ? 1 : 0,
-                    textAlign: "right",
-                    color: isActive(item.path) ? "#DB2777" : "inherit",
-                    fontWeight: isActive(item.path) ? 700 : "normal",
-                  }}
-                />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-
-        {/* Bottom Section */}
-        <Box sx={{ marginTop: "auto" }}>
-          <Divider />
-          {id ? (
-            <Box sx={{ p: 1, display: "flex", justifyContent: "center" }}>
-              <SideDropdown />
-            </Box>
-          ) : (
-            <List>
-              {authMenuItems.map((item) => (
-                <ListItem key={item.path} sx={{ display: "block" }}>
-                  <ListItemButton
-                    component={RouterLink}
-                    to={item.path}
+                  <ListItemIcon
                     sx={{
-                      minHeight: 48,
-                      borderRadius: "10px",
-                      mb: 1,
-                      justifyContent: open ? "initial" : "center",
-                      "&:hover": {
-                        backgroundColor: "rgba(219,39,119,0.08)",
-                      },
+                      minWidth: 0,
+                      justifyContent: "center",
+                      mr: open ? 3 : "auto",
+                      color: isActive(item.path) ? "#DB2777" : "inherit",
                     }}
                   >
-                    <ListItemIcon
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.text}
+                    sx={{
+                      opacity: open ? 1 : 0,
+                      textAlign: "right",
+                      color: isActive(item.path) ? "#DB2777" : "inherit",
+                      fontWeight: isActive(item.path) ? 700 : "normal",
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+
+          {/* Bottom Section */}
+          <Box sx={{ marginTop: "auto" }}>
+            <Divider />
+            {id ? (
+              <Box sx={{ p: 1, display: "flex", justifyContent: "center" }}>
+                <SideDropdown />
+              </Box>
+            ) : (
+              <List>
+                {authMenuItems.map((item) => (
+                  <ListItem key={item.path} sx={{ display: "block" }}>
+                    <ListItemButton
+                      component={RouterLink}
+                      to={item.path}
                       sx={{
-                        minWidth: 0,
-                        justifyContent: "center",
-                        mr: open ? 3 : "auto",
+                        minHeight: 48,
+                        borderRadius: "10px",
+                        mb: 1,
+                        justifyContent: open ? "initial" : "center",
+                        "&:hover": {
+                          backgroundColor: "rgba(219,39,119,0.08)",
+                        },
                       }}
                     >
-                      {item.icon}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={item.text}
-                      sx={{
-                        opacity: open ? 1 : 0,
-                        textAlign: "right",
-                      }}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
-          )}
-        </Box>
-      </StyledDrawer>
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 0,
+                          justifyContent: "center",
+                          mr: open ? 3 : "auto",
+                        }}
+                      >
+                        {item.icon}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={item.text}
+                        sx={{
+                          opacity: open ? 1 : 0,
+                          textAlign: "right",
+                        }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+            )}
+          </Box>
+        </StyledDrawer>
 
-      {/* Main Content */}
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          marginRight: open
-            ? `${drawerWidth}px`
-            : `calc(${theme.spacing(7)} + 1px)`,
-          transition: theme.transitions.create("margin", {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-          }),
-          width: "100%",
-          minHeight: "100vh",
-        }}
-      >
-        {children}
+        {/* Main Content */}
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            p: 3,
+            marginRight: open
+              ? `${drawerWidth}px`
+              : `calc(${theme.spacing(7)} + 1px)`,
+            transition: theme.transitions.create("margin", {
+              easing: theme.transitions.easing.sharp,
+              duration: theme.transitions.duration.leavingScreen,
+            }),
+            width: "100%",
+            minHeight: "100vh",
+          }}
+        >
+          {children}
+        </Box>
       </Box>
-    </Box>
+    </div>
   );
 };
 
