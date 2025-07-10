@@ -1,4 +1,13 @@
-import { Box, Button, Container, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Typography,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+} from "@mui/material";
 import { useForm } from "react-hook-form";
 import useCategories from "../../hooks/useCategories";
 import useCreateProduct, {
@@ -70,15 +79,30 @@ const ProductCreate = () => {
               />
             </div>
             <div className="w-1/2">
-              <label htmlFor="productBrand">دسته بندی</label>
+              <InputLabel
+                sx={{
+                  mb: "12px",
+                  color: "#000",
+                }}
+                id="category"
+              >
+                دسته بندی
+              </InputLabel>
 
-              <select {...register("category")} id="category">
-                {categories?.map((category) => (
-                  <option key={category._id} value={category._id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
+              <FormControl sx={{ width: "100%" }}>
+                <InputLabel id="category">دسته بندی</InputLabel>
+                <Select
+                  id="category"
+                  label="category"
+                  {...register("category")}
+                >
+                  {categories?.map((category) => (
+                    <MenuItem key={category._id} value={category._id}>
+                      {category.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </div>
           </Box>
           <Box className="flex flex-col gap-3">
