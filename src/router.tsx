@@ -9,7 +9,8 @@ import UsersPage from "./pages/Admin/UsersPage";
 import ProtectedRoutes from "./ProtectedRoutes";
 import Home from "./pages/User/Home";
 import NotFoundPage from "./pages/Error404";
-import Favorite from './pages/User/favorite'
+import Favorite from "./pages/User/favorite";
+import ProductPage from "./pages/User/ProductPage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
       {
         path: "shop",
         Component: ShopPage,
+      },
+      {
+        path: "product-page/:id",
+        Component: ProductPage,
       },
       {
         path: "wishlist",

@@ -32,6 +32,7 @@ export default function wProductCard({
     console.log(itemId, isFavorite);
   };
 
+
   return (
     <Box sx={{ width: "384px" }}>
       <Box
