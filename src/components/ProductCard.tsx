@@ -1,6 +1,7 @@
+import EditIcon from "@mui/icons-material/Edit";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import shoppingCard from "../assets/shop.svg";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, IconButton, Typography } from "@mui/material";
 import FavoriteItem from "./heartButton";
 import type { ProductResponseType } from "../types/Product";
 
@@ -11,6 +12,7 @@ interface ProductCardProps {
   price: number;
   description: string;
   imageSrc: string;
+  onEdit?: (productId: string | number) => void;
   onShowMore?: (productId: number | string) => void;
   onAddToBasket?: (productId: number | string) => void;
 }
@@ -22,6 +24,7 @@ export default function wProductCard({
   price,
   description,
   imageSrc,
+  onEdit,
   onShowMore,
   onAddToBasket,
 }: ProductCardProps) {
@@ -49,14 +52,13 @@ export default function wProductCard({
         <Box component="img" src={imageSrc} alt="product-picture" />
         <FavoriteItem
           product={product}
-          // itemId={productId}
-          // initialIsFavorite={false}
           onToggleFavorite={handleToggleFavorite}
         />
       </Box>
 
       <Box
         sx={{
+          position: "relative",
           borderBottomLeftRadius: "6px",
           borderBottomRightRadius: "6px",
           backgroundColor: "#1F2937",
@@ -87,18 +89,36 @@ export default function wProductCard({
           {description}
         </Typography>
         <Box className=" flex justify-between ">
-          <Box
-            component="img"
-            sx={{
-              borderRadius: "12px",
-              marginBottom: "16px",
-              backgroundColor: "#797979",
-            }}
-            src={shoppingCard}
-            alt="product_card"
-            onClick={() => onAddToBasket?.(productId)}
-          />
-
+          <Box component="section" className="flex itmes-text-center gap-2">
+            <Box
+              component="img"
+              sx={{
+                borderRadius: "12px",
+                marginBottom: "16px",
+                backgroundColor: "#797979",
+              }}
+              src={shoppingCard}
+              alt="product_card"
+              onClick={() => onAddToBasket?.(productId)}
+            />
+            <IconButton
+              aria-label="edit"
+              size="small"
+              onClick={() => onEdit?.(productId)}
+              sx={{
+                padding: "4px",
+                width: "28px",
+                height: "28px",
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                color: "white",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.7)",
+                },
+              }}
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Box>
           <Button
             variant="contained"
             sx={{

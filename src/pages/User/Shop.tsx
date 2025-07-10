@@ -6,8 +6,10 @@ import { Box } from "@mui/material";
 import useAllProducts from "../../hooks/useAllProducts";
 import useGetAllCategories from "../../hooks/useCategories";
 import useFilterProducts from "../../hooks/useFilters";
+import { useNavigate } from "react-router-dom";
 
 const Shop = () => {
+  const navigate = useNavigate();
   const [filters, setFilters] = useState<FilterProductType>({
     categories: [],
     price: [],
@@ -54,6 +56,10 @@ const Shop = () => {
 
   console.log("dataToDisplay", dataToDisplay);
 
+  const handleEdit = (productId: string | number) => {
+    navigate(`/edit-product/${productId}`);
+  };
+
   return (
     <Box
       sx={{
@@ -89,6 +95,7 @@ const Shop = () => {
               imageSrc={product.image}
               productId={product._id}
               description={product.description}
+              onEdit={handleEdit}
             />
           ))}
       </Box>

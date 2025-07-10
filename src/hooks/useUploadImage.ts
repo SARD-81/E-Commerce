@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import server from "../utils/axios";
 
-const useUploadImgae = () => {
+const useUploadImage = () => {
   return useMutation({
     mutationKey: ["upload-image"],
     mutationFn: (data: File) => {
@@ -18,4 +18,4 @@ const useUploadImgae = () => {
   });
 };
 
-export default useUploadImgae;
+export default useUploadImage;
