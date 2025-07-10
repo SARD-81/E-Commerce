@@ -7,7 +7,7 @@ export const getAllUsers = async (): Promise<User[]> => {
 };
 
 export const updateUser = async (_id: string, userData: Partial<User>): Promise<User> => {
-  const response = await axios.patch(`/users/${_id}`, userData);
+  const response = await axios.put(`/users/${_id}`, userData);
   return response.data;
 };
 

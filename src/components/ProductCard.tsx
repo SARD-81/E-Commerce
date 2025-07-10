@@ -1,21 +1,23 @@
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import shoppingCard from "../assets/shop.svg";
-import { Box, Button, Typography } from "@mui/material";
-import FavoriteItem from "./heartButton";
+import { Box, Button, Typography, IconButton } from "@mui/material";
+import FavoriteItem from "../components/heartButton";
 import type { ProductResponseType } from "../types/Product";
+import { useCartStore } from "../state-management/stores/useCartStore";
+import { toast } from 'react-toastify';
+
 
 interface ProductCardProps {
   product: ProductResponseType;
-  productId: number | string;
+  productId: string;
   title: string;
   price: number;
   description: string;
   imageSrc: string;
-  onShowMore?: (productId: number | string) => void;
-  onAddToBasket?: (productId: number | string) => void;
+  onShowMore?: (productId: string) => void;
 }
 
-export default function wProductCard({
+export default function ProductCard({
   product,
   productId,
   title,
@@ -23,21 +25,43 @@ export default function wProductCard({
   description,
   imageSrc,
   onShowMore,
-  onAddToBasket,
 }: ProductCardProps) {
+  const addItem = useCartStore(state => state.addItem);
+
+  const handleAddToCart = () => {
+    addItem(product);
+    toast.success('محصول به سبد خرید اضافه شد!', {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      rtl: true,
+    });
+  };
+
   const handleToggleFavorite = (
-    itemId: string | number,
+    itemId: string,
     isFavorite: boolean
   ) => {
     console.log(itemId, isFavorite);
   };
 
   return (
-    <Box sx={{ width: "384px" }}>
+    <Box sx={{ 
+      width: "384px", 
+      borderRadius: "6px",
+      overflow: "hidden",
+      boxShadow: 3,
+      transition: "transform 0.3s",
+      "&:hover": {
+        transform: "translateY(-5px)"
+      }
+    }}>
       <Box
         sx={{
-          borderTopLeftRadius: "6px",
-          borderTopRightRadius: "6px",
+          backgroundColor: "white",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -46,19 +70,24 @@ export default function wProductCard({
           position: "relative",
         }}
       >
-        <Box component="img" src={imageSrc} alt="product-picture" />
+        <Box 
+          component="img" 
+          src={imageSrc} 
+          alt="product-picture" 
+          sx={{ 
+            maxHeight: "100%",
+            maxWidth: "100%",
+            objectFit: "contain" 
+          }} 
+        />
         <FavoriteItem
           product={product}
-          // itemId={productId}
-          // initialIsFavorite={false}
           onToggleFavorite={handleToggleFavorite}
         />
       </Box>
 
       <Box
         sx={{
-          borderBottomLeftRadius: "6px",
-          borderBottomRightRadius: "6px",
           backgroundColor: "#1F2937",
           display: "flex",
           flexDirection: "column",
@@ -72,42 +101,73 @@ export default function wProductCard({
             justifyContent: "space-between",
           }}
         >
-          <Typography component="p" variant="body1" sx={{ color: "#DB2777" }}>
-            {price} تومان
+          <Typography component="p" variant="body1" sx={{ color: "#DB2777", fontWeight: 'bold' }}>
+            {price.toLocaleString()} تومان
           </Typography>
           <Typography
             component="p"
             variant="body1"
-            sx={{ color: "#FFFFFF", fontSize: "20px", fontWeight: "bold" }}
+            sx={{ 
+              color: "#FFFFFF", 
+              fontSize: "20px", 
+              fontWeight: "bold",
+              maxWidth: '200px',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}
           >
             {title}
           </Typography>
         </Box>
-        <Typography className="text-[#9CA3AF] text-right">
+        
+        <Typography 
+          sx={{ 
+            color: '#9CA3AF', 
+            textAlign: 'right',
+            height: '40px',
+            overflow: 'hidden',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical'
+          }}
+        >
           {description}
         </Typography>
-        <Box className=" flex justify-between ">
-          <Box
-            component="img"
+        
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <IconButton
+            onClick={handleAddToCart}
             sx={{
+              backgroundColor: "#4B5563",
               borderRadius: "12px",
-              marginBottom: "16px",
-              backgroundColor: "#797979",
+              padding: "8px",
+              "&:hover": {
+                backgroundColor: "#6B7280"
+              }
             }}
-            src={shoppingCard}
-            alt="product_card"
-            onClick={() => onAddToBasket?.(productId)}
-          />
+          >
+            <Box
+              component="img"
+              src={shoppingCard}
+              alt="add to cart"
+              sx={{ width: "24px", height: "24px" }}
+            />
+          </IconButton>
 
           <Button
             variant="contained"
             sx={{
               color: "#FFFFFF",
               backgroundColor: "#DB2777",
+              "&:hover": {
+                backgroundColor: "#EC4899"
+              }
             }}
             onClick={() => onShowMore?.(productId)}
+            endIcon={<KeyboardBackspaceIcon sx={{ transform: 'rotate(180deg)' }} />}
           >
-            <KeyboardBackspaceIcon /> مشاهده بیشتر{" "}
+            مشاهده بیشتر
           </Button>
         </Box>
       </Box>
