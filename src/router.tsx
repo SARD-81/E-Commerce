@@ -11,6 +11,9 @@ import NotFoundPage from "./pages/Error404";
 import Favorite from "./pages/User/favorite";
 import Cart from "./pages/User/Cart";
 import ShoppingProgress from "./pages/User/ShoppingProgress";
+
+import ProductPage from "./pages/User/ProductPage";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -30,6 +33,10 @@ const router = createBrowserRouter([
         Component: ShopPage,
       },
       { path: "cart", Component: Cart },
+      {
+        path: "product-page/:id",
+        Component: ProductPage,
+      },
       {
         path: "wishlist",
         Component: Favorite,
