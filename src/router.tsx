@@ -12,6 +12,7 @@ import Favorite from "./pages/User/favorite";
 import Cart from "./pages/User/Cart";
 import ShoppingProgress from "./pages/User/ShoppingProgress";
 import ProductPage from "./pages/User/ProductPage";
+import Checkout from "./pages/User/Checkout";
 
 const router = createBrowserRouter([
   {
@@ -26,11 +27,25 @@ const router = createBrowserRouter([
       {
         Component: ProtectedRoutes,
         children: [
+
           { path: "shop", Component: ShopPage },
           { path: "cart", Component: Cart },
           { path: "product-page/:id", Component: ProductPage },
           { path: "wishlist", Component: Favorite },
           { path: "profile", Component: ProfilePage },
+
+          {
+            path: "profile",
+            Component: ProfilePage,
+          },
+          {
+            path: "shooping-progress",
+            Component: ShoppingProgress,
+          },
+          {
+            path: "checkout",
+            Component: Checkout,
+          },
           { path: "shipping", Component: ShoppingProgress },
           { path: "users", Component: UsersPage },
           { path: "dashboard", Component: DashboardPage },

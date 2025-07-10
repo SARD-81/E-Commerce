@@ -1,6 +1,6 @@
 import { Button } from "@mui/material";
 
-const AddToCartButton = () => (
+const AddToCartButton = ({ onAddToCard }: { onAddToCard: () => void }) => (
   <Button
     variant="contained"
     size="small"
@@ -12,6 +12,7 @@ const AddToCartButton = () => (
       fontSize: "0.75rem",
       alignSelf: "flex-start",
     }}
+    onClick={onAddToCard}
   >
     افزودن به سبد خرید
   </Button>
