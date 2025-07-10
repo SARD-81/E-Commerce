@@ -1,6 +1,8 @@
 import type { CategoryType } from "./Category";
 import type { ApiResponse } from "./ApiResponse";
 
+
+
 interface Review {
   name: string;
   rating: number;

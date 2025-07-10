@@ -24,12 +24,14 @@ interface ISummaryProps {
   products: IProduct[];
   addressData: IAddressData;
   paymentMethod: string;
+  onPlaceOrder: () => void;
 }
 
 const Summary: React.FC<ISummaryProps> = ({
   products,
   addressData,
   paymentMethod,
+  onPlaceOrder,
 }) => {
   const navigate = useNavigate();
   const subtotal = products.reduce((sum, p) => sum + p.price * p.quantity, 0);
@@ -58,9 +60,11 @@ const Summary: React.FC<ISummaryProps> = ({
               </TableCell>
               <TableCell align="right">{p.name}</TableCell>
               <TableCell align="center">{p.quantity}</TableCell>
-              <TableCell align="center">${p.price.toFixed(2)}</TableCell>
               <TableCell align="center">
-                ${(p.price * p.quantity).toFixed(2)}
+                {p.price.toLocaleString()} تومان
+              </TableCell>
+              <TableCell align="center">
+                {(p.price * p.quantity).toLocaleString()} تومان
               </TableCell>
             </TableRow>
           ))}
@@ -149,7 +153,10 @@ const Summary: React.FC<ISummaryProps> = ({
         variant="contained"
         fullWidth
         sx={{ height: 48, mt: 3, borderRadius: "100px" }}
-        onClick={() => navigate("/checkout")}
+        onClick={() => {
+          onPlaceOrder();
+          navigate("/checkout");
+        }}
       >
         ثبت سفارش
       </Button>
