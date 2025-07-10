@@ -5,13 +5,15 @@ import CreateProductPage from "./pages/Admin/ProductCreate";
 import DashboardPage from "./pages/Admin/Dashboard";
 import ProfilePage from "./pages/User/Profile";
 import ShopPage from "./pages/User/Shop";
-import UsersPage from "./pages/Admin/usersList";
+import UsersPage from "./pages/Admin/UsersPage";
 import ProtectedRoutes from "./ProtectedRoutes";
 import Home from "./pages/User/Home";
-
+import NotFoundPage from "./pages/Error404";
+import Favorite from './pages/User/favorite'
 const router = createBrowserRouter([
   {
     path: "/",
+    errorElement: <NotFoundPage />,
     Component: Layout,
     children: [
       {
@@ -25,6 +27,10 @@ const router = createBrowserRouter([
       {
         path: "shop",
         Component: ShopPage,
+      },
+      {
+        path: "wishlist",
+        Component: Favorite,
       },
       {
         Component: ProtectedRoutes,
