@@ -1,17 +1,27 @@
-import React, { useState, useRef } from "react";
-import { Box, ClickAwayListener, IconButton, Menu, MenuItem, Typography } from "@mui/material";
+import {
+  Box,
+  ClickAwayListener,
+  IconButton,
+  Menu,
+  MenuItem,
+  Typography,
+} from "@mui/material";
+import { useRef, useState } from "react";
 import { IoChevronDownSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
-import { useAuthUser, useAuthLoading, useLogout } from "../state-management/stores/useAuthStore";
+import useAuthStore from "../state-management/stores/useAuthStore";
 
 const UserDropdown = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const navigate = useNavigate();
 
-  const user = useAuthUser();
-  const loading = useAuthLoading();
-  const logout = useLogout();
+  const navigate = useNavigate();
+  const { id, logout } = useAuthStore((state) => ({
+    id: state.id,
+    logout: state.logout,
+  }));
+
+  if (!id) return null;
 
   if (!user || loading) {
     return null;
@@ -36,7 +46,13 @@ const UserDropdown = () => {
 
   return (
     <ClickAwayListener onClickAway={handleClose}>
-      <Box sx={{ position: "relative", display: "inline-block", textAlign: "right" }}>
+      <Box
+        sx={{
+          position: "relative",
+          display: "inline-block",
+          textAlign: "right",
+        }}
+      >
         <IconButton
           onClick={handleToggle}
           ref={buttonRef}
@@ -81,7 +97,10 @@ const UserDropdown = () => {
               sx={{
                 borderRadius: 1,
                 textAlign: "right",
-                ":hover": { backgroundColor: "rgba(219,39,119,0.08)", color: "#DB2777" },
+                ":hover": {
+                  backgroundColor: "rgba(219,39,119,0.08)",
+                  color: "#DB2777",
+                },
               }}
             >
               {text}
@@ -92,7 +111,10 @@ const UserDropdown = () => {
             sx={{
               borderRadius: 1,
               textAlign: "right",
-              ":hover": { backgroundColor: "rgba(219,39,119,0.08)", color: "#DB2777" },
+              ":hover": {
+                backgroundColor: "rgba(219,39,119,0.08)",
+                color: "#DB2777",
+              },
             }}
           >
             خروج از حساب

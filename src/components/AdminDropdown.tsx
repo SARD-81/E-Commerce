@@ -38,9 +38,10 @@ const AdminDropdown = () => {
     setAnchorEl(null);
   };
 
-  const handleLogout = async () => {
-    await logout();
-    navigate("/login", { replace: true });
+  const handleLogout = () => {
+    logout();
+    handleClose();
+    navigate("/");
   };
 
   const menuItems = [
@@ -94,7 +95,13 @@ const AdminDropdown = () => {
             sx: { width: 169, borderRadius: 1, boxShadow: 3, p: 1 },
           }}
         >
-          {menuItems.map(({ text, path }, idx) => (
+          {[
+            { text: "داشبورد", path: "/admin/dashboard" },
+            { text: "محصول جدید", path: "/products/new" },
+            { text: "مدیریت کاربران", path: "/admin/users" },
+            { text: "سفارشات", path: "/admin/orders" },
+            { text: "پروفایل", path: "/profile" },
+          ].map((item, index) => (
             <MenuItem
               key={idx}
               onClick={() => {

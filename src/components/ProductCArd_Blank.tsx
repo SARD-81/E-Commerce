@@ -5,6 +5,7 @@ interface ProductCard_BlankProps {
   title: string;
   price: number;
   imageSrc: string;
+  alt?: string;
   size: "small" | "large";
 }
 const ProductCArd_Blank = ({
@@ -13,6 +14,7 @@ const ProductCArd_Blank = ({
   title,
   price,
   imageSrc,
+  alt,
 }: ProductCard_BlankProps) => {
   const imageSize: { width: number; height: number } =
     size === "small"
@@ -33,7 +35,7 @@ const ProductCArd_Blank = ({
           backgroundColor: "#797979",
         }}
         src={imageSrc}
-        alt="product_card_blank"
+        alt={!alt ? "product_card_blank" : alt}
         width={imageSize.width}
         height={imageSize.height}
         data-product-id={productId}

@@ -1,8 +1,8 @@
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { RouterProvider } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import router from "./router";
 import { theme } from "./theme";
-import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
