@@ -1,4 +1,5 @@
 import { Box, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 interface ProductCard_BlankProps {
   productId: number | string;
@@ -16,6 +17,8 @@ const ProductCArd_Blank = ({
   imageSrc,
   alt,
 }: ProductCard_BlankProps) => {
+  const navigate = useNavigate();
+
   const imageSize: { width: number; height: number } =
     size === "small"
       ? { width: 200, height: 200 }
@@ -26,6 +29,7 @@ const ProductCArd_Blank = ({
       style={{
         width: imageSize.width,
       }}
+      onClick={() => navigate(`/product-page/${productId}`)}
     >
       <Box
         component="img"
@@ -33,6 +37,7 @@ const ProductCArd_Blank = ({
           borderRadius: "12px",
           marginBottom: "16px",
           backgroundColor: "#797979",
+          cursor: "pointer",
         }}
         src={imageSrc}
         alt={!alt ? "product_card_blank" : alt}
