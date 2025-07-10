@@ -1,4 +1,4 @@
-import  axiosInstance  from "../utils/axios";
+import axiosInstance from "../utils/axios";
 import useAuthStore from "../state-management/stores/useAuthStore";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
