@@ -22,6 +22,7 @@ interface Product {
 
 
 interface ProductResponseType {
+
   _id: string;
   name: string;
   image: string;
@@ -33,10 +34,12 @@ interface ProductResponseType {
   price: number;
   countInStock: number;
   reviews: Review[];
+
   createdAt: string;
   updatedAt: string;
   __v: number;
 }
+
 
 type ProductType = ApiResponse<ProductResponseType[]>;
 
@@ -50,3 +53,4 @@ type CreateProductPayload = {
 };
 
 export type { ProductType, ProductResponseType, CreateProductPayload, Review , Product};
+

@@ -14,7 +14,10 @@ interface ProductCardProps {
   price: number;
   description: string;
   imageSrc: string;
-  onShowMore?: (productId: string) => void;
+
+  onShowMore?: (productId: number | string) => void;
+  onAddToBasket?: (productId: number | string) => void;
+
 }
 
 export default function ProductCard({
@@ -147,6 +150,7 @@ export default function ProductCard({
                 backgroundColor: "#6B7280"
               }
             }}
+
           >
             <Box
               component="img"

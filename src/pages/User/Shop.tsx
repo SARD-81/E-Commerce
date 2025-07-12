@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 const Shop = () => {
 const navigate = useNavigate();
 
+
   const [filters, setFilters] = useState<FilterProductType>({
     categories: [],
     price: [],
@@ -24,11 +25,13 @@ const navigate = useNavigate();
   const { mutate: filterMutation, data: filteredProducts } =
     useFilterProducts();
 
+
   const handleCategoryFilter = (categoryId: string) => {
     const temp = { ...filters };
     temp.categories = [categoryId];
     setFilters(temp);
     filterMutation(temp);
+
   };
 
   const handlePriceFilter = (price: string) => {
@@ -36,6 +39,7 @@ const navigate = useNavigate();
     priceTemp.price = [1, Number(price)];
     setFilters(priceTemp);
     filterMutation(priceTemp);
+
   };
 
   const handleDeleteFilter = () => {
@@ -97,6 +101,7 @@ const navigate = useNavigate();
           ))}
       </Box>
     </Box>
+
   );
 };
 
