@@ -3,6 +3,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { type ReactNode } from "react";
+import { Link as RouterLink } from "react-router"; 
 
 interface IMenuItemProps {
   text: string;
@@ -10,6 +11,7 @@ interface IMenuItemProps {
   selected: boolean;
   onClick: () => void;
   icon: ReactNode;
+  to: string; 
 }
 
 const SlideMenuItem = ({
@@ -18,9 +20,12 @@ const SlideMenuItem = ({
   selected,
   onClick,
   icon,
+  to, 
 }: IMenuItemProps) => (
   <ListItem onClick={onClick} sx={{ display: "block" }}>
     <ListItemButton
+      component={RouterLink} 
+      to={to} 
       sx={{
         minHeight: 20,
         borderRadius: "10px",

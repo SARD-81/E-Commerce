@@ -1,1 +1,14 @@
 @import "tailwindcss";
+
+body {
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+}
+
+::selection {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+::-moz-selection {
+  background-color: rgba(0, 0, 0, 0.2);
+}

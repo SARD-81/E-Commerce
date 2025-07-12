@@ -1,18 +1,35 @@
-import { Box, Container, Typography } from "@mui/material";
-import { useRef, useState } from "react";
-
+import {
+  Box,
+  Button,
+  Container,
+  Typography,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+} from "@mui/material";
+import { useForm } from "react-hook-form";
+import useCategories from "../../hooks/useCategories";
+import useCreateProduct, {
+  type CreateProductType,
+} from "../../hooks/useCreateProduct";
+import useUploadImage from "../../hooks/useUploadImage";
+import UploadImage from "./ProductUploadImage";
 const ProductCreate = () => {
-  const [filename, setFileName] = useState("");
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const handleClick = () => {
-    fileInputRef.current?.click();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateProductType>();
+
+  const { data: categories } = useCategories();
+  const { mutate: uploadImage, data: UploadedImage } = useUploadImage();
+  const { mutate, isPending } = useCreateProduct(UploadedImage?.image);
+
+  const onSubmit = (data: CreateProductType) => {
+    mutate(data);
   };
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFileName(file.name);
-    }
-  };
+
   return (
     <Container maxWidth="md">
       <Box
@@ -26,108 +43,112 @@ const ProductCreate = () => {
       >
         <Typography variant="h5">محصول جدید</Typography>
         <form
-          onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
-            e.preventDefault();
-          }}
+          onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col w-full gap-6"
         >
-          <Box
-            onClick={handleClick}
-            sx={{
-              border: "1px dashed #CED2D7",
-              borderRadius: "8px",
-              display: "flex",
-              justifyContent: "center",
-              cursor: "pointer",
-              mb: 4,
-              height: "150px",
-              backgroundColor: "#fff",
-            }}
-          >
-            <Typography sx={{ alignSelf: "center", color: "#58616C" }}>
-              {filename ? `فایل انتخاب شده: ${filename}` : "آپلود عکس"}
-            </Typography>
-            <input
-              type="file"
-              ref={fileInputRef}
-              accept="image/*"
-              className="hidden"
-              onChange={handleChange}
-            />
+          <Box component="div">
+            <UploadImage onUploadImage={(file) => uploadImage(file)} />
           </Box>
           <Box>
-            <label htmlFor="product-name">نام</label>
+            <label htmlFor="productName">نام</label>
             <input
-              type="text"
-              id="product-name"
-              name="product-name"
+              id="name"
+              {...register("name", {
+                required: true,
+                minLength: 3,
+              })}
               placeholder="نام محصول خود را وارد نمایید"
-              className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white "
+              className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
             />
+            {errors.name?.type === "required" && (
+              <p className="text-error text-sm">این فیلد اجباری است</p>
+            )}
+            {errors.name?.type === "minLength" && (
+              <p className="text-error text-sm">حداقل باید 3 کارکتر باشد</p>
+            )}
           </Box>
           <Box className="flex items-center justify-center gap-8">
             <div className="w-1/2">
-              <label htmlFor="product-price">قیمت</label>
+              <label htmlFor="productPrice">قیمت</label>
               <input
                 type="number"
-                id="product-price"
-                name="product-price"
+                {...register("price")}
+                id="productPrice"
                 placeholder="قیمت محصول خود را وارد نمایید"
                 className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
               />
             </div>
             <div className="w-1/2">
-              <label htmlFor="product-brand">برند</label>
-              <input
-                type="text"
-                id="product-brand"
-                name="product-brand"
-                className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
-                placeholder="برند محصول خود را وارد نمایید"
-              />
+              <InputLabel
+                sx={{
+                  mb: "12px",
+                  color: "#000",
+                }}
+                id="category"
+              >
+                دسته بندی
+              </InputLabel>
+
+              <FormControl sx={{ width: "100%" }}>
+                <InputLabel id="category">دسته بندی</InputLabel>
+                <Select
+                  id="category"
+                  label="category"
+                  {...register("category")}
+                >
+                  {categories?.map((category) => (
+                    <MenuItem key={category._id} value={category._id}>
+                      {category.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </div>
           </Box>
           <Box className="flex flex-col gap-3">
-            <label htmlFor="product-desc">توضیحات</label>
+            <label htmlFor="productDesc">توضیحات</label>
             <textarea
+              id="productDesc"
               rows={4}
-              name="product-desc"
-              id="product-desc"
+              {...register("description")}
               placeholder="توضیحات محصول خود را وارد نمایید"
               className="w-full p-2 outline-none border border-[#CED2D7] rounded-lg bg-white resize-none"
             ></textarea>
           </Box>
           <Box className="flex items-center justify-center gap-8">
             <div className="w-1/2">
-              <label htmlFor="product-price">
-                تعداد قابل خرید را وارد نمایید
-              </label>
+              <label htmlFor="productQuantity">تعداد قابل خرید</label>
               <input
                 type="number"
-                id="product-price"
-                name="product-price"
-                placeholder="قیمت محصول خود را وارد نمایید"
+                {...register("quantity")}
+                id="productQuantity"
+                placeholder="تعداد را وارد نمایید"
                 className="w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
               />
             </div>
             <div className="w-1/2">
-              <label htmlFor="product-brand">موجودی</label>
+              <label htmlFor="productStatus">موجودی</label>
               <select
-                id="product-brand"
-                name="product-brand"
+                id="productStatus"
+                name="status"
                 className="appearance-none cursor-pointer w-full mt-3 p-2 outline-none border border-[#CED2D7] rounded-lg bg-white"
               >
-                <option className="color-[]" value="in-stock">
-                  موجودی
-                </option>
+                <option value="in-stock">موجود</option>
                 <option value="out-of-stock">ناموجود</option>
               </select>
             </div>
           </Box>
-          <Box className="w-1/5 text-white flex items-center rounded-lg bg-[#DB2777]">
-            <button type="submit" className="m-auto h-[45px] cursor-pointer">
-              ساخت محصول جدید
-            </button>
+          <Box>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={isPending}
+              className={`${
+                isPending ? "w-[100px]" : ""
+              } w-[15.5%] py-1 rounded-lg shadow-none bg-[#DB2777] whitespace-nowrap hover:bg-[#BE1D64]`}
+            >
+              {isPending ? "در حال پردازش..." : "ساخت محصول جدید"}
+            </Button>
           </Box>
         </form>
       </Box>

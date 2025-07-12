@@ -1,8 +1,8 @@
 import { Box } from "@mui/material";
 
 interface IProductPageImageProps {
-  src: string;
-  alt: string;
+  src?: string;
+  alt?: string;
 }
 
 const ProductImage = ({ src, alt }: IProductPageImageProps) => {

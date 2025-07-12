@@ -1,32 +1,45 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ProductCard from "../../components/ProductCard";
 import ShopPageFilter from "../../components/ShopPageFilter";
-import { CategoryMockData } from "../../mockData/CategoryMockData";
-import { ProductMockData } from "../../mockData/ProductMockData";
 import type { FilterProductType } from "../../types/filter";
-import type { ProductType } from "../../types/Product";
+import { Box } from "@mui/material";
+import useAllProducts from "../../hooks/useAllProducts";
+import useGetAllCategories from "../../hooks/useCategories";
+import useFilterProducts from "../../hooks/useFilters";
+import { useNavigate } from "react-router-dom";
 
 const Shop = () => {
-  const [products, setProducts] = useState<ProductType[]>([]);
+const navigate = useNavigate();
+
+
   const [filters, setFilters] = useState<FilterProductType>({
     categories: [],
     price: [],
   });
 
-  useEffect(() => {
-    setProducts(ProductMockData);
-  }, []);
+  const { data, isError, isLoading, error } = useAllProducts();
+
+  const { data: allCategories, isLoading: allCategoriesIsLoading } =
+    useGetAllCategories();
+
+  const { mutate: filterMutation, data: filteredProducts } =
+    useFilterProducts();
+
 
   const handleCategoryFilter = (categoryId: string) => {
     const temp = { ...filters };
     temp.categories = [categoryId];
     setFilters(temp);
+    filterMutation(temp);
+
   };
 
   const handlePriceFilter = (price: string) => {
     const priceTemp = { ...filters };
-    priceTemp.price = [Number(price)];
+    priceTemp.price = [1, Number(price)];
     setFilters(priceTemp);
+    filterMutation(priceTemp);
+
   };
 
   const handleDeleteFilter = () => {
@@ -36,26 +49,59 @@ const Shop = () => {
     });
   };
 
+  if (isLoading || allCategoriesIsLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  const dataToDisplay = filteredProducts || data;
+
+  console.log("dataToDisplay", dataToDisplay);
+
   return (
-    <div className="flex gap-8 bg-[#EEEFF1] pt-6 pr-8">
+    <Box
+      sx={{
+        display: "flex",
+        gap: "32px",
+        paddingTop: "24px",
+        paddingRight: "32px",
+
+        backgroundColor: "#EEEFF1",
+      }}
+    >
       <ShopPageFilter
         onPriceFilter={handlePriceFilter}
         onDeleteFilter={handleDeleteFilter}
-        categories={CategoryMockData}
+        categories={allCategories}
         onCategoryFilter={handleCategoryFilter}
       />
-      <div className="flex flex-wrap w-3/4 gap-8">
-        {products.map((product) => (
-          <ProductCard
-            title={product.name}
-            price={product.price}
-            imageSrc={product.image}
-            productId={product._id}
-            description={product.description}
-          />
-        ))}
-      </div>
-    </div>
+      <Box
+        sx={{
+          display: "flex",
+          gap: "32px",
+          width: "75%",
+          flexWrap: "wrap",
+        }}
+      >
+        {dataToDisplay &&
+          dataToDisplay.map((product) => (
+            <ProductCard
+              key={product._id}
+              product={product}
+              title={product.name}
+              price={product.price}
+              imageSrc={product.image}
+              productId={product._id}
+              description={product.description}
+              onShowMore={()=>navigate(`/product-page/${product._id}`)}
+            />
+          ))}
+      </Box>
+    </Box>
+
   );
 };
 

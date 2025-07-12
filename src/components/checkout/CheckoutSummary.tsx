@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography , Button } from "@mui/material";
 import type { ReactNode } from "react";
 
 const summary = {
@@ -71,10 +71,9 @@ const CheckoutSummary = ({ actionButton }: { actionButton?: ReactNode }) => {
           </Box>
         ))}
       </Box>
-<<<<<<< Updated upstream
+
       {/* Button */}
       {actionButton && <Box sx={{ mt: "32px" }}>{actionButton}</Box>}
-=======
 
       {/* Payment Button */}
       <Button
@@ -96,7 +95,6 @@ const CheckoutSummary = ({ actionButton }: { actionButton?: ReactNode }) => {
       >
         پرداخت
       </Button>
->>>>>>> Stashed changes
     </Box>
   );
 };

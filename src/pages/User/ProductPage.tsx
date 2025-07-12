@@ -18,28 +18,61 @@ import moment from "moment-jalaali";
 import { useState } from "react";
 import brand from "../../assets/brand.svg";
 import comment from "../../assets/comment.svg";
-import laptop from "../../assets/light-laptop.svg";
 import scoreImg from "../../assets/socre.svg";
 import stock from "../../assets/stock.svg";
 import tedad from "../../assets/tedad.svg";
 import timeUpdate from "../../assets/time-for-update.svg";
-
-import ProductCard from "../../components/ProductCard";
+import { useParams } from "react-router-dom";
 import AddToCartButton from "../../components/ProductPageReusables/ProductPageAddToCartButton";
 import ProductImage from "../../components/ProductPageReusables/ProductPageImage";
 import ProductInfo from "../../components/ProductPageReusables/ProductPageInfo";
 import ProductStats from "../../components/ProductPageReusables/ProductPageStats";
 import ProductRatingSelector from "../../components/ProductPageReusables/ProductRatingSelector";
+import useAllProducts from "../../hooks/useAllProducts";
+import useProduct from "../../hooks/useProduct";
+import useSubmitReview from "../../hooks/useSubmitReview";
+import type { Review } from "../../types/Product";
+import ProductCArd_Blank from "../../components/ProductCArd_Blank";
+import { useCartStore } from "../../state-management/stores/useCartStore";
+import { toast } from "react-toastify";
 
 interface IUserComments {
   score: string;
   comment: string;
   name?: null | string;
+
 }
 const ProductPage = () => {
+  const { id: productId } = useParams();
+  const { data: product, isLoading } = useProduct(productId);
+  const { mutate: SubmitReview, isPending } = useSubmitReview();
+  const { data: products } = useAllProducts();
   const [userComments, setUserComments] = useState<IUserComments[]>([]);
   const [currentComment, setCurrentComment] = useState("");
 
+  const addItem = useCartStore(state => state.addItem);
+  
+    const handleAddToCart = () => {
+      if (!product) return;
+      addItem(product);
+      toast.success('محصول به سبد خرید اضافه شد!', {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        rtl: true,
+      });
+    };
+
+  const allReviews: Review[] = [];
+  products?.forEach((product) => {
+    if (product.reviews && product.reviews.length > 0) {
+      allReviews.push(...product.reviews);
+    }
+  });
+  console.log(allReviews);
   const theme = useTheme();
   const [activeSection, setActiveSection] = useState<
     "submit" | "list" | "related"
@@ -60,22 +93,25 @@ const ProductPage = () => {
   };
 
   const statsLeft = [
-    { icon: scoreImg, label: "امتیاز", value: "۵" },
-    { icon: tedad, label: "تعداد", value: "۵۲" },
-    { icon: stock, label: "موجودی", value: "۱۰" },
+    { icon: scoreImg, label: "امتیاز", value: product?.rating },
+    { icon: tedad, label: "تعداد", value: product?.quantity },
+    { icon: stock, label: "موجودی", value: product?.countInStock },
   ];
 
   const statsRight = [
-    { icon: brand, label: "برند", value: "اپل" },
-    { icon: timeUpdate, label: "زمان بروزرسانی", value: "چند لحظه قبل" },
-    { icon: comment, label: "نظرات", value: "۴۲۰۲" },
+    { icon: brand, label: "برند", value: product?.category.name },
+    { icon: timeUpdate, label: "زمان بروزرسانی", value: product?.updatedAt },
+    { icon: comment, label: "نظرات", value: product?.numReviews },
   ];
+
   const toPersianDigits = (str: string) => {
     return str.replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[parseInt(d)]);
   };
-  const jalaaliDate = toPersianDigits(
-    moment().locale("fa").format("jYYYY/jMM/jDD")
-  );
+
+  function toJalali(isDate: string): string {
+    return toPersianDigits(moment(isDate).format("jYYYY/jMM/jDD"));
+  }
+
   return (
     <Box sx={{ bgcolor: theme.palette.background.default, minHeight: "100vh" }}>
       <Container maxWidth="lg" sx={{ py: 5, mt: 3 }}>
@@ -92,12 +128,16 @@ const ProductPage = () => {
         >
           {/* Product Image */}
           <Box>
-            <ProductImage src={laptop} alt="laptop" />
+            <ProductImage src={product?.image} alt={product?.name} />
           </Box>
 
           {/* Product Info */}
           <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <ProductInfo />
+            <ProductInfo
+              name={product?.name}
+              description={product?.description}
+              price={product?.price}
+            />
 
             <Stack spacing={1} mb={2}>
               <section className="flex justify-between">
@@ -119,7 +159,7 @@ const ProductPage = () => {
               />
             </Box>
 
-            <AddToCartButton />
+            <AddToCartButton onAddToCard={handleAddToCart}/>
           </Box>
         </Box>
 
@@ -213,6 +253,7 @@ const ProductPage = () => {
 
                   <Button
                     variant="contained"
+                    disabled={isPending}
                     sx={{
                       backgroundColor: "#DB2777",
                       mt: 3,
@@ -231,7 +272,7 @@ const ProductPage = () => {
                       }
                     }}
                   >
-                    ثبت نظر
+                    {isPending ? "در حال ثبت نظر" : "ثبت نظر "}
                   </Button>
                 </Grid>
               </Grid>
@@ -244,23 +285,25 @@ const ProductPage = () => {
                 نظرات کاربران
               </Typography>
               <Stack spacing={2}>
-                {userComments.length === 0 ? (
+                {allReviews.length === 0 ? (
                   <Typography>نظری ثبت نشده است</Typography>
                 ) : (
-                  userComments.map((item, index) => (
+                  allReviews?.map((review) => (
                     <section
-                      key={index}
+                      key={review._id}
                       className="bg-[#E6E8EB] rounded-lg min-w-3xl p-4 space-y-4"
                     >
                       <div className="flex text-[#58616C] items-center justify-between">
-                        <p>علی موسوی</p>
-                        <span className="ml-2">{jalaaliDate}</span>
+                        <p>{review.name}</p>
+                        <span className="ml-2">
+                          {toJalali(review.createdAt)}
+                        </span>
                       </div>
                       <div className="space-y-6">
-                        <p className="text-black">{item.comment}</p>
+                        <p className="text-black">{review.comment}</p>
                         <Rating
                           name="read-only-rating"
-                          value={parseFloat(item.score)}
+                          value={review.rating}
                           precision={0.5}
                           readOnly
                           sx={{ direction: "ltr" }}
@@ -280,20 +323,15 @@ const ProductPage = () => {
               </Typography>
               <Stack>
                 <Grid container spacing={2} mt={2}>
-                  {[1, 2, 3, 4].map((id) => (
-                    <Grid key={id}>
-                      <ProductCard
-                        productId={id}
-                        title={`محصول ${id}`}
-                        price={1000000 + id * 100000}
-                        description={`توضیحات محصول ${id}`}
-                        imageSrc={laptop}
-                        onShowMore={() =>
-                          console.log(`Show more for product ${id}`)
-                        }
-                        onAddToBasket={() =>
-                          console.log(`Add product ${id} to basket`)
-                        }
+                  {products?.map((product) => (
+                    <Grid key={product._id}>
+                      <ProductCArd_Blank
+                        productId={product._id}
+                        title={product.name}
+                        price={product.price}
+                        imageSrc={product.image}
+                        alt={product.name}
+                        size="small"
                       />
                     </Grid>
                   ))}
