@@ -51,7 +51,7 @@ const Home = () => {
     return <div>Error: {errorNewProduct.message}</div>;
   }
   return (
-    <Box>
+    <Box sx={{backgroundColor : "#F3F4F6" , padding : "20px"}}>
       <Box
         sx={{
           display: "flex",

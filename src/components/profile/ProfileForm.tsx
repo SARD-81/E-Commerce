@@ -2,6 +2,7 @@ import { Box, Typography, TextField, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import useUpdateUser from "../../hooks/useUpdateUser";
 import user from '../../hooks/useUpdateUser'
+import { useNavigate } from "react-router";
 type ProfileInputValues = {
   username: string;
   email: string;
@@ -41,6 +42,7 @@ const ProfileForm = () => {
     password: "",
     confirmPassword: "",
   });
+  const navigate = useNavigate();
 
   const userInfo = user();
 
@@ -155,6 +157,7 @@ const ProfileForm = () => {
       >
         <Button
           variant="contained"
+          onClick={() => navigate("/orders")}
           sx={{
             width: 102,
             height: 36,
