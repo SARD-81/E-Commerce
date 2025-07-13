@@ -32,8 +32,8 @@ const ProductCArd_Blank = ({
 
   const imageSize: { width: number; height: number } =
     size === "small"
-      ? { width: 200, height: 200 }
-      : { width: 250, height: 250 };
+      ? { width: 350, height: 335 }
+      : { width: 405, height: 385 };
 
   return (
     <Box
@@ -42,6 +42,14 @@ const ProductCArd_Blank = ({
       }}
       sx={{
         position: "relative",
+        backgroundColor: "#FFFFFF",
+        borderRadius: "12px",
+        overflow: "hidden",
+        padding: "16px",
+        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+        ":hover": {
+          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.3)",
+        },
       }}
       onClick={() => navigate(`/product-page/${productId}`)}
     >
@@ -53,6 +61,10 @@ const ProductCArd_Blank = ({
           marginBottom: "16px",
           backgroundColor: "#797979",
           cursor: "pointer",
+          ":hover": {
+            scale: 1.05,
+            transition: "transform 1000ms ease-in-out",
+          },
         }}
         src={imageSrc}
         alt={!alt ? "product_card_blank" : alt}

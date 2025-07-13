@@ -51,10 +51,12 @@ const Home = () => {
     return <div>Error: {errorNewProduct.message}</div>;
   }
   return (
-    <Box sx={{backgroundColor : "#F3F4F6" , padding : "20px"}}>
+    <Box sx={{backgroundColor : "#EEEFF1" , padding : "20px"}}>
       <Box
         sx={{
           display: "flex",
+          alignItems: "center",
+          flexDirection: "row",
           marginBottom: "40px",
           width: "100%",
           justifyContent: "space-between",
@@ -65,9 +67,17 @@ const Home = () => {
             display: "flex",
             justifyContent: "space-around",
             width: "40%",
+            gap: "24px",
           }}
         >
-          <Box>
+          <Box sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "20px",
+            width: "100%",
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
             {newProduct?.slice(0, 2).map((product) => (
               <ProductCArd_Blank
                 size="small"
@@ -78,7 +88,14 @@ const Home = () => {
               />
             ))}
           </Box>
-          <Box>
+          <Box sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "20px",
+            width: "100%",
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
             {newProduct?.slice(3, 5).map((product) => (
               <ProductCArd_Blank
                 size="small"
