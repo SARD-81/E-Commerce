@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import FavoriteItem from "./heartButton";
+import FavoriteItem from "./FavoriteItem";
 import type { ProductResponseType } from "../types/Product";
 
 interface ProductCard_BlankProps {
@@ -22,13 +22,6 @@ const ProductCArd_Blank = ({
   alt,
 }: ProductCard_BlankProps) => {
   const navigate = useNavigate();
-
-  const handleToggleFavorite = (
-    itemId: string | number,
-    isFavorite: boolean
-  ) => {
-    console.log(itemId, isFavorite);
-  };
 
   const imageSize: { width: number; height: number } =
     size === "small"
@@ -53,7 +46,7 @@ const ProductCArd_Blank = ({
       }}
       onClick={() => navigate(`/product-page/${productId}`)}
     >
-      <FavoriteItem product={product} onToggleFavorite={handleToggleFavorite} />
+      <FavoriteItem product={product} />
       <Box
         component="img"
         sx={{

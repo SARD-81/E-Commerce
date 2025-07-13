@@ -1,25 +1,25 @@
-import { useEffect } from "react";
-import { toast } from "react-toastify";
+// import { useEffect } from "react";
+// import { toast } from "react-toastify";
 import ProductCArd_Blank from "../../components/ProductCArd_Blank";
 import ProductSlider from "../../components/ProductSlider";
 import { Box, Typography } from "@mui/material";
-import useAuthStore from "../../state-management/stores/useAuthStore";
+// import useAuthStore from "../../state-management/stores/useAuthStore";
 import useAllProducts from "../../hooks/useAllProducts";
 import useNewProduct from "../../hooks/useNewProducts";
 
 const Home = () => {
-  const { flashMessage, clearFlashMessage } = useAuthStore();
-  const toastId = "flash-success-toast";
-  useEffect(() => {
-    if (flashMessage) {
-      if (!toast.isActive(toastId)) {
-        toast.success(flashMessage, { toastId });
-      }
-      setTimeout(() => {
-        clearFlashMessage();
-      }, 100);
-    }
-  }, [flashMessage, clearFlashMessage]);
+  // const { flashMessage, clearFlashMessage } = useAuthStore();
+  // const toastId = "flash-success-toast";
+  // useEffect(() => {
+  //   if (flashMessage) {
+  //     if (!toast.isActive(toastId)) {
+  //       toast.success(flashMessage, { toastId });
+  //     }
+  //     setTimeout(() => {
+  //       clearFlashMessage();
+  //     }, 100);
+  //   }
+  // }, [flashMessage, clearFlashMessage]);
 
   const {
     data: allProducts,
@@ -51,7 +51,7 @@ const Home = () => {
     return <div>Error: {errorNewProduct.message}</div>;
   }
   return (
-    <Box sx={{backgroundColor : "#EEEFF1" , padding : "20px"}}>
+    <Box sx={{ backgroundColor: "#EEEFF1", padding: "20px" }}>
       <Box
         sx={{
           display: "flex",
@@ -70,16 +70,19 @@ const Home = () => {
             gap: "24px",
           }}
         >
-          <Box sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "20px",
-            width: "100%",
-            alignItems: "center",
-            justifyContent: "center",
-          }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "20px",
+              width: "100%",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             {newProduct?.slice(0, 2).map((product) => (
               <ProductCArd_Blank
+                product={product}
                 size="small"
                 imageSrc={product.image}
                 title={product.name}
@@ -88,16 +91,19 @@ const Home = () => {
               />
             ))}
           </Box>
-          <Box sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "20px",
-            width: "100%",
-            alignItems: "center",
-            justifyContent: "center",
-          }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "20px",
+              width: "100%",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             {newProduct?.slice(3, 5).map((product) => (
               <ProductCArd_Blank
+                product={product}
                 size="small"
                 imageSrc={product.image}
                 title={product.name}
@@ -152,6 +158,7 @@ const Home = () => {
         >
           {allProducts?.map((product) => (
             <ProductCArd_Blank
+              product={product}
               size="large"
               imageSrc={product.image}
               title={product.name}
