@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { ProductResponseType } from "../types/Product";
+import type { ProductResponseType } from "../../types/Product";
 
 interface FavoriteStore {
   favorites: ProductResponseType[];
@@ -27,3 +27,4 @@ export const useFavoriteStore = create<FavoriteStore>((set, get) => ({
     }
   },
 }));
+export const useFavoritesStore = useFavoriteStore; // Alias for backward compatibility
