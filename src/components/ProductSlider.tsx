@@ -49,92 +49,95 @@ const ProductSlider = () => {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        width: "50%",
+        width: "55%",
+        backgroundColor: "white",
+        padding: "40px",
+        borderRadius: "8px",
+        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+        position: "relative",
       }}
     >
       <Box
         sx={{
           width: "full",
           overflow: "hidden",
+          alignItems: "center",
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "column",
         }}
         dir="rtl"
       >
         <Box
+          component="img"
+          alt="Product"
+          src={newProduct[currentIndex].image}
+          style={{ maxHeight: "610px", width: "100%" }}
           sx={{
-            position: "relative",
-            boxShadow: "var(--tw-inset-shadow)",
+            width: "full",
+            height: "auto",
+            objectFit: "cover",
+            opacity: 1,
+            transition: "opacity 500ms ease-in-out",
+            borderRadius: "8px",
+            
+          }}
+        />
+
+        <Button
+          onClick={handlePrev}
+          sx={{
+            position: "absolute",
+            top: "calc(1/2 * 100%)",
+            left: 0,
+            transform: "translateY(-50%)",
+            backgroundColor: "rgba(255, 255, 255, 0.5)",
+            "&:hover": {
+              backgroundColor: "rgba(255, 255, 255, 0.8)",
+            },
+            "&:focus": {
+              outline: "none",
+            },
+            borderRadius: "50px",
+            padding: "15px",
+            transition: "background-color 300ms ease-in-out",
           }}
         >
-          <Box
-            component="img"
-            alt="Product"
-            src={newProduct[currentIndex].image}
-            style={{ minHeight: "400px" }}
+          <ArrowBackIosSharpIcon
             sx={{
-              width: "full",
-              height: "auto",
-              objectFit: "cover",
-              opacity: 1,
-              transition: "opacity 500ms ease-in-out",
-              borderRadius: "8px",
+              height: "24px",
+              width: "24px",
+              color: "#1e2939",
             }}
           />
-
-          <Button
-            onClick={handlePrev}
+        </Button>
+        <Button
+          onClick={handleNext}
+          sx={{
+            position: "absolute",
+            top: "calc(1/2 * 100%)",
+            right: 0,
+            transform: "translateY(-50%)",
+            backgroundColor: "rgba(255, 255, 255, 0.5)",
+            "&:hover": {
+              backgroundColor: "rgba(255, 255, 255, 0.8)",
+            },
+            "&:focus": {
+              outline: "none",
+            },
+            borderRadius: "50px",
+            padding: "15px",
+            transition: "background-color 300ms ease-in-out",
+          }}
+        >
+          <ArrowForwardIosSharpIcon
             sx={{
-              position: "absolute",
-              top: "calc(1/2 * 100%)",
-              left: 0,
-              transform: "translateY(-50%)",
-              backgroundColor: "rgba(255, 255, 255, 0.5)",
-              "&:hover": {
-                backgroundColor: "rgba(255, 255, 255, 0.8)",
-              },
-              "&:focus": {
-                outline: "none",
-              },
-              borderRadius: "50px",
-              padding: "15px",
-              transition: "background-color 300ms ease-in-out",
+              height: "24px",
+              width: "24px",
+              color: "#1e2939",
             }}
-          >
-            <ArrowBackIosSharpIcon
-              sx={{
-                height: "24px",
-                width: "24px",
-                color: "#1e2939",
-              }}
-            />
-          </Button>
-          <Button
-            onClick={handleNext}
-            sx={{
-              position: "absolute",
-              top: "calc(1/2 * 100%)",
-              right: 0,
-              transform: "translateY(-50%)",
-              backgroundColor: "rgba(255, 255, 255, 0.5)",
-              "&:hover": {
-                backgroundColor: "rgba(255, 255, 255, 0.8)",
-              },
-              "&:focus": {
-                outline: "none",
-              },
-              borderRadius: "50px",
-              padding: "15px",
-              transition: "background-color 300ms ease-in-out",
-            }}
-          >
-            <ArrowForwardIosSharpIcon
-              sx={{
-                height: "24px",
-                width: "24px",
-                color: "#1e2939",
-              }}
-            />
-          </Button>
-        </Box>
+          />
+        </Button>
 
         <Box
           sx={{
@@ -169,7 +172,7 @@ const ProductSlider = () => {
               sx={{
                 fontSize: "18px",
                 fontWeight: "bold",
-                textAlign:'left',
+                textAlign: "left",
                 color: "#101828",
               }}
             >

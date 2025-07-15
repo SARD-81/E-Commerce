@@ -1,35 +1,33 @@
-import { useState } from "react";
+import {
+  ChevronRight,
+  FavoriteOutlined,
+  HomeOutlined,
+  Login,
+  Menu as MenuIcon,
+  PersonAddOutlined,
+  ShoppingBagOutlined,
+  ShoppingCartOutlined,
+} from "@mui/icons-material";
 import {
   Box,
+  CssBaseline,
+  type CSSObject,
+  Divider,
+  Drawer,
+  IconButton,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Divider,
-  IconButton,
-  Drawer,
   styled,
   type Theme,
-  type CSSObject,
   useTheme,
-  CssBaseline,
 } from "@mui/material";
-import {
-  HomeOutlined,
-  ShoppingBagOutlined,
-  ShoppingCartOutlined,
-  FavoriteOutlined,
-  Login,
-  PersonAddOutlined,
-  Menu as MenuIcon,
-  ChevronRight,
-} from "@mui/icons-material";
+import { useState } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
-import useAuthStore from "../state-management/stores/useAuthStore";
 import SideDropdown from "../components/SideDropdown";
-import useThemeStore from "../state-management/stores/useThemeStore";
-import { FiMoon, FiSun } from "react-icons/fi";
+import useAuthStore from "../state-management/stores/useAuthStore";
 
 const drawerWidth = 300;
 
@@ -106,25 +104,8 @@ const SideMenu = ({ children }: SideMenuProps) => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  const { mode, toggleMode } = useThemeStore();
   return (
     <div>
-      <Box
-        sx={{
-          position: "fixed",
-          bottom: 40,
-          right: 10,
-          zIndex: theme.zIndex.drawer + 1,
-        }}
-      >
-        <IconButton onClick={toggleMode}>
-          {mode === "light" ? (
-            <FiMoon style={{ fontSize: 22, color: "#1A237E" }} />
-          ) : (
-            <FiSun style={{ fontSize: 22, color: "#FFEB3B" }} />
-          )}
-        </IconButton>
-      </Box>
       <Box sx={{ display: "flex", minHeight: "100vh" }}>
         <CssBaseline />
 

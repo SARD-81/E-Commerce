@@ -18,14 +18,11 @@ import moment from "moment-jalaali";
 import { useState } from "react";
 import brand from "../../assets/brand.svg";
 import comment from "../../assets/comment.svg";
-import laptop from "../../assets/light-laptop.svg";
 import scoreImg from "../../assets/socre.svg";
 import stock from "../../assets/stock.svg";
 import tedad from "../../assets/tedad.svg";
 import timeUpdate from "../../assets/time-for-update.svg";
-
 import { useParams } from "react-router-dom";
-import ProductCard from "../../components/ProductCard";
 import AddToCartButton from "../../components/ProductPageReusables/ProductPageAddToCartButton";
 import ProductImage from "../../components/ProductPageReusables/ProductPageImage";
 import ProductInfo from "../../components/ProductPageReusables/ProductPageInfo";
@@ -36,11 +33,14 @@ import useProduct from "../../hooks/useProduct";
 import useSubmitReview from "../../hooks/useSubmitReview";
 import type { Review } from "../../types/Product";
 import ProductCArd_Blank from "../../components/ProductCArd_Blank";
+import { useCartStore } from "../../state-management/stores/useCartStore";
+import { toast } from "react-toastify";
 
 interface IUserComments {
   score: string;
   comment: string;
   name?: null | string;
+
 }
 const ProductPage = () => {
   const { id: productId } = useParams();
@@ -49,6 +49,22 @@ const ProductPage = () => {
   const { data: products } = useAllProducts();
   const [userComments, setUserComments] = useState<IUserComments[]>([]);
   const [currentComment, setCurrentComment] = useState("");
+
+  const addItem = useCartStore(state => state.addItem);
+  
+    const handleAddToCart = () => {
+      if (!product) return;
+      addItem(product);
+      toast.success('محصول به سبد خرید اضافه شد!', {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        rtl: true,
+      });
+    };
 
   const allReviews: Review[] = [];
   products?.forEach((product) => {
@@ -143,7 +159,7 @@ const ProductPage = () => {
               />
             </Box>
 
-            <AddToCartButton />
+            <AddToCartButton onAddToCard={handleAddToCart}/>
           </Box>
         </Box>
 

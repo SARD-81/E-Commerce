@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 
 const Shop = () => {
   const navigate = useNavigate();
+
   const [filters, setFilters] = useState<FilterProductType>({
     categories: [],
     price: [],
@@ -96,6 +97,7 @@ const Shop = () => {
               productId={product._id}
               description={product.description}
               onEdit={handleEdit}
+              onShowMore={() => navigate(`/product-page/${product._id}`)}
             />
           ))}
       </Box>

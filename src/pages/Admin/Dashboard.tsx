@@ -23,6 +23,7 @@ import {
   type ChartOptions,
 } from "chart.js";
 import { useDashboardStats, useSalesData } from "../../hooks/useDashboard";
+import Preloader from "../../components/Preloader";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
 
@@ -102,18 +103,7 @@ const Dashboard: React.FC = () => {
 
   // Loading skeleton
   if (statsLoading || salesLoading) {
-    return (
-      <Box sx={{ p: 4, minHeight: "100vh" }}>
-        <Grid container spacing={10} mb={8} justifyContent="center">
-          {[1, 2, 3].map((item) => (
-            <Grid item xs={4} key={item}>
-              <Skeleton variant="rectangular" width={272} height={150} />
-            </Grid>
-          ))}
-        </Grid>
-        <Skeleton variant="rectangular" height={400} />
-      </Box>
-    );
+    return <Preloader />;
   }
 
   // Error handling

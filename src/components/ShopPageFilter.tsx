@@ -5,7 +5,9 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import type { CategoryType } from "../types/Category";
 import TextField from "@mui/material/TextField";
+
 import { Button, Box } from "@mui/material";
+
 
 interface IShopFilterProps {
   onCategoryFilter: (categoryId: string) => void;
@@ -32,6 +34,7 @@ const ShopPageFilter = ({
     }
   };
   return (
+
     <Box
       sx={{
         width: "25%",
@@ -56,6 +59,7 @@ const ShopPageFilter = ({
       >
         فیلتر برند
       </Box>
+
       <FormControl>
         <RadioGroup
           aria-labelledby="demo-radio-buttons-group-label"
@@ -85,6 +89,7 @@ const ShopPageFilter = ({
       >
         فیلتر قیمت{" "}
       </Box>
+
       <TextField
         sx={{
           backgroundColor: "#fff",
@@ -110,6 +115,7 @@ const ShopPageFilter = ({
         حذف فیلترها
       </Button>
     </Box>
+
   );
 };
 

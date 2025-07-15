@@ -1,11 +1,11 @@
-// App.tsx
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
-import { useMemo } from "react";
 import { RouterProvider } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { faIR } from "@mui/material/locale";
 import router from "./router";
+
+import { useMemo } from "react";
 import useThemeStore from "./state-management/stores/useThemeStore";
+import { faIR } from "@mui/material/locale";
 
 function App() {
   const mode = useThemeStore((state) => state.mode);
