@@ -57,10 +57,6 @@ const Shop = () => {
 
   console.log("dataToDisplay", dataToDisplay);
 
-  const handleEdit = (productId: string | number) => {
-    navigate(`/edit-product/${productId}`);
-  };
-
   return (
     <Box
       sx={{
@@ -96,7 +92,6 @@ const Shop = () => {
               imageSrc={product.image}
               productId={product._id}
               description={product.description}
-              onEdit={handleEdit}
               onShowMore={() => navigate(`/product-page/${product._id}`)}
             />
           ))}

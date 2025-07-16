@@ -16,13 +16,15 @@ import {
 } from "@mui/material";
 import moment from "moment-jalaali";
 import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import brand from "../../assets/brand.svg";
 import comment from "../../assets/comment.svg";
 import scoreImg from "../../assets/socre.svg";
 import stock from "../../assets/stock.svg";
 import tedad from "../../assets/tedad.svg";
 import timeUpdate from "../../assets/time-for-update.svg";
-import { useParams } from "react-router-dom";
+import ProductCArd_Blank from "../../components/ProductCArd_Blank";
 import AddToCartButton from "../../components/ProductPageReusables/ProductPageAddToCartButton";
 import ProductImage from "../../components/ProductPageReusables/ProductPageImage";
 import ProductInfo from "../../components/ProductPageReusables/ProductPageInfo";
@@ -31,48 +33,31 @@ import ProductRatingSelector from "../../components/ProductPageReusables/Product
 import useAllProducts from "../../hooks/useAllProducts";
 import useProduct from "../../hooks/useProduct";
 import useSubmitReview from "../../hooks/useSubmitReview";
-import type { Review } from "../../types/Product";
-import ProductCArd_Blank from "../../components/ProductCArd_Blank";
 import { useCartStore } from "../../state-management/stores/useCartStore";
-import { toast } from "react-toastify";
 
-interface IUserComments {
-  score: string;
-  comment: string;
-  name?: null | string;
-
-}
 const ProductPage = () => {
   const { id: productId } = useParams();
-  const { data: product, isLoading } = useProduct(productId);
+  const { data: product, refetch: refetchProduct } = useProduct(productId);
   const { mutate: SubmitReview, isPending } = useSubmitReview();
   const { data: products } = useAllProducts();
-  const [userComments, setUserComments] = useState<IUserComments[]>([]);
   const [currentComment, setCurrentComment] = useState("");
 
-  const addItem = useCartStore(state => state.addItem);
-  
-    const handleAddToCart = () => {
-      if (!product) return;
-      addItem(product);
-      toast.success('محصول به سبد خرید اضافه شد!', {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        rtl: true,
-      });
-    };
+  const addItem = useCartStore((state) => state.addItem);
 
-  const allReviews: Review[] = [];
-  products?.forEach((product) => {
-    if (product.reviews && product.reviews.length > 0) {
-      allReviews.push(...product.reviews);
-    }
-  });
-  console.log(allReviews);
+  const handleAddToCart = () => {
+    if (!product) return;
+    addItem(product);
+    toast.success("محصول به سبد خرید اضافه شد!", {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      rtl: true,
+    });
+  };
+
   const theme = useTheme();
   const [activeSection, setActiveSection] = useState<
     "submit" | "list" | "related"
@@ -82,6 +67,9 @@ const ProductPage = () => {
 
   const handleSectionToggle = (section: "submit" | "list" | "related") => {
     setActiveSection(section);
+    if (section === "list") {
+      refetchProduct();
+    }
   };
 
   const handleRateChange = (e: SelectChangeEvent<number>) => {
@@ -92,25 +80,34 @@ const ProductPage = () => {
     setScore(e.target.value);
   };
 
+  const toPersianDigits = (str: string) => {
+    return str.replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[parseInt(d)]);
+  };
+
+  function toJalali(isDate: string | undefined): string {
+    return toPersianDigits(moment(isDate).format("jYYYY/jMM/jDD"));
+  }
+
   const statsLeft = [
     { icon: scoreImg, label: "امتیاز", value: product?.rating },
     { icon: tedad, label: "تعداد", value: product?.quantity },
     { icon: stock, label: "موجودی", value: product?.countInStock },
   ];
+  console.log("Product Category:", product?.category);
 
   const statsRight = [
-    { icon: brand, label: "برند", value: product?.category.name },
-    { icon: timeUpdate, label: "زمان بروزرسانی", value: product?.updatedAt },
+    {
+      icon: brand,
+      label: "برند",
+      value: product?.category?.name || product?.category,
+    },
+    {
+      icon: timeUpdate,
+      label: "زمان بروزرسانی",
+      value: toJalali(product?.updatedAt),
+    },
     { icon: comment, label: "نظرات", value: product?.numReviews },
   ];
-
-  const toPersianDigits = (str: string) => {
-    return str.replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[parseInt(d)]);
-  };
-
-  function toJalali(isDate: string): string {
-    return toPersianDigits(moment(isDate).format("jYYYY/jMM/jDD"));
-  }
 
   return (
     <Box sx={{ bgcolor: theme.palette.background.default, minHeight: "100vh" }}>
@@ -140,7 +137,7 @@ const ProductPage = () => {
             />
 
             <Stack spacing={1} mb={2}>
-              <section className="flex justify-between">
+              <section className="flex items-center gap-8">
                 <ProductStats stats={statsLeft} />
                 <ProductStats stats={statsRight} />
               </section>
@@ -159,7 +156,7 @@ const ProductPage = () => {
               />
             </Box>
 
-            <AddToCartButton onAddToCard={handleAddToCart}/>
+            <AddToCartButton onAddToCard={handleAddToCart} />
           </Box>
         </Box>
 
@@ -261,14 +258,18 @@ const ProductPage = () => {
                     }}
                     onClick={() => {
                       if (score && currentComment) {
-                        setUserComments((prev) => [
-                          ...prev,
-                          { score, comment: currentComment },
-                        ]);
-
-                        // clear inputs AFTER state is set
-                        setScore("");
-                        setCurrentComment("");
+                        SubmitReview(
+                          {
+                            comment: currentComment,
+                            rating: Number(score),
+                          },
+                          {
+                            onSuccess: () => {
+                              setScore("");
+                              setCurrentComment("");
+                            },
+                          }
+                        );
                       }
                     }}
                   >
@@ -285,10 +286,10 @@ const ProductPage = () => {
                 نظرات کاربران
               </Typography>
               <Stack spacing={2}>
-                {allReviews.length === 0 ? (
+                {product?.reviews && product?.reviews.length === 0 ? (
                   <Typography>نظری ثبت نشده است</Typography>
                 ) : (
-                  allReviews?.map((review) => (
+                  product?.reviews?.map((review) => (
                     <section
                       key={review._id}
                       className="bg-[#E6E8EB] rounded-lg min-w-3xl p-4 space-y-4"
@@ -326,6 +327,7 @@ const ProductPage = () => {
                   {products?.map((product) => (
                     <Grid key={product._id}>
                       <ProductCArd_Blank
+                        product={product}
                         productId={product._id}
                         title={product.name}
                         price={product.price}

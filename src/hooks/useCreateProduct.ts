@@ -1,6 +1,6 @@
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
 import server from "../utils/axios";
 
 export interface CreateProductType {
@@ -13,6 +13,7 @@ export interface CreateProductType {
 }
 
 const useCreateProduct = (image: string | undefined) => {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   return useMutation({
     mutationKey: ["new-product"],
@@ -28,6 +29,7 @@ const useCreateProduct = (image: string | undefined) => {
       );
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["all-products"] });
       toast.success("Product created successfully");
       navigate("/");
     },

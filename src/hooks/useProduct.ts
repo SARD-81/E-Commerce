@@ -9,6 +9,7 @@ const useProduct = (id?: string) => {
       server
         .get<ProductResponseType>(`/products/${id}`)
         .then((res) => res.data),
+    enabled: !!id,
   });
 };
 

@@ -1,12 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
-  Button, 
-  Menu, 
-  MenuItem, 
-  Box,
-  Typography
-} from "@mui/material";
+import { Button, Menu, MenuItem, Box, Typography } from "@mui/material";
 import useAuthStore from "../state-management/stores/useAuthStore";
 import useLogout from "../hooks/useLogout";
 
@@ -15,7 +9,7 @@ const NavDropdown = () => {
   const navigate = useNavigate();
   const isAdmin = useAuthStore((state) => state.isAdmin);
   const { mutate: logout } = useLogout();
-  
+
   const open = Boolean(anchorEl);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -52,23 +46,21 @@ const NavDropdown = () => {
           borderColor: "divider",
           "&:hover": {
             borderColor: "primary.main",
-            backgroundColor: "action.hover"
-          }
+            backgroundColor: "action.hover",
+          },
         }}
       >
-        <Typography variant="body2">
-          {isAdmin ? "ادمین" : "کاربر"}
-        </Typography>
+        <Typography variant="body2">{isAdmin ? "ادمین" : "کاربر"}</Typography>
         <Box
           sx={{
             transform: open ? "rotate(180deg)" : "rotate(0deg)",
-            transition: "transform 0.2s ease"
+            transition: "transform 0.2s ease",
           }}
         >
           ▼
         </Box>
       </Button>
-      
+
       <Menu
         id="nav-dropdown-menu"
         anchorEl={anchorEl}
@@ -99,9 +91,9 @@ const NavDropdown = () => {
               "&:hover": {
                 backgroundColor: "rgba(219,39,119,0.08)",
                 color: "#DB2777",
-              }
-            }
-          }
+              },
+            },
+          },
         }}
       >
         {isAdmin && (
@@ -112,6 +104,11 @@ const NavDropdown = () => {
         {isAdmin && (
           <MenuItem onClick={() => handleNavigation("/create-product")}>
             محصول جدید
+          </MenuItem>
+        )}
+        {isAdmin && (
+          <MenuItem onClick={() => handleNavigation("/all-product")}>
+            تمام محصولات
           </MenuItem>
         )}
         {isAdmin && (
@@ -128,9 +125,7 @@ const NavDropdown = () => {
         <MenuItem onClick={() => handleNavigation("/profile")}>
           پروفایل
         </MenuItem>
-        <MenuItem onClick={() => logout()}>
-          خروج از حساب
-        </MenuItem>
+        <MenuItem onClick={() => logout()}>خروج از حساب</MenuItem>
       </Menu>
     </Box>
   );
