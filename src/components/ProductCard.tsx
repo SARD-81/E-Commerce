@@ -1,3 +1,4 @@
+import EditIcon from "@mui/icons-material/Edit";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import shoppingCard from "../assets/shop.svg";
 import { Box, Button, Typography, IconButton } from "@mui/material";
@@ -13,6 +14,7 @@ interface ProductCardProps {
   price: number;
   description: string;
   imageSrc: string;
+  onEdit?: (productId: string | number) => void;
 
   onShowMore?: (productId: number | string) => void;
   onAddToBasket?: (productId: number | string) => void;
@@ -25,6 +27,7 @@ export default function ProductCard({
   price,
   description,
   imageSrc,
+  onEdit,
   onShowMore,
 }: ProductCardProps) {
   const addItem = useCartStore((state) => state.addItem);
@@ -40,10 +43,6 @@ export default function ProductCard({
       draggable: true,
       rtl: true,
     });
-  };
-
-  const handleToggleFavorite = (itemId: string, isFavorite: boolean) => {
-    console.log(itemId, isFavorite);
   };
 
   return (
@@ -80,10 +79,7 @@ export default function ProductCard({
             objectFit: "contain",
           }}
         />
-        <FavoriteItem
-          product={product}
-          onToggleFavorite={handleToggleFavorite}
-        />
+        <FavoriteItem product={product} />
       </Box>
 
       <Box
@@ -138,27 +134,44 @@ export default function ProductCard({
         >
           {description}
         </Typography>
-
-        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-          <IconButton
-            onClick={handleAddToCart}
-            sx={{
-              backgroundColor: "#4B5563",
-              borderRadius: "12px",
-              padding: "8px",
-              "&:hover": {
-                backgroundColor: "#6B7280",
-              },
-            }}
-          >
-            <Box
-              component="img"
-              src={shoppingCard}
-              alt="add to cart"
-              sx={{ width: "24px", height: "24px" }}
-            />
-          </IconButton>
-
+        <Box className=" flex justify-between ">
+          <Box component="section" className="flex itmes-text-center gap-2">
+            <IconButton
+              onClick={handleAddToCart}
+              sx={{
+                backgroundColor: "#4B5563",
+                borderRadius: "12px",
+                padding: "8px",
+                "&:hover": {
+                  backgroundColor: "#6B7280",
+                },
+              }}
+            >
+              <Box
+                component="img"
+                src={shoppingCard}
+                alt="add to cart"
+                sx={{ width: "24px", height: "24px" }}
+              />
+            </IconButton>
+            <IconButton
+              aria-label="edit"
+              size="small"
+              onClick={() => onEdit?.(productId)}
+              sx={{
+                padding: "4px",
+                width: "28px",
+                height: "28px",
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                color: "white",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.7)",
+                },
+              }}
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Box>
           <Button
             variant="contained"
             sx={{

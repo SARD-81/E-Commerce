@@ -46,6 +46,7 @@ const AdminDropdown = () => {
   const menuItems = [
     { text: "داشبورد", path: "/admin" },
     { text: "محصول جدید", path: "/admin/products/new" },
+    { text: "تمام محصولات", path: "/all-product" },
     { text: "مدیریت کاربران", path: "/admin/users" },
     { text: "سفارشات", path: "/admin/orders" },
     { text: "پروفایل", path: "/profile" },

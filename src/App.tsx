@@ -1,11 +1,11 @@
-import { CssBaseline, ThemeProvider , createTheme } from "@mui/material";
+import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
 import { RouterProvider } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import router from "./router";
+
 import { useMemo } from "react";
 import useThemeStore from "./state-management/stores/useThemeStore";
 import { faIR } from "@mui/material/locale";
-
 
 function App() {
   const mode = useThemeStore((state) => state.mode);
@@ -30,16 +30,12 @@ function App() {
       ),
     [mode]
   );
+
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline>
-        <ToastContainer
-          position="top-center"
-          autoClose={2000}
-          pauseOnHover={false}
-        />
-        <RouterProvider router={router} />
-      </CssBaseline>
+      <CssBaseline />
+      <ToastContainer position="top-center" autoClose={2000} />
+      <RouterProvider router={router} />
     </ThemeProvider>
   );
 }

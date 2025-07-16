@@ -1,18 +1,22 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ReviewPayload } from "../types/ReviewPayload";
 import server from "../utils/axios";
 import { toast } from "react-toastify";
 import type { AxiosError } from "axios";
+import { useParams } from "react-router-dom";
 
 const useSubmitReview = () => {
+  const { id } = useParams();
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: async ({ productId, comment, rating }: ReviewPayload) => {
-      await server.post(`/products/${productId}/reviews`, {
-        comment,
-        rating,
-      });
+    mutationFn: async ({ comment, rating }: ReviewPayload) => {
+      await server.post(`/products/${id}/reviews`, { comment, rating });
     },
-    onSuccess: () => toast.success("نظر شما با موفقیت ثبت شد."),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [""] });
+      toast.success("نظر شما با موفقیت ثبت شد.");
+    },
     onError: (error) => {
       const err = error as AxiosError<{ message: string }>;
       const message =
