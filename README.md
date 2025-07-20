@@ -6,19 +6,19 @@ Welcome to the E-Commerce project repository! This project is a modern, responsi
 
 # 🌟  Features
 
-* Product Listing: Browse a wide range of products with detailed cards.
+* **Product Listing**: Browse a wide range of products with detailed cards.
 
-* Favorites Management: Add or remove products from your favorites list using a global state managed by Zustand.
+* **Favorites Management**: Add or remove products from your favorites list using a global state managed by Zustand.
 
-* Shopping Cart: (Basic implementation inferred) Add products to your shopping cart.
+* **Shopping Cart**: (Basic implementation inferred) Add products to your shopping cart.
 
-* User Dashboard: A dedicated panel for users to manage their profiles, view order history, and handle other user-specific settings.
+* **User Dashboard**: A dedicated panel for users to manage their profiles, view order history, and handle other user-specific settings.
 
-* Admin Panel: (Planned or Future Feature) A dedicated panel for administrators to manage products, orders, users, and other backend functionalities.
+* **Admin Panel**: (Planned or Future Feature) A dedicated panel for administrators to manage products, orders, users, and other backend functionalities.
 
-* Responsive Design: Built with Tailwind CSS and Material UI for a seamless experience across various devices.
+* **Responsive Design**: Built with Tailwind CSS and Material UI for a seamless experience across various devices.
 
-* Client-Side Routing: Powered by react-router-dom for smooth navigation between pages.
+* **Client-Side Routing**: Powered by react-router-dom for smooth navigation between pages.
 
 
 # 🚀  Technologies Used
@@ -27,27 +27,27 @@ This project leverages the following key technologies:
 
 Frontend:
 
-**React** - A JavaScript library for building user interfaces.
+* **React** - A JavaScript library for building user interfaces.
 
-**Vite** - A fast build tool for modern web projects.
+* **Vite** - A fast build tool for modern web projects.
 
-**TypeScript** - A typed superset of JavaScript that compiles to plain JavaScript.
+* **TypeScript** - A typed superset of JavaScript that compiles to plain JavaScript.
 
-**Zustand** - A small, fast, and scalable bear-bones state-management solution.
+* **Zustand** - A small, fast, and scalable bear-bones state-management solution.
 
-**Tailwind CSS** - A utility-first CSS framework for rapidly building custom designs.
+* **Tailwind CSS** - A utility-first CSS framework for rapidly building custom designs.
 
-**Material UI** - A comprehensive library of UI tools for React.
+* **Material UI** - A comprehensive library of UI tools for React.
 
-**Axios** - Promise-based HTTP client for the browser and Node.js.
+* **Axios** - Promise-based HTTP client for the browser and Node.js.
 
-**React Router DOM** - Declarative routing for React.
+* **React Router DOM** - Declarative routing for React.
 
 # Linting & Formatting:
 
-**ESLint** - Pluggable JavaScript linter.
+* **ESLint** - Pluggable JavaScript linter.
 
-**Prettier** - An opinionated code formatter.
+* **Prettier** - An opinionated code formatter.
 
 # 🛠️ Installation
 To get a local copy up and running, follow these simple steps.
@@ -77,7 +77,7 @@ To run the project in development mode:
 Bash
 
 npm run dev
-# or
+**or**
 yarn dev
 This will start the development server, and you can view the application in your browser at http://localhost:5173 (or whatever port Vite assigns).
 
@@ -86,7 +86,7 @@ To build the project for production:
 Bash
 
 npm run build
-# or
+**or**
 yarn build
 This will compile the application into the dist directory.
 
