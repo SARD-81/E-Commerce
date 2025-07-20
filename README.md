@@ -6,15 +6,19 @@ Welcome to the E-Commerce project repository! This project is a modern, responsi
 
 # 🌟  Features
 
-Product Listing: Browse a wide range of products with detailed cards.
+* Product Listing: Browse a wide range of products with detailed cards.
 
-Favorites Management: Add or remove products from your favorites list using a global state managed by Zustand.
+* Favorites Management: Add or remove products from your favorites list using a global state managed by Zustand.
 
-Shopping Cart: (Basic implementation inferred) Add products to your shopping cart.
+* Shopping Cart: (Basic implementation inferred) Add products to your shopping cart.
 
-Responsive Design: Built with Tailwind CSS and Material UI for a seamless experience across various devices.
+* User Dashboard: A dedicated panel for users to manage their profiles, view order history, and handle other user-specific settings.
 
-Client-Side Routing: Powered by react-router-dom for smooth navigation between pages.
+* Admin Panel: (Planned or Future Feature) A dedicated panel for administrators to manage products, orders, users, and other backend functionalities.
+
+* Responsive Design: Built with Tailwind CSS and Material UI for a seamless experience across various devices.
+
+* Client-Side Routing: Powered by react-router-dom for smooth navigation between pages.
 
 
 # 🚀  Technologies Used
