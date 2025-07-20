@@ -34,6 +34,8 @@ Frontend:
 * **TypeScript** - A typed superset of JavaScript that compiles to plain JavaScript.
 
 * **Zustand** - A small, fast, and scalable bear-bones state-management solution.
+  
+* **React Query** - Powerful asynchronous state management for React.
 
 * **Tailwind CSS** - A utility-first CSS framework for rapidly building custom designs.
 
@@ -42,12 +44,21 @@ Frontend:
 * **Axios** - Promise-based HTTP client for the browser and Node.js.
 
 * **React Router DOM** - Declarative routing for React.
+  
 
 # Linting & Formatting:
 
 * **ESLint** - Pluggable JavaScript linter.
 
 * **Prettier** - An opinionated code formatter.
+
+ # 🔒 Authentication & Data Persistence
+ 
+This project handles user authentication and data persistence:
+
+**Login/Logout**: Users can securely log in and out of the application. Authentication logic is handled to manage user sessions.
+
+**Local Storage**: User preferences, authentication tokens (if applicable), and potentially favorite items or cart data are persisted using Local Storage to provide a consistent user experience across sessions.
 
 # 🛠️ Installation
 To get a local copy up and running, follow these simple steps.
