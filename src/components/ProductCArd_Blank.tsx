@@ -25,8 +25,8 @@ const ProductCArd_Blank = ({
 
   const imageSize: { width: number; height: number } =
     size === "small"
-      ? { width: 350, height: 335 }
-      : { width: 405, height: 385 };
+      ? { width: 280, height: 240 }
+      : { width: 320, height: 280 };
 
   return (
     <Box
