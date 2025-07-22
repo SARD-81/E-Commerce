@@ -50,8 +50,9 @@ const ProductSlider = () => {
         alignItems: "center",
         justifyContent: "center",
         width: "55%",
+        height: "700px",
         backgroundColor: "white",
-        padding: "40px",
+        padding: "20px",
         borderRadius: "8px",
         boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
         position: "relative",
@@ -59,12 +60,15 @@ const ProductSlider = () => {
     >
       <Box
         sx={{
+          backgroundColor: "white",
           width: "full",
           overflow: "hidden",
           alignItems: "center",
           display: "flex",
           justifyContent: "center",
           flexDirection: "column",
+          position: "relative",
+          gap: "40px",
         }}
         dir="rtl"
       >
@@ -72,15 +76,14 @@ const ProductSlider = () => {
           component="img"
           alt="Product"
           src={newProduct[currentIndex].image}
-          style={{ maxHeight: "610px", width: "100%" }}
           sx={{
             width: "full",
-            height: "auto",
-            objectFit: "cover",
+            minHeight: "300px",
+            height: "300px",
+            objectFit: "contain",
             opacity: 1,
             transition: "opacity 500ms ease-in-out",
             borderRadius: "8px",
-            
           }}
         />
 
