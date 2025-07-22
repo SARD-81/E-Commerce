@@ -12,7 +12,7 @@ const useDeleteProduct = () => {
     mutationFn: () => server.delete(`products/${id}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["all-products"] });
-      toast.success("محصول به موفقیت حدف شد");
+      toast.success("Product has been successfully deleted");
       navigate("/all-product");
     },
   });

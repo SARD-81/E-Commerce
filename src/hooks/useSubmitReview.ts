@@ -4,6 +4,7 @@ import server from "../utils/axios";
 import { toast } from "react-toastify";
 import type { AxiosError } from "axios";
 import { useParams } from "react-router-dom";
+import reviewError from "../errors/reviewError";
 
 const useSubmitReview = () => {
   const { id } = useParams();
@@ -15,15 +16,13 @@ const useSubmitReview = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [""] });
-      toast.success("نظر شما با موفقیت ثبت شد.");
+      toast.success("Your comment was submitted successfully.");
     },
     onError: (error) => {
-      const err = error as AxiosError<{ message: string }>;
-      const message =
-        err?.response?.data?.message ||
-        err.message ||
-        "ثبت نظر با خطا مواجه شد";
-      toast.error(message);
+      const err = error as AxiosError;
+      const status = err.response?.status as keyof typeof reviewError;
+      const message = reviewError[status];
+      toast.warning(message);
     },
   });
 };

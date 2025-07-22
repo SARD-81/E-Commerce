@@ -1,10 +1,11 @@
-import type { AuthResponseModel, LoginPayloadModel } from "../types/auth.model";
-import  axiosInstance  from "../utils/axios";
-import useAuthStore from "../state-management/stores/useAuthStore";
 import { useMutation } from "@tanstack/react-query";
-import type { AxiosResponse } from "axios";
+import type { AxiosError, AxiosResponse } from "axios";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
+import useAuthStore from "../state-management/stores/useAuthStore";
+import type { AuthResponseModel, LoginPayloadModel } from "../types/auth.model";
+import axiosInstance from "../utils/axios";
+import authError from "../errors/authError";
 
 const useLogin = () => {
   const navigate = useNavigate();
@@ -24,10 +25,13 @@ const useLogin = () => {
     },
     onSuccess: () => {
       navigate("/");
-      toast.success("ورود موفق");
+      toast.success("You've been successfully loggin.");
     },
-    onError() {
-      toast.error("خطا در ورود");
+    onError(error) {
+      const err = error as AxiosError;
+      const status = err.response?.status as keyof typeof authError;
+      const message = authError[status];
+      toast.warning(message);
     },
   });
 };
