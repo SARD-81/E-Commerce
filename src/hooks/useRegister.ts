@@ -5,9 +5,10 @@ import type {
 import axiosInstance from "../utils/axios";
 import useAuthStore from "../state-management/stores/useAuthStore";
 import { useMutation } from "@tanstack/react-query";
-import type { AxiosResponse } from "axios";
+import type { AxiosError, AxiosResponse } from "axios";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
+import registrationError from "../errors/registrationError";
 
 const useRegister = () => {
   const navigate = useNavigate();
@@ -27,10 +28,13 @@ const useRegister = () => {
     },
     onSuccess: () => {
       navigate("/");
-      toast.success("ثبت نام موفق");
+      toast.success("Registration successful.");
     },
-    onError: () => {
-      toast.error("خطا در ثبت نام");
+    onError: (error) => {
+      const err = error as AxiosError;
+      const status = err.response?.status as keyof typeof registrationError;
+      const message = registrationError[status];
+      toast.warning(message);
     },
   });
 };

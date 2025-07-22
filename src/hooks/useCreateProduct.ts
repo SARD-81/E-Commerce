@@ -30,7 +30,7 @@ const useCreateProduct = (image: string | undefined) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["all-products"] });
-      toast.success("Product created successfully");
+      toast.success("Product has been successfully created");
       navigate("/");
     },
     onError: (error) => toast.error(error.message),

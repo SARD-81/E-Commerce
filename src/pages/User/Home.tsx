@@ -82,6 +82,7 @@ const Home = () => {
           >
             {newProduct?.slice(0, 2).map((product) => (
               <ProductCArd_Blank
+                key={product._id}
                 product={product}
                 size="small"
                 imageSrc={product.image}

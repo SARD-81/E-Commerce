@@ -1,6 +1,6 @@
 import axios from "axios";
 import useAuthStore from "../state-management/stores/useAuthStore"; // Fixed import
-
+import { toast } from "react-toastify";
 const server = axios.create({
   baseURL: "https://qbc9.liara.run/api",
   headers: {
@@ -10,44 +10,41 @@ const server = axios.create({
   timeout: 10000,
 });
 
-// Add token to requests
+// request interceptor
+// This interceptor adds the Authorization header to every request if a token is available
 server.interceptors.request.use((config) => {
   const token = useAuthStore.getState().token; // Access via getState()
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  console.log("Sending request to", config.url);
   return config;
 });
 
-// Handle 401 errors
-server.interceptors.response.use(
-  response => response,
-  error => {
-    if (error.response?.status === 401) {
-      // Prevent recursive logout loops
-      if (!error.config.url.includes("/logout") && 
-          !error.config.url.includes("/login")) {
-        useAuthStore.getState().logout();
-      }
-    }
-    return Promise.reject(error);
-  }
-);
-
-// Add this to log requests
-server.interceptors.request.use((config) => {
-  console.log("Sending request to:", config.url);
-  return config;
-});
-
-// Add this to log responses
+// response interceptor (success + error)
 server.interceptors.response.use(
   (response) => {
-    console.log("Response from:", response.config.url, response);
+    console.log("Response from", response.config.url, response);
     return response;
   },
   (error) => {
-    console.error("API Error:", error);
+    const status = error.response?.status;
+    if (status === 401) {
+      // Prevent recursive logout loops
+      toast.warning(
+        "Unauthorized. Please log in or provide valid credentials to access this resource."
+      );
+    } else if (status === 403) {
+      toast.warning("Access denied.");
+    } else if (status === 500) {
+      toast.warning("A server error occurred. Please try again later.");
+    } else if (!error.response) {
+      // Network error (no response object)
+      toast.warning("Network error. Please check your internet connection.");
+    } else if (error.code === "ECONNABORTED") {
+      toast.warning("Request timed out. Please try again.");
+    }
+    console.log("API Error:", error);
     return Promise.reject(error);
   }
 );

@@ -29,7 +29,7 @@ const useEditProduct = (image: string | undefined) => {
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["all-products"] });
-      toast.success("محصول با موفقیت آپدیت شد");
+      toast.success("Product has been successfully updated");
       navigate("/all-product");
     },
   });
